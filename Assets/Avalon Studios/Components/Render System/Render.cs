@@ -26,6 +26,9 @@ namespace AvalonStudios.Additions.Components.RenderSystem
         [SerializeField, Tooltip("Input key to take the screenshot.")]
         private KeyInputManager screenshotInput = null;
 
+        [SerializeField, Tooltip("Time between screenshot.")]
+        private float timeBtwScreenshots = .5f;
+
         [SerializeField, Tooltip("Image format.")]
         private Format format = Format.JPG;
 
@@ -37,13 +40,32 @@ namespace AvalonStudios.Additions.Components.RenderSystem
         private Texture2D screenshot;
         private new Camera camera;
         private string formatName;
+        private float lastTimeScreen;
 
-        private void Awake() => camera = GetComponent<Camera>();
+        private void Awake()
+        {
+            lastTimeScreen = -timeBtwScreenshots;
+            camera = GetComponent<Camera>();
+        }
 
         private void Update()
         {
-            if (screenshotInput.Execute())
+            if (screenshotInput.Execute() && Cooldown())
                 Screenshot();
+        }
+
+        private bool Cooldown()
+        {
+            bool result;
+            if (Time.time >= lastTimeScreen + timeBtwScreenshots)
+            {
+                result = true;
+                lastTimeScreen = Time.time;
+            }
+            else
+                result = true;
+
+            return result;
         }
 
         private void Screenshot()
@@ -88,15 +110,12 @@ namespace AvalonStudios.Additions.Components.RenderSystem
 
             string filename = UniqueFileName((int)rect.width, (int)rect.height, formatName);
 
-            new System.Threading.Thread(() =>
-            {
-                FileStream fileStream = File.Create(filename);
-                if (fileHeader != null)
-                    fileStream.Write(fileHeader, 0, fileHeader.Length);
+            FileStream fileStream = File.Create(filename);
+            if (fileHeader != null)
+                fileStream.Write(fileHeader, 0, fileHeader.Length);
 
-                fileStream.Write(fileData, 0, fileData.Length);
-                fileStream.Close();
-            }).Start();
+            fileStream.Write(fileData, 0, fileData.Length);
+            fileStream.Close();
 
             if (!optimizeForManyScreenshots)
             {
