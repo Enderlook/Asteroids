@@ -29,6 +29,8 @@ Material:
     - _Radius: 9.85
     - _Randomness: 5
     - _Rotation: 0
+    - _Sky: 1
+    - _Stars: 1
     - _StarsScale: 4
     - __dirty: 0
     m_Colors:

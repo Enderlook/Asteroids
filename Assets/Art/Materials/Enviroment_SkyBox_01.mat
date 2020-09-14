@@ -20,6 +20,8 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
+    - _Sky: 1
+    - _Stars: 1
     - _StarsAngle: 20
     - _StarsDensity: 10
     - _StarsSpeed: 0.007
