@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Asteroids.Characters.Player
+namespace Asteroids.Entities.Player
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public class PlayerMovement : MonoBehaviour

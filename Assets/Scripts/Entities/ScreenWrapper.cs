@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Asteroids.Scene
+namespace Asteroids.Entities
 {
     [RequireComponent(typeof(Renderer)), RequireComponent(typeof(Rigidbody2D))]
     public class ScreenWrapper : MonoBehaviour
