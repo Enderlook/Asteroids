@@ -301,6 +301,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1049467940}
   - component: {fileID: 1049467939}
+  - component: {fileID: 1049467942}
+  - component: {fileID: 1049467941}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -334,6 +336,38 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1049467941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049467938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 230a404b7a6b938409830b4d7bcacd0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialEnemyAmount: 2
+  additionalEnemiesPerLevel: 2
+  maximumAmountOfEnemies: 12
+  enemyBuilders:
+  - {fileID: 11400000, guid: cb240d706a38a924698148ce14a4e0ec, type: 2}
+  initialSpeed:
+    min: 1
+    max: 5
+--- !u!114 &1049467942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049467938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e5a1b93c22296446bde11065c2d79ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1092820304
 GameObject:
   m_ObjectHideFlags: 0

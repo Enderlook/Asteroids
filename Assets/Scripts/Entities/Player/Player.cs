@@ -1,7 +1,12 @@
-﻿using UnityEngine;
+﻿using Asteroids.Events;
+
+using System.Collections;
+
+using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
+    [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(Collider2D))]
     public class Player : MonoBehaviour
     {
 #pragma warning disable CS0649
@@ -10,6 +15,9 @@ namespace Asteroids.Entities.Player
 
         [SerializeField, Tooltip("Maximum amount of lifes the player can have.")]
         private int maxLifes;
+
+        [SerializeField, Tooltip("Duration of invulnerability after lose a life.")]
+        private float invulnerabilityDuration;
 #pragma warning restore CS0649
 
         private static Player instance;
@@ -19,6 +27,12 @@ namespace Asteroids.Entities.Player
         public static int MaxLifes => instance.maxLifes;
 
         private int lifes;
+
+        private new Rigidbody2D rigidbody;
+
+        private new Collider2D collider;
+
+        private WaitForSeconds invlunerabilityWait;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -31,26 +45,46 @@ namespace Asteroids.Entities.Player
             }
             instance = this;
 
+            rigidbody = GetComponent<Rigidbody2D>();
+            collider = GetComponent<Collider2D>();
+
             lifes = startingLifes;
 
-            EventManager.Subscribe(EventManager.Event.LevelComplete, OnLevelComplete);
+            invlunerabilityWait = new WaitForSeconds(invulnerabilityDuration);
+
+            EventManager.Subscribe<LevelTerminationEvent>(OnLevelComplete);
         }
 
-        private void OnLevelComplete()
+        private void OnLevelComplete(LevelTerminationEvent @event)
         {
-            if (lifes < maxLifes)
+            if (@event.HasWon && lifes < maxLifes)
             {
                 lifes++;
-                EventManager.Raise(EventManager.Event.PlayerGotNewLife);
+                EventManager.Raise(PlayerHealthChangedEvent.Increase);
             }
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (--lifes == 0)
-                EventManager.Raise(EventManager.Event.LostGame);
+            if (lifes == 0)
+                EventManager.Raise(LevelTerminationEvent.Lose);
             else
-                EventManager.Raise(EventManager.Event.PlayerLostOneLife);
+            {
+                lifes--;
+                EventManager.Raise(PlayerHealthChangedEvent.Decrease);
+            }
+
+            rigidbody.position = Vector2.zero;
+            rigidbody.rotation = 0;
+            collider.enabled = false;
+
+            StartCoroutine(Work());
+
+            IEnumerator Work()
+            {
+                yield return invlunerabilityWait;
+                collider.enabled = true;
+            }
         }
     }
 }

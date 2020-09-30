@@ -192,3 +192,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startingLifes: 3
   maxLifes: 10
+  invulnerabilityDuration: 1

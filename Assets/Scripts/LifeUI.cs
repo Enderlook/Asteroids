@@ -1,4 +1,5 @@
 ﻿using Asteroids.Entities.Player;
+using Asteroids.Events;
 using Asteroids.Utils;
 
 using UnityEngine;
@@ -6,11 +7,13 @@ using UnityEngine.UI;
 
 namespace Asteroids.UI
 {
-    [DefaultExecutionOrder(1)]
+    [DefaultExecutionOrder((int)ExecutionOrder.O3_LifeUI)]
     public class LifeUI : MonoBehaviour
     {
+#pragma warning disable CS0649
         [SerializeField, Tooltip("Sprite used for life icons.")]
         private Sprite lifeSprite;
+#pragma warning restore CS0649
 
         private Pool<Transform> pool;
 
@@ -18,11 +21,18 @@ namespace Asteroids.UI
         private void Awake()
         {
             pool = new Pool<Transform>(PoolConstructor, PoolEnable, PoolDisable);
-            EventManager.Subscribe(EventManager.Event.PlayerLostOneLife, OnDecrease);
-            EventManager.Subscribe(EventManager.Event.PlayerGotNewLife, OnIncrease);
+            EventManager.Subscribe<PlayerHealthChangedEvent>(OnHealthChange);
 
             for (int i = 0; i < Player.StartingLifes; i++)
                 OnIncrease();
+        }
+
+        private void OnHealthChange(PlayerHealthChangedEvent @event)
+        {
+            if (@event.HasIncreased)
+                OnIncrease();
+            else
+                OnDecrease();
         }
 
         private void OnIncrease() => pool.Get();
@@ -51,7 +61,7 @@ namespace Asteroids.UI
 
         private void PoolDisable(Transform obj)
         {
-            obj.parent = null;
+            obj.SetParent(null);
             obj.gameObject.SetActive(false);
         }
     }
