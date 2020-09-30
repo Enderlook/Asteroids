@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3835330508921528676}
   - component: {fileID: 1664063711261092465}
   - component: {fileID: 1194742860074162194}
-  - component: {fileID: 579952073249446025}
+  - component: {fileID: 7091834247238112134}
   m_Layer: 5
   m_Name: Health Bar
   m_TagString: Untagged
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &579952073249446025
+--- !u!114 &7091834247238112134
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -84,11 +84,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6980778074502496361}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -609711369, guid: 8514bc2c934c20949bcfbd938774ada4, type: 3}
+  m_Script: {fileID: -609711369, guid: 7dbdb8c1dcc6a4d459edfb922ff23a60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   textShowed: '{0} / {1} ({2}%)'
-  dynamicNumbers: 0
+  dynamicNumbers: 1
   maxHealthColor: {r: 0, g: 1, b: 0, a: 1}
   minHealthColor: {r: 1, g: 0, b: 0, a: 1}
   fillingSpeed: 1
@@ -96,7 +96,7 @@ MonoBehaviour:
   healthBar: {fileID: 7599763248378914896}
   damageBar: {fileID: 7558930798319532954}
   healingBar: {fileID: 7599522417589928272}
-  roundingMode: 0
+  roundingMode: 2
   canvas: {fileID: 0}
   frame: {fileID: 1194742860074162194}
   background: {fileID: 7558325305389770306}
