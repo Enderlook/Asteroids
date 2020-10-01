@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class Menu : MonoBehaviour
+
+public class SceneManagement : MonoBehaviour
 {
-   
+
+
     public void GoToGame()
-   {
+    {
         SceneManager.LoadScene("Level");
-   }
+    }
 
 
     public void QuitGame()
@@ -17,6 +19,9 @@ public class Menu : MonoBehaviour
         Debug.Log("SALE DEL JUEGO");
     }
 
-    
+    public void Menu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
 
 }
