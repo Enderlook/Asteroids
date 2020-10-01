@@ -39,7 +39,7 @@ namespace Asteroids.Entities.Enemies
             private readonly GameObject gameObject;
             private readonly SpriteRenderer spriteRenderer;
             private readonly Rigidbody2D rigidbody;
-            private readonly BreakOnCollision breakOnCollision;
+           // private readonly BreakOnCollision breakOnCollision;
             private readonly PolygonCollider2D collider;
             private readonly List<Vector2> physicsShape;
 
@@ -55,7 +55,7 @@ namespace Asteroids.Entities.Enemies
 
                 rigidbody = gameObject.AddComponent<Rigidbody2D>();
                 rigidbody.gravityScale = 0;
-                breakOnCollision = gameObject.AddComponent<BreakOnCollision>();
+              //  breakOnCollision = gameObject.AddComponent<BreakOnCollision>();
                 spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
                 gameObject.AddComponent<ScreenWrapper>();
                 collider = gameObject.AddComponent<PolygonCollider2D>();
@@ -73,7 +73,7 @@ namespace Asteroids.Entities.Enemies
                 gameObject.SetActive(true);
                 rigidbody.velocity = Vector2.zero;
                 rigidbody.mass = data.mass;
-                breakOnCollision.SetDestroyedEvent(new EnemyDestroyedEvent(this, data.scoreWhenDestroyed));
+                //breakOnCollision.SetDestroyedEvent(new EnemyDestroyedEvent(this, data.scoreWhenDestroyed));
 
                 int count = sprite.GetPhysicsShapeCount();
                 for (int i = 0; i < count; i++)
