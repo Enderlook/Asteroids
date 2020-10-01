@@ -18,6 +18,9 @@ namespace Asteroids.Entities.Player
 
         [SerializeField, Tooltip("Duration of invulnerability after lose a life.")]
         private float invulnerabilityDuration;
+
+        [SerializeField, Min(1), Tooltip("Amount of points required to earn a new life. Up to a maximum of one life can be get per score increase.")]
+        private int scorePerLife;
 #pragma warning restore CS0649
 
         private static Player instance;
@@ -34,6 +37,8 @@ namespace Asteroids.Entities.Player
 
         private WaitForSeconds invlunerabilityWait;
 
+        private int scoreToNextLife;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
@@ -49,16 +54,18 @@ namespace Asteroids.Entities.Player
             collider = GetComponent<Collider2D>();
 
             lifes = startingLifes;
+            scoreToNextLife = scorePerLife;
 
             invlunerabilityWait = new WaitForSeconds(invulnerabilityDuration);
 
-            EventManager.Subscribe<LevelTerminationEvent>(OnLevelComplete);
+            EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreChanged);
         }
 
-        private void OnLevelComplete(LevelTerminationEvent @event)
+        private void OnScoreChanged(ScoreHasChangedEvent @event)
         {
-            if (@event.HasWon && lifes < maxLifes)
+            if (scoreToNextLife <= @event.NewScore)
             {
+                scoreToNextLife += scorePerLife;
                 lifes++;
                 EventManager.Raise(PlayerHealthChangedEvent.Increase);
             }

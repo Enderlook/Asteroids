@@ -193,3 +193,4 @@ MonoBehaviour:
   startingLifes: 3
   maxLifes: 10
   invulnerabilityDuration: 1
+  scorePerLife: 10000
