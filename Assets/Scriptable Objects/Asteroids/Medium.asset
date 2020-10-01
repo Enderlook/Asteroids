@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef23260a5b8f52341a3069e2a1597f2c, type: 3}
+  m_Name: Medium
+  m_EditorClassIdentifier: 
+  scoreWhenDestroyed: 20
+  mass: 3
+  sprites:
+  - {fileID: 21300000, guid: 680984a081866c7499bb02c9f6f3881e, type: 3}
+  - {fileID: 21300000, guid: 4ad3d47eb2d0ab34caf8a441fea8b693, type: 3}
+  - {fileID: 21300000, guid: f3be5b455b3430041be6df60d002c0b9, type: 3}
+  - {fileID: 21300000, guid: d6aa954e04edca941985afd0222de736, type: 3}
+  layer: 9
+  enemyToSpawn: {fileID: 11400000, guid: 885e1ee6b609b1e40863db83199ab8d4, type: 2}
+  amountToSpawn: 0
+  initialSpeed:
+    min: 2
+    max: 5

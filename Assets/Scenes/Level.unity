@@ -351,8 +351,10 @@ MonoBehaviour:
   initialEnemyAmount: 2
   additionalEnemiesPerLevel: 2
   maximumAmountOfEnemies: 12
-  enemyBuilders:
-  - {fileID: 11400000, guid: cb240d706a38a924698148ce14a4e0ec, type: 2}
+  enemyTemplates:
+  - {fileID: 11400000, guid: 78909d49236b57342b1f0ba35e5ecace, type: 2}
+  - {fileID: 11400000, guid: f5c26d841db79fd4fa37356619928b11, type: 2}
+  - {fileID: 11400000, guid: 885e1ee6b609b1e40863db83199ab8d4, type: 2}
   initialSpeed:
     min: 1
     max: 5
@@ -652,6 +654,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3962719958744909300, guid: 65f701556d3298344bd7238864ad72fc,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 65f701556d3298344bd7238864ad72fc, type: 3}
