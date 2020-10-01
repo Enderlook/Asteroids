@@ -92,7 +92,7 @@ namespace Asteroids.Entities.Enemies
 
             Vector2 position = camera.ViewportToWorldPoint(positionViewport);
 
-            Vector2 speed = (new Vector2(Random.value, Random.value) - position).normalized * initialSpeed.Value;
+            Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
 
             enemyTemplates.RandomPick().Create((position, speed));
         }

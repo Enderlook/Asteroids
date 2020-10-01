@@ -45,7 +45,6 @@ namespace Asteroids.Entities.Enemies
                 GameObject = new GameObject(data.name);
                 Rigidbody = GameObject.AddComponent<Rigidbody2D>();
                 Rigidbody.gravityScale = 0;
-                GameObject.AddComponent<ScreenWrapper>();
             }
 
             public virtual void Initialize() => GameObject.SetActive(true);

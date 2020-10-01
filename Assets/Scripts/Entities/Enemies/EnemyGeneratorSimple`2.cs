@@ -45,6 +45,7 @@ namespace Asteroids.Entities.Enemies
                 collider = GameObject.AddComponent<PolygonCollider2D>();
                 physicsShape = new List<Vector2>();
                 GameObject.layer = Data.layer;
+                GameObject.AddComponent<ScreenWrapper>();
 
                 SubInitialize();
             }
