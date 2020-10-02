@@ -30,9 +30,7 @@ namespace Asteroids.Entities.Enemies
                 base.ExecuteOnCollision();
 
                 for (int i = 0; i < Data.amountToSpawn; i++)
-                {
-                    var h = Data.enemyToSpawn.Create((Rigidbody.position, Random.insideUnitCircle * Data.initialSpeed.Value));
-                }
+                    _ = Data.enemyToSpawn.Create((Rigidbody.position, Random.insideUnitCircle * Data.initialSpeed.Value));
             }
 
             protected override EnemyDestroyedEvent CreateEnemyDestroyedEvent()
