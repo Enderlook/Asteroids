@@ -11,7 +11,7 @@ namespace Asteroids.UI
 
         public void Menu()
         {
-            FindObjectOfType<Pause>().TogglePause();
+            FindObjectOfType<Pause>().UnPause();
             SceneManager.LoadScene(0);
         }
     }
