@@ -1,40 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 525132703, guid: a1787eaee3ab7ca4ba8f4cc484ae1faf, type: 3}
-  m_Name: Level
-  m_EditorClassIdentifier: 
-  sounds:
-  - {fileID: 4093948568778001181}
-  - {fileID: 6098522126957675953}
-  - {fileID: 7813077273452270036}
-  playMode: 0
-  playListMode: 0
-  playsAmount: -1
---- !u!114 &4093948568778001181
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1179470597, guid: a1787eaee3ab7ca4ba8f4cc484ae1faf, type: 3}
-  m_Name: Infinite Sensations
-  m_EditorClassIdentifier: 
-  audioClip: {fileID: 8300000, guid: a4662e510d8eeec47be64f1dc38472b6, type: 3}
-  playsAmount: 1
-  modifiers: []
---- !u!114 &6098522126957675953
+--- !u!114 &-7961570873860195187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -49,7 +15,41 @@ MonoBehaviour:
   audioClip: {fileID: 8300000, guid: 0a3dc175f3d16874c8105f491f0a5b35, type: 3}
   playsAmount: 1
   modifiers: []
---- !u!114 &7813077273452270036
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 525132703, guid: a1787eaee3ab7ca4ba8f4cc484ae1faf, type: 3}
+  m_Name: Level
+  m_EditorClassIdentifier: 
+  sounds:
+  - {fileID: 233579833232279589}
+  - {fileID: -7961570873860195187}
+  - {fileID: 4011044079149129477}
+  playMode: 1
+  playListMode: 0
+  playsAmount: 1
+--- !u!114 &233579833232279589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1179470597, guid: a1787eaee3ab7ca4ba8f4cc484ae1faf, type: 3}
+  m_Name: Infinite Sensations
+  m_EditorClassIdentifier: 
+  audioClip: {fileID: 8300000, guid: a4662e510d8eeec47be64f1dc38472b6, type: 3}
+  playsAmount: 1
+  modifiers: []
+--- !u!114 &4011044079149129477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
