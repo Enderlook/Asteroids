@@ -15,8 +15,8 @@ MonoBehaviour:
   scoreWhenDestroyed: 80
   mass: 1
   sprites:
-  - {fileID: 21300000, guid: e0e6cb2874a9ef04aa9291222a966c87, type: 3}
-  - {fileID: 21300000, guid: 5b189fb61a2784343b6b1ccd70566d92, type: 3}
-  - {fileID: 21300000, guid: 2496d4afdd2c893439eb2275a06f94ee, type: 3}
-  - {fileID: 21300000, guid: 7b2a785e5b6177e4abc64ea8cb095217, type: 3}
+  - Asteroids/meteorBrown_tiny1
+  - Asteroids/meteorBrown_tiny2
+  - Asteroids/meteorGrey_tiny1
+  - Asteroids/meteorGrey_tiny2
   layer: 9

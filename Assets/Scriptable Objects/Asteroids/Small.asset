@@ -15,10 +15,10 @@ MonoBehaviour:
   scoreWhenDestroyed: 40
   mass: 2
   sprites:
-  - {fileID: 21300000, guid: b796c23bfb7524443b189a1f77425f5c, type: 3}
-  - {fileID: 21300000, guid: 1e9d0393d6a006642bafc3cd1f0555cc, type: 3}
-  - {fileID: 21300000, guid: 3db5585e405825647a53cccdf9b4d1de, type: 3}
-  - {fileID: 21300000, guid: 9b3e4d990aa82594aba271d2ff244566, type: 3}
+  - Asteroids/meteorBrown_small1
+  - Asteroids/meteorBrown_small2
+  - Asteroids/meteorGrey_small1
+  - Asteroids/meteorGrey_small2
   layer: 9
   enemyToSpawn: {fileID: 11400000, guid: cb240d706a38a924698148ce14a4e0ec, type: 2}
   amountToSpawn: 2

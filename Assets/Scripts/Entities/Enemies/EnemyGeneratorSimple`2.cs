@@ -3,10 +3,11 @@
 using Enderlook.Enumerables;
 using Enderlook.Unity.Attributes;
 
-using System;
 using System.Collections.Generic;
 
 using UnityEngine;
+
+using Resources = Asteroids.Utils.Resources;
 
 namespace Asteroids.Entities.Enemies
 {
@@ -21,8 +22,8 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Tooltip("Mass of the enemy")]
         private float mass;
 
-        [SerializeField, Tooltip("A random sprite will be picked by the enemy.")]
-        private Sprite[] sprites;
+        [SerializeField, Tooltip("A random sprite will be picked by the enemy."), DrawTexture(false)]
+        private string[] sprites;
 
         [SerializeField, Layer, Tooltip("Layer of the enemy.")]
         private int layer;
@@ -58,7 +59,7 @@ namespace Asteroids.Entities.Enemies
 
             private void SubInitialize()
             {
-                Sprite sprite = Data.sprites.RandomPick();
+                Sprite sprite = Resources.Load<Sprite>(Data.sprites.RandomPick());
 
                 spriteRenderer.sprite = sprite;
                 Rigidbody.mass = Data.mass;
