@@ -73,6 +73,9 @@ namespace Asteroids.Entities.Player
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            if (gameObject.layer == LayerMask.NameToLayer("Bullet"))
+                return;
+
             if (lifes == 0)
                 EventManager.Raise(LevelTerminationEvent.Lose);
             else
