@@ -10,8 +10,7 @@ namespace Asteroids.Entities.Enemies
     {
         private Pool<THandler, (Vector2 position, Vector2 speed)> pool;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
-        private void OnEnable() => pool = new Pool<THandler, (Vector2 position, Vector2 speed)>(Constructor, Initializer, Deinitializer);
+        public override void Initialize() => pool = new Pool<THandler, (Vector2 position, Vector2 speed)>(Constructor, Initializer, Deinitializer);
 
         protected abstract THandler Constructor((Vector2 position, Vector2 speed) arguments);
 
