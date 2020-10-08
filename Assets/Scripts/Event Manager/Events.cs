@@ -1,4 +1,4 @@
-﻿using Asteroids.Entities.Enemies;
+﻿using System;
 
 namespace Asteroids.Events
 {
@@ -26,14 +26,18 @@ namespace Asteroids.Events
 
     public readonly struct EnemyDestroyedEvent
     {
-        public readonly EnemyBuilderData.EnemyHandler Enemy;
         public readonly int Score;
+        public readonly int NewSpawnedEnemiesCount;
 
-        public EnemyDestroyedEvent(EnemyBuilderData.EnemyHandler enemy, int score)
+        public EnemyDestroyedEvent(int score, int newSpawnedEnemiesCount)
         {
-            Enemy = enemy;
             Score = score;
+            NewSpawnedEnemiesCount = newSpawnedEnemiesCount;
         }
+
+        public EnemyDestroyedEvent(int score) : this(score, 0) { }
+
+        internal EnemyDestroyedEvent WithNewSpawnedEnemiesCount(int amountToSpawn) => new EnemyDestroyedEvent(Score, amountToSpawn);
     }
 
     public readonly struct ScoreHasChangedEvent
@@ -41,5 +45,18 @@ namespace Asteroids.Events
         public readonly int NewScore;
 
         public ScoreHasChangedEvent(int newScore) => NewScore = newScore;
+    }
+
+    public readonly struct PauseEvent
+    {
+        public readonly bool IsPaused;
+
+        public bool IsPlaying => !IsPaused;
+
+        public PauseEvent(bool isPaused) => IsPaused = isPaused;
+
+        public static PauseEvent Pause => new PauseEvent(true);
+
+        public static PauseEvent Play => new PauseEvent(false);
     }
 }

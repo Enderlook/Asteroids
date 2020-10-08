@@ -4,7 +4,7 @@
     /// A factory of objects.
     /// </summary>
     /// <typeparam name="TObject">Type of object to create.</typeparam>
-    public interface IFactory<TObject>
+    public interface IFactory<out TObject>
     {
         /// <summary>
         /// Creates a new instance.

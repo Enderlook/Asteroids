@@ -1,8 +1,8 @@
 ﻿using Asteroids.Events;
 using Asteroids.Scene;
-using Asteroids.Utils;
 
 using Enderlook.Enumerables;
+using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Serializables.Ranges;
 
 using UnityEngine;
@@ -24,14 +24,12 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Tooltip("Maximum amount of enemies per level.")]
         private int maximumAmountOfEnemies;
 
-        [SerializeField, Tooltip("Possible enemies to spawn.")]
-        private EnemyBuilderData[] enemyBuilders;
+        [SerializeField, Tooltip("Possible enemies to spawn."), Expandable]
+        private EnemyGenerator[] enemyTemplates;
 
         [SerializeField, Tooltip("Random speed of spawned enemies.")]
         private RangeFloat initialSpeed;
 #pragma warning restore CS0649
-
-        private Pool<EnemyBuilderData.EnemyHandler, EnemyBuilderData> pool;
 
         private new Camera camera;
 
@@ -40,12 +38,6 @@ namespace Asteroids.Entities.Enemies
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
-            pool = new Pool<EnemyBuilderData.EnemyHandler, EnemyBuilderData>(
-                (configuration) => configuration.Create(),
-                (enemy, configuration) => configuration.Initialize(enemy),
-                (enemy) => enemy.Deinitialize()
-            );
-
             camera = Camera.main;
 
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
@@ -62,8 +54,7 @@ namespace Asteroids.Entities.Enemies
 
         private void OnEnemyDestroyed(EnemyDestroyedEvent @event)
         {
-            pool.Store(@event.Enemy);
-            remainingEnemies--;
+            remainingEnemies = remainingEnemies - 1 + @event.NewSpawnedEnemiesCount;
             if (remainingEnemies == 0)
                 EventManager.Raise(LevelTerminationEvent.Win);
         }
@@ -78,16 +69,32 @@ namespace Asteroids.Entities.Enemies
 
         private void SpawnEnemy()
         {
-            EnemyBuilderData configuration = enemyBuilders.RandomPick();
-            EnemyBuilderData.EnemyHandler enemy = pool.Get(configuration);
+            Vector3 positionViewport;
 
-            Vector3 position;
-            if (Random.value > .5)
-                position = new Vector3(1.05f, Random.value, 0);
-            else
-                position = new Vector3(-0.05f, Random.value, 0);
+            switch (Random.Range(0, 4))
+            {
+                case 0:
+                    positionViewport = new Vector3(1.05f, Random.value, 0);
+                    break;
+                case 1:
+                    positionViewport = new Vector3(-0.05f, Random.value, 0);
+                    break;
+                case 2:
+                    positionViewport = new Vector3(Random.value, 1.05f, 0);
+                    break;
+                case 3:
+                    positionViewport = new Vector3(Random.value, -0.05f, 0);
+                    break;
+                default:
+                    Debug.LogError("Impossible state.");
+                    goto case 0;
+            }
 
-            enemy.Initialize(camera.ViewportToWorldPoint(position), new Vector2(Random.value, Random.value), initialSpeed.Value);
+            Vector2 position = camera.ViewportToWorldPoint(positionViewport);
+
+            Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
+
+            enemyTemplates.RandomPick().Create((position, speed));
         }
     }
 }
