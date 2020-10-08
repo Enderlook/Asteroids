@@ -2,10 +2,12 @@
 
 using Enderlook.Enumerables;
 using Enderlook.Unity.Attributes;
+using Enderlook.Unity.Components.ScriptableSound;
 
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Audio;
 
 using Resources = Asteroids.Utils.Resources;
 
@@ -27,6 +29,12 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Layer, Tooltip("Layer of the enemy.")]
         private int layer;
+
+        [SerializeField, Tooltip("Sound played on death.")]
+        private Sound deathSound;
+
+        [SerializeField, Tooltip("Audio mixer group of death sound.")]
+        private AudioMixerGroup audioMixerGroup;
 #pragma warning restore CS0649
 
         public new abstract class Handler : EnemyGenerator<TData, THandler>.Handler
@@ -38,6 +46,8 @@ namespace Asteroids.Entities.Enemies
             private PolygonCollider2D collider;
             private List<Vector2> physicsShape;
 
+            private SimpleSoundPlayer player;
+
             public override void Create(TData data)
             {
                 base.Create(data);
@@ -47,6 +57,9 @@ namespace Asteroids.Entities.Enemies
                 physicsShape = new List<Vector2>();
                 GameObject.layer = Data.layer;
                 GameObject.AddComponent<ScreenWrapper>();
+
+                player = SimpleSoundPlayer.CreateOneTimePlayer(data.deathSound, false, false);
+                player.GetComponent<AudioSource>().outputAudioMixerGroup = data.audioMixerGroup;
 
                 SubInitialize();
             }
@@ -77,6 +90,7 @@ namespace Asteroids.Entities.Enemies
 
             private void OnCollision()
             {
+                player.Play();
                 EventManager.Raise(CreateEnemyDestroyedEvent());
                 ExecuteOnCollision();
                 ReturnToPool();

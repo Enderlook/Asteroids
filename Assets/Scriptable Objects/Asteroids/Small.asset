@@ -20,6 +20,9 @@ MonoBehaviour:
   - Asteroids/meteorGrey_small1
   - Asteroids/meteorGrey_small2
   layer: 9
+  deathSound: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477, type: 2}
+  audioMixerGroup: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
+    type: 2}
   enemyToSpawn: {fileID: 11400000, guid: cb240d706a38a924698148ce14a4e0ec, type: 2}
   amountToSpawn: 2
   initialSpeed:
