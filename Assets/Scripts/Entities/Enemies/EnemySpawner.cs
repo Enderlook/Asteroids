@@ -43,6 +43,9 @@ namespace Asteroids.Entities.Enemies
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
 
+            foreach (EnemyGenerator generator in enemyTemplates)
+                generator.Initialize();
+
             remainingEnemies = SpawnEnemies();
         }
 

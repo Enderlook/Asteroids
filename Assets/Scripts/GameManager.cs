@@ -1,4 +1,5 @@
 ﻿using Asteroids.Events;
+using Asteroids.UI;
 
 using UnityEngine;
 
@@ -7,9 +8,16 @@ namespace Asteroids.Scene
     [DefaultExecutionOrder((int)ExecutionOrder.O4_GameManager)]
     public class GameManager : MonoBehaviour
     {
+#pragma warning disable CS0649
+        [SerializeField, Tooltip("Panel shown on loose.")]
+        private GameObject gameOver;
+#pragma warning restore CS0649
+
         private static GameManager instance;
 
         public static int Level => instance.level;
+
+        public static int Score => instance.score;
 
         private int level = 1;
 
@@ -30,7 +38,16 @@ namespace Asteroids.Scene
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
         }
 
-        private void OnLevelComplete() => level++;
+        private void OnLevelComplete(LevelTerminationEvent @event)
+        {
+            if (@event.HasWon)
+                level++;
+            else
+            {
+                FindObjectOfType<PauseManager>().Pause();
+                gameOver.SetActive(true);
+            }
+        }
 
         private void OnEnemyDestroyed(EnemyDestroyedEvent @event)
         {
