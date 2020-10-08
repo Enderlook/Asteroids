@@ -1,5 +1,7 @@
 ﻿using Asteroids.Events;
 
+using Enderlook.Unity.Components.ScriptableSound;
+
 using System.Collections;
 
 using UnityEngine;
@@ -21,6 +23,9 @@ namespace Asteroids.Entities.Player
 
         [SerializeField, Min(1), Tooltip("Amount of points required to earn a new life. Up to a maximum of one life can be get per score increase.")]
         private int scorePerLife;
+
+        [SerializeField, Tooltip("Sound played on death.")]
+        private SimpleSoundPlayer deathSound;
 #pragma warning restore CS0649
 
         private static Player instance;
@@ -73,6 +78,8 @@ namespace Asteroids.Entities.Player
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            deathSound.Play();
+
             if (lifes == 0)
                 EventManager.Raise(LevelTerminationEvent.Lose);
             else
