@@ -21,3 +21,4 @@ MonoBehaviour:
   sprite: Abilities/laserBlue02
   force: 25
   projectileLayer: 10
+  shootSound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}

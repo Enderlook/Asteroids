@@ -2,6 +2,7 @@
 using Asteroids.Utils;
 
 using Enderlook.Unity.Attributes;
+using Enderlook.Unity.Components.ScriptableSound;
 
 using UnityEngine;
 
@@ -21,17 +22,24 @@ namespace Asteroids.AbilitySystem
 
         [SerializeField, Layer, Tooltip("Layer of the projectile.")]
         private int projectileLayer;
+
+        [SerializeField, Tooltip("Sound produced on shoot.")]
+        private Sound shootSound;
 #pragma warning restore CS0649
 
         private AbilitiesManager abilitiesManager;
 
         private Pool<Rigidbody2D> pool;
 
+        private SimpleSoundPlayer soundPlayer;
+
         public override void Initialize(AbilitiesManager abilitiesManager)
         {
             this.abilitiesManager = abilitiesManager;
             base.Initialize(abilitiesManager);
             pool = new Pool<Rigidbody2D>(ProjectileConstructor, ProjectileInitializer, ProjectileDeinitializer);
+
+            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(shootSound, false, false);
         }
 
         private Rigidbody2D ProjectileConstructor()
@@ -72,6 +80,8 @@ namespace Asteroids.AbilitySystem
             rigidbody2D.rotation = playerRigidbody.rotation;
             rigidbody2D.MovePosition(castPoint.position);
             rigidbody2D.velocity = (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity;
+
+            soundPlayer.Play();
         }
     }
 }
