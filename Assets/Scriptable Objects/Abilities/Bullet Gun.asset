@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1a829375630e9a4fa218dd1a87e361f, type: 3}
   m_Name: Bullet Gun
   m_EditorClassIdentifier: 
-  weaponName: 
+  abilityName: 
   description: 
   cooldown: 0.35
   castInput:
     keys: 20000000
     canBeHoldDown: 1
+  abilitySound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}
   sprite: Abilities/laserBlue02
-  force: 25
+  force: 10
   projectileLayer: 10
-  shootSound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}

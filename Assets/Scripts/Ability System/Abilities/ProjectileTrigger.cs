@@ -22,9 +22,6 @@ namespace Asteroids.AbilitySystem
 
         [SerializeField, Layer, Tooltip("Layer of the projectile.")]
         private int projectileLayer;
-
-        [SerializeField, Tooltip("Sound produced on shoot.")]
-        private Sound shootSound;
 #pragma warning restore CS0649
 
         private AbilitiesManager abilitiesManager;
@@ -39,7 +36,7 @@ namespace Asteroids.AbilitySystem
             base.Initialize(abilitiesManager);
             pool = new Pool<Rigidbody2D>(ProjectileConstructor, ProjectileInitializer, ProjectileDeinitializer);
 
-            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(shootSound, false, false);
+            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
         }
 
         private Rigidbody2D ProjectileConstructor()

@@ -1,4 +1,6 @@
 ﻿using Enderlook.Unity.Utils.Interfaces;
+using Enderlook.Unity.Components.ScriptableSound;
+
 using AvalonStudios.Additions.Utils.InputsManager;
 
 using UnityEngine;
@@ -19,6 +21,9 @@ namespace Asteroids.AbilitySystem
 
         [SerializeField, Tooltip("Ability's input.")]
         protected KeyInputManager castInput = new KeyInputManager();
+
+        [SerializeField, Tooltip("Sound produced on shoot.")]
+        protected Sound abilitySound;
 #pragma warning restore CS0649
 
         private float nextCast;
