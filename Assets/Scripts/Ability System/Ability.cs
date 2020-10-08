@@ -8,17 +8,17 @@ namespace Asteroids.AbilitySystem
     public abstract class Ability : ScriptableObject, IInitialize<AbilitiesManager>
     {
 #pragma warning disable CS0649
-        [SerializeField, Tooltip("Weapon's name.")]
-        private string weaponName;
+        [SerializeField, Tooltip("Ability's name.")]
+        private string abilityName;
 
-        [SerializeField, Tooltip("Weapon's description.")]
+        [SerializeField, Tooltip("Ability's description.")]
         private string description;
 
-        [SerializeField, Tooltip("Weapon's cooldown in secods.")]
+        [SerializeField, Tooltip("Ability's cooldown in secods.")]
         private float cooldown = 1;
 
         [SerializeField, Tooltip("Ability's input.")]
-        private KeyInputManager castInput = new KeyInputManager();
+        protected KeyInputManager castInput = new KeyInputManager();
 #pragma warning restore CS0649
 
         private float nextCast;
