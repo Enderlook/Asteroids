@@ -1,10 +1,10 @@
-﻿using System;
-
-namespace Asteroids.Events
+﻿namespace Asteroids.Events
 {
     public readonly struct LevelTerminationEvent
     {
         public readonly bool HasWon;
+
+        public bool HasLost => !HasWon;
 
         public LevelTerminationEvent(bool hasWon) => HasWon = hasWon;
 

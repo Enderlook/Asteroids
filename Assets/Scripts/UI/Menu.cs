@@ -22,11 +22,24 @@ namespace Asteroids.UI
 
         private PauseManager pause;
 
+        private bool isLock;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
             pause = FindObjectOfType<PauseManager>();
             EventManager.Subscribe<PauseEvent>(OnPause);
+            EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
+        }
+
+        private void OnLevelTermination(LevelTerminationEvent @event)
+        {
+            if (@event.HasLost)
+            {
+                isLock = true;
+                for (int i = 0; i < panels.Length; i++)
+                    panels[i].SetActive(false);
+            }
         }
 
         private void OnPause(PauseEvent @event)
@@ -40,7 +53,7 @@ namespace Asteroids.UI
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()
         {
-            if (Input.GetKeyDown(menu))
+            if (!isLock && Input.GetKeyDown(menu))
             {
                 if (isMainMenu)
                 {
