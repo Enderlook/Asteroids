@@ -77,8 +77,12 @@ namespace Asteroids.AbilitySystem
             Rigidbody2D playerRigidbody = abilitiesManager.Rigidbody2D;
 
             Rigidbody2D rigidbody2D = pool.Get();
-            rigidbody2D.rotation = playerRigidbody.rotation;
-            rigidbody2D.MovePosition(castPoint.position);
+
+            // Don't use Rigidbody2D because it takes a frame to update and produces a visual bug
+            Transform transform = rigidbody2D.transform;
+            transform.position = castPoint.position;
+            transform.rotation = Quaternion.Euler(new Vector3(0, 0, playerRigidbody.rotation));
+
             rigidbody2D.velocity = (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity;
 
             soundPlayer.Play();
