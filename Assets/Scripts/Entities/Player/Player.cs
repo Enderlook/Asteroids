@@ -83,6 +83,7 @@ namespace Asteroids.Entities.Player
 
             rigidbody.position = Vector2.zero;
             rigidbody.rotation = 0;
+            rigidbody.velocity = default;
             collider.enabled = false;
 
             StartCoroutine(Work());
