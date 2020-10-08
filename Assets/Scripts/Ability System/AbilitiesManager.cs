@@ -1,32 +1,35 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Enderlook.Unity.Attributes;
+
 using UnityEngine;
 
 namespace Asteroids.AbilitySystem
 {
+    [RequireComponent(typeof(Rigidbody2D))]
     public class AbilitiesManager : MonoBehaviour
     {
-        public Transform CastPoint => castPoint;
-
-        [Header("Setup")]
-
-        [SerializeField, Tooltip("Cast position")]
-        private Transform castPoint;
+#pragma warning disable CS0649
+        [field: Header("Setup")]
+        [field: SerializeField, IsProperty, Tooltip("Cast position")]
+        public Transform CastPoint { get; private set; }
 
         [SerializeField, Tooltip("Abilities.")]
-        private AbilitiesPack abilitiesPack = null;
+        private AbilitiesPack abilitiesPack;
+#pragma warning restore CS0649
 
-        public void Awake()
+        public Rigidbody2D Rigidbody2D { get; private set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Awake()
         {
+            Rigidbody2D = GetComponent<Rigidbody2D>();
             abilitiesPack.Initialize(this);
         }
 
-        public void Update()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Update()
         {
-            if (!abilitiesPack)
-                return;
-
-            abilitiesPack.Update();
+            if (abilitiesPack != null)
+                abilitiesPack.Update();
         }
     }
 }

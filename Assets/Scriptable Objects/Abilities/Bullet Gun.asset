@@ -10,17 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1a829375630e9a4fa218dd1a87e361f, type: 3}
-  m_Name: Beam 01
+  m_Name: Bullet Gun
   m_EditorClassIdentifier: 
   weaponName: 
   description: 
   cooldown: 1
   castInput:
-    keys: 65000000
+    keys: 20000000
     canBeHoldDown: 1
-  prefab: {fileID: 8021783189002871324, guid: 575d3409683afce48844b6bd7d40de11, type: 3}
-  damage: 5
-  speed: 6
-  hitTargets:
-    serializedVersion: 2
-    m_Bits: 512
+  sprite: Abilities/laserBlue02
+  force: 25
+  projectileLayer: 10
