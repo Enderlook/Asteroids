@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &822242070
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 822242071}
+  m_Layer: 8
+  m_Name: Cast Point
+  m_TagString: Untagged
+  m_Icon: {fileID: -5442936267250999957, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &822242071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 822242070}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.73, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3962719958744909298}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3962719958744909296
 GameObject:
   m_ObjectHideFlags: 0
@@ -17,6 +47,7 @@ GameObject:
   - component: {fileID: 7746794580776982559}
   - component: {fileID: 162143194529827942}
   - component: {fileID: 3801145147293042392}
+  - component: {fileID: 5783271450683341574}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -34,7 +65,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 822242071}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -107,7 +139,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!60 &3962719958744909299
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -196,7 +228,7 @@ MonoBehaviour:
   maxLifes: 10
   invulnerabilityDuration: 1
   scorePerLife: 10000
-  deathSound: {fileID: 3801145147293042392}
+  deathSound: {fileID: 5783271450683341574}
 --- !u!82 &162143194529827942
 AudioSource:
   m_ObjectHideFlags: 0
@@ -303,9 +335,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 3962719958744909296}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b918cde03ccbee449c348d76574d094, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CastPoint>k__BackingField: {fileID: 822242071}
+  abilitiesPack: {fileID: 11400000, guid: 4875ddb658962484ba8766cdde3bc948, type: 2}
+--- !u!114 &5783271450683341574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3962719958744909296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: -1829235207, guid: a1787eaee3ab7ca4ba8f4cc484ae1faf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sound: {fileID: 11400000, guid: 198181fcbcdf38a43a9e497abf2a4db9, type: 2}
+  sound: {fileID: -4213840797054624402, guid: 6437f7c5af2005b40aaea9f00187d905, type: 2}
   playOnStart: 0
   destroyOnFinish: 0

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1a829375630e9a4fa218dd1a87e361f, type: 3}
+  m_Name: Bullet Gun
+  m_EditorClassIdentifier: 
+  weaponName: 
+  description: 
+  cooldown: 0.35
+  castInput:
+    keys: 20000000
+    canBeHoldDown: 1
+  sprite: Abilities/laserBlue02
+  force: 25
+  projectileLayer: 10
+  shootSound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}
