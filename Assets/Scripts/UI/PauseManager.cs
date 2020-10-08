@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids.UI
 {
-    public class Pause : MonoBehaviour
+    public class PauseManager : MonoBehaviour
     {
         public void TogglePause()
         {
@@ -24,6 +24,12 @@ namespace Asteroids.UI
         {
             Time.timeScale = 1;
             EventManager.Raise(PauseEvent.Play);
+        }
+
+        public void Pause()
+        {
+            Time.timeScale = 0;
+            EventManager.Raise(PauseEvent.Pause);
         }
     }
 }
