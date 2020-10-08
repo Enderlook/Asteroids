@@ -52,7 +52,9 @@ namespace Asteroids.Entities.Enemies
 
             public void ConfigureRigidbody(Vector2 position, Vector2 speed)
             {
-                Rigidbody.position = position;
+                // Don't use Rigidbody to set position because it has one frame delay
+                GameObject.transform.position = position;
+
                 Rigidbody.velocity = speed;
                 Rigidbody.rotation = 0;
             }
