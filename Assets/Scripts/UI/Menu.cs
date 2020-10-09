@@ -24,6 +24,8 @@ namespace Asteroids.UI
 
         private bool isLock;
 
+        private const int MAIN_MENU_SCENE = 0;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
@@ -82,7 +84,7 @@ namespace Asteroids.UI
         {
             if (pause != null)
                 pause.UnPause();
-            SceneManager.LoadScene(1);
+            Load(1);
         }
 
         public void QuitGame() => Application.Quit();
@@ -90,7 +92,17 @@ namespace Asteroids.UI
         public void GotToMenu()
         {
             pause.UnPause();
-            SceneManager.LoadScene(0);
+            Load(MAIN_MENU_SCENE);
+        }
+
+        private void Load(string scene) => SceneLoading(SceneManager.LoadSceneAsync(scene));
+
+        private void Load(int scene = 0) => SceneLoading(SceneManager.LoadSceneAsync(scene));
+
+        private AsyncOperation SceneLoading(AsyncOperation asyncOperation)
+        {
+            asyncOperation.completed += (_) => Time.timeScale = 1;
+            return asyncOperation;
         }
     }
 }
