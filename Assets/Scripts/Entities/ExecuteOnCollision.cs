@@ -15,5 +15,7 @@ namespace Asteroids.Entities
         public void RemoveAllListeners() => OnCollision = null;
 
         public void Subscribe(Action onCollision) => OnCollision += onCollision;
+
+        public void ManualTrigger() => OnCollision?.Invoke();
     }
 }

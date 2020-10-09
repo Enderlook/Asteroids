@@ -24,6 +24,8 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Tooltip("Maximum amount of enemies per level.")]
         private int maximumAmountOfEnemies;
 
+        public int MaxmiumAmountOfEnemies => maximumAmountOfEnemies;
+
         [SerializeField, Tooltip("Possible enemies to spawn."), Expandable]
         private EnemyGenerator[] enemyTemplates;
 
