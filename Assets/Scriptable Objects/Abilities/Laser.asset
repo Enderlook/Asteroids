@@ -18,7 +18,7 @@ MonoBehaviour:
   castInput:
     keys: 65000000
     canBeHoldDown: 0
-  abilitySound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}
+  abilitySound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
   distance: 20
   hitTargets:
     serializedVersion: 2
