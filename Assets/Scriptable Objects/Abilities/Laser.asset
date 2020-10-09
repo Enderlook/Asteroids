@@ -17,7 +17,7 @@ MonoBehaviour:
   cooldown: 1
   castInput:
     keys: 65000000
-    canBeHoldDown: 0
+    canBeHoldDown: 1
   abilitySound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
   distance: 20
   hitTargets:
