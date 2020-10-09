@@ -15,6 +15,9 @@ namespace Asteroids.UI
 
         [SerializeField, Tooltip("Index of menu music.")]
         private int menu;
+
+        [SerializeField, Tooltip("Index of game over music.")]
+        private int gameOver;
 #pragma warning restore CS0649
 
         private SoundPlayer player;
@@ -24,8 +27,15 @@ namespace Asteroids.UI
         {
             player = GetComponent<SoundPlayer>();
             EventManager.Subscribe<PauseEvent>(OnPause);
+            EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
         }
 
         private void OnPause(PauseEvent @event) => player.Play(@event.IsPaused ? menu : play);
+
+        private void OnLevelTermination(LevelTerminationEvent @event)
+        {
+            if (@event.HasLost)
+                player.Play(gameOver, () => player.Play(menu));
+        }
     }
 }

@@ -2576,6 +2576,7 @@ GameObject:
   - component: {fileID: 1905634948}
   - component: {fileID: 1905634947}
   - component: {fileID: 1905634946}
+  - component: {fileID: 1905634949}
   m_Layer: 0
   m_Name: Audio
   m_TagString: Untagged
@@ -2598,6 +2599,7 @@ MonoBehaviour:
   sounds:
   - {fileID: 11400000, guid: 09448e300bbb51543837d212f4fea17a, type: 2}
   - {fileID: 11400000, guid: 6437f7c5af2005b40aaea9f00187d905, type: 2}
+  - {fileID: 11400000, guid: 6ab03fe3c4e362741bc72fd117c7f324, type: 2}
   playOnAwake: 1
   onAwakeIndex: 0
 --- !u!82 &1905634947
@@ -2711,6 +2713,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1905634949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905634945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4f72369ebdda4d4c9642d20f24e6907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  play: 0
+  menu: 1
+  gameOver: 2
 --- !u!1 &1955786949
 GameObject:
   m_ObjectHideFlags: 0
