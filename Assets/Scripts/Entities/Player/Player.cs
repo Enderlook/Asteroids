@@ -26,6 +26,9 @@ namespace Asteroids.Entities.Player
 
         [SerializeField, Tooltip("Sound played on death.")]
         private SimpleSoundPlayer deathSound;
+
+        [SerializeField, Tooltip("Sound played on get new life.")]
+        private SimpleSoundPlayer newLife;
 #pragma warning restore CS0649
 
         private static Player instance;
@@ -70,6 +73,7 @@ namespace Asteroids.Entities.Player
         {
             if (scoreToNextLife <= @event.NewScore)
             {
+                newLife.Play();
                 scoreToNextLife += scorePerLife;
                 lifes++;
                 EventManager.Raise(PlayerHealthChangedEvent.Increase);

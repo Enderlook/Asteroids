@@ -3,6 +3,7 @@ using Asteroids.Scene;
 
 using Enderlook.Enumerables;
 using Enderlook.Unity.Attributes;
+using Enderlook.Unity.Components.ScriptableSound;
 using Enderlook.Unity.Serializables.Ranges;
 
 using UnityEngine;
@@ -31,6 +32,9 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Tooltip("Random speed of spawned enemies.")]
         private RangeFloat initialSpeed;
+
+        [SerializeField, Tooltip("Sound played when spawning new enemies.")]
+        private SimpleSoundPlayer spawnSound;
 #pragma warning restore CS0649
 
         private new Camera camera;
@@ -54,7 +58,10 @@ namespace Asteroids.Entities.Enemies
         private void OnLevelTermination(LevelTerminationEvent @event)
         {
             if (@event.HasWon)
+            {
                 remainingEnemies = SpawnEnemies();
+                spawnSound.Play();
+            }
         }
 
         private void OnEnemyDestroyed(EnemyDestroyedEvent @event)
