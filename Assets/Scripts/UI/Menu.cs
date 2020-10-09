@@ -89,19 +89,13 @@ namespace Asteroids.UI
 
         public void QuitGame() => Application.Quit();
 
-        public void GotToMenu()
-        {
-            pause.UnPause();
-            Load(MAIN_MENU_SCENE);
-        }
-
-        private void Load(string scene) => SceneLoading(SceneManager.LoadSceneAsync(scene));
+        public void GotToMenu() => Load(MAIN_MENU_SCENE);
 
         private void Load(int scene = 0) => SceneLoading(SceneManager.LoadSceneAsync(scene));
 
         private AsyncOperation SceneLoading(AsyncOperation asyncOperation)
         {
-            asyncOperation.completed += (_) => Time.timeScale = 1;
+            asyncOperation.completed += _ => FindObjectOfType<PauseManager>().UnPause();
             return asyncOperation;
         }
     }
