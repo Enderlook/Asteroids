@@ -49,7 +49,9 @@ namespace Asteroids.UI
             GameObject go = new GameObject("Life UI Slot");
             Image image = go.AddComponent<Image>();
             image.sprite = lifeSprite;
+            image.preserveAspect = true;
             go.transform.SetParent(transform);
+            go.GetComponent<RectTransform>().localScale = Vector3.one;
             return go.transform;
         }
 
