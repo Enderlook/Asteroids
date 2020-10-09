@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace AvalonStudios.Additions.Extensions
@@ -114,5 +115,22 @@ namespace AvalonStudios.Additions.Extensions
 
             return transformsChildWithLayer.ToArray();
         }
+
+#if UNITY_EDITOR
+        public static List<T> FindAssetsOfType<T>(string path = "Assets") where T : Object
+        {
+            List<T> assets = new List<T>();
+
+            string[] guids = AssetDatabase.FindAssets($"t: {typeof(T).ToString().Replace("UnityEngine.", "")}", new[] { path });
+            foreach (string guid in guids)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                if (asset != null)
+                    assets.Add(asset);
+            }
+            return assets;
+        }
+#endif
     }
 }

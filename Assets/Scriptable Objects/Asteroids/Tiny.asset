@@ -20,3 +20,6 @@ MonoBehaviour:
   - Asteroids/meteorGrey_tiny1
   - Asteroids/meteorGrey_tiny2
   layer: 9
+  deathSound: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477, type: 2}
+  audioMixerGroup: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
+    type: 2}

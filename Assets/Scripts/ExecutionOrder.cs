@@ -7,5 +7,6 @@
         O3_LifeUI = 1,
         O4_GameManager = 2,
         O5_EnemySpawner = 3,
+        O6_Score = 4,
     }
 }

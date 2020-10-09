@@ -19,6 +19,12 @@ namespace Asteroids.Entities.Enemies
         private RangeFloat initialSpeed;
 #pragma warning restore CS0649
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            enemyToSpawn.Initialize();
+        }
+
         protected override Handler Constructor((Vector2 position, Vector2 speed) arguments) => ConstructorBase(this, arguments);
 
         public new class Handler : EnemyGeneratorSimple<EnemyGeneratorSplitOnDeath, Handler>.Handler
