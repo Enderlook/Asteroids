@@ -2,6 +2,7 @@
 
 namespace Asteroids.Entities.Enemies
 {
+    [CreateAssetMenu(menuName = "Asteroids/Enemies/Simple Enemy")]
     public class EnemyGeneratorSimple : EnemyGeneratorSimple<EnemyGeneratorSimple, EnemyGeneratorSimple.Handler>
     {
         protected override Handler Constructor((Vector2 position, Vector2 speed) arguments) => ConstructorBase(this, arguments);

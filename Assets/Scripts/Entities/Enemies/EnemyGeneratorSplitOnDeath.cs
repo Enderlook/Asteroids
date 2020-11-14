@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
+    [CreateAssetMenu(menuName = "Asteroids/Enemies/Split On Death Enemy")]
     public class EnemyGeneratorSplitOnDeath : EnemyGeneratorSimple<EnemyGeneratorSplitOnDeath, EnemyGeneratorSplitOnDeath.Handler>
     {
 #pragma warning disable CS0649
