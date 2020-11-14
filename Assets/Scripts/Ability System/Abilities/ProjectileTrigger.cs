@@ -1,5 +1,4 @@
-﻿using Asteroids.Entities;
-using Asteroids.Utils;
+﻿using Asteroids.Utils;
 
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
@@ -54,8 +53,8 @@ namespace Asteroids.AbilitySystem
 
             projectile.AddComponent<PolygonCollider2D>();
 
-            ExecuteOnCollision executeOnCollision = projectile.AddComponent<ExecuteOnCollision>();
-            executeOnCollision.Subscribe(() => pool.Store(rigidbody2D));
+            ReturnToPoolOnCollision returnToPoolOnCollision = projectile.AddComponent<ReturnToPoolOnCollision>();
+            returnToPoolOnCollision.pool = pool;
 
             return rigidbody2D;
         }
@@ -83,6 +82,14 @@ namespace Asteroids.AbilitySystem
             rigidbody2D.velocity = (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity;
 
             soundPlayer.Play();
+        }
+
+        private class ReturnToPoolOnCollision : MonoBehaviour
+        {
+            public Pool<Rigidbody2D> pool;
+
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+            private void OnCollisionEnter2D(Collision2D collision) => pool.Store(GetComponent<Rigidbody2D>());
         }
     }
 }

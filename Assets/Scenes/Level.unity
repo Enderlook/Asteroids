@@ -1353,9 +1353,9 @@ MonoBehaviour:
   additionalEnemiesPerLevel: 2
   maximumAmountOfEnemies: 12
   enemyTemplates:
-  - {fileID: 11400000, guid: 78909d49236b57342b1f0ba35e5ecace, type: 2}
-  - {fileID: 11400000, guid: f5c26d841db79fd4fa37356619928b11, type: 2}
-  - {fileID: 11400000, guid: 885e1ee6b609b1e40863db83199ab8d4, type: 2}
+  - {fileID: 11400000, guid: 17491de2474f8c84080221b5a15bd9c4, type: 2}
+  - {fileID: 11400000, guid: 6b3162a8337fcd94a86946848a788c09, type: 2}
+  - {fileID: 11400000, guid: 0461f02efa1e2664aba2dc72efa4a309, type: 2}
   initialSpeed:
     min: 1
     max: 5

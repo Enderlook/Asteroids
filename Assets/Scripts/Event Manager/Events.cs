@@ -27,17 +27,15 @@
     public readonly struct EnemyDestroyedEvent
     {
         public readonly int Score;
-        public readonly int NewSpawnedEnemiesCount;
 
-        public EnemyDestroyedEvent(int score, int newSpawnedEnemiesCount)
-        {
-            Score = score;
-            NewSpawnedEnemiesCount = newSpawnedEnemiesCount;
-        }
+        public EnemyDestroyedEvent(int score) => Score = score;
+    }
 
-        public EnemyDestroyedEvent(int score) : this(score, 0) { }
+    public readonly struct EnemySplittedEvent
+    {
+        public readonly int Amount;
 
-        internal EnemyDestroyedEvent WithNewSpawnedEnemiesCount(int amountToSpawn) => new EnemyDestroyedEvent(Score, amountToSpawn);
+        public EnemySplittedEvent(int amount) => Amount = amount;
     }
 
     public readonly struct ScoreHasChangedEvent

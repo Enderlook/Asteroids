@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef23260a5b8f52341a3069e2a1597f2c, type: 3}
+  m_Script: {fileID: 11500000, guid: b61ab9a88919e0c4ca69c8d2605779bc, type: 3}
   m_Name: Big
   m_EditorClassIdentifier: 
-  scoreWhenDestroyed: 10
-  mass: 4
-  sprites:
+  <ScoreWhenDestroyed>k__BackingField: 10
+  <Mass>k__BackingField: 4
+  <Sprites>k__BackingField:
   - Asteroids/meteorBrown_big1
   - Asteroids/meteorBrown_big2
   - Asteroids/meteorBrown_big3
@@ -23,12 +23,14 @@ MonoBehaviour:
   - Asteroids/meteorGrey_big2
   - Asteroids/meteorGrey_big3
   - Asteroids/meteorGrey_big4
-  layer: 9
-  deathSound: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477, type: 2}
-  audioMixerGroup: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
+  <Layer>k__BackingField: 9
+  <DeathSound>k__BackingField: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477,
     type: 2}
-  enemyToSpawn: {fileID: 11400000, guid: f5c26d841db79fd4fa37356619928b11, type: 2}
-  amountToSpawn: 2
-  initialSpeed:
+  <AudioMixerGroup>k__BackingField: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
+    type: 2}
+  <enemyToSpawn>k__BackingField: {fileID: 11400000, guid: 6b3162a8337fcd94a86946848a788c09,
+    type: 2}
+  <amountToSpawn>k__BackingField: 2
+  <initialSpeed>k__BackingField:
     min: 1
     max: 2

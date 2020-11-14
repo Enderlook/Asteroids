@@ -1,5 +1,4 @@
-﻿using Asteroids.Entities;
-using Asteroids.Entities.Enemies;
+﻿using Asteroids.Entities.Enemies;
 
 using Enderlook.Unity.Components.ScriptableSound;
 
@@ -60,8 +59,8 @@ namespace Asteroids.AbilitySystem
             for (int i = 0; i < amount; i++)
             {
                 GameObject gameObject = results[i].collider.gameObject;
-                if (gameObject.TryGetComponent(out ExecuteOnCollision executeOnCollision))
-                    executeOnCollision.ManualTrigger();
+                foreach (ExecuteOnCollision toExecute in gameObject.GetComponents<ExecuteOnCollision>())
+                    toExecute.Execute();
             }
             lineRenderer.SetPosition(0, new Vector3(0, distance, 0));
         }

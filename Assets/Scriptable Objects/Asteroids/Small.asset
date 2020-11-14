@@ -9,17 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fed092b0c9c8b08488f276228c355441, type: 3}
+  m_Script: {fileID: 11500000, guid: 312f219593d547746b4a637bf2ebe771, type: 3}
   m_Name: Small
   m_EditorClassIdentifier: 
-  scoreWhenDestroyed: 40
-  mass: 2
-  sprites:
+  <ScoreWhenDestroyed>k__BackingField: 40
+  <Mass>k__BackingField: 2
+  <Sprites>k__BackingField:
   - Asteroids/meteorBrown_small1
   - Asteroids/meteorBrown_small2
   - Asteroids/meteorGrey_small1
   - Asteroids/meteorGrey_small2
-  layer: 9
-  deathSound: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477, type: 2}
-  audioMixerGroup: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
+  <Layer>k__BackingField: 9
+  <DeathSound>k__BackingField: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477,
+    type: 2}
+  <AudioMixerGroup>k__BackingField: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
     type: 2}

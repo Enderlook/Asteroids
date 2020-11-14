@@ -28,7 +28,7 @@ namespace Asteroids.Entities.Enemies
         public int MaxmiumAmountOfEnemies => maximumAmountOfEnemies;
 
         [SerializeField, Tooltip("Possible enemies to spawn."), Expandable]
-        private EnemyGenerator[] enemyTemplates;
+        private EnemyFlyweight[] enemyTemplates;
 
         [SerializeField, Tooltip("Random speed of spawned enemies.")]
         private RangeFloat initialSpeed;
@@ -48,11 +48,16 @@ namespace Asteroids.Entities.Enemies
 
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
-
-            foreach (EnemyGenerator generator in enemyTemplates)
-                generator.Initialize();
+            EventManager.Subscribe<EnemySplittedEvent>(OnEnemySplitted);
 
             remainingEnemies = SpawnEnemies();
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Update()
+        {
+            if (remainingEnemies == 0)
+                EventManager.Raise(LevelTerminationEvent.Win);
         }
 
         private void OnLevelTermination(LevelTerminationEvent @event)
@@ -64,12 +69,9 @@ namespace Asteroids.Entities.Enemies
             }
         }
 
-        private void OnEnemyDestroyed(EnemyDestroyedEvent @event)
-        {
-            remainingEnemies = remainingEnemies - 1 + @event.NewSpawnedEnemiesCount;
-            if (remainingEnemies == 0)
-                EventManager.Raise(LevelTerminationEvent.Win);
-        }
+        private void OnEnemyDestroyed(EnemyDestroyedEvent @event) => remainingEnemies--;
+
+        private void OnEnemySplitted(EnemySplittedEvent @event) => remainingEnemies += @event.Amount;
 
         private int SpawnEnemies()
         {
@@ -106,7 +108,7 @@ namespace Asteroids.Entities.Enemies
 
             Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
 
-            enemyTemplates.RandomPick().Create((position, speed));
+            enemyTemplates.RandomPick().GetFactory().Create((position, speed));
         }
     }
 }
