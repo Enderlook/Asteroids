@@ -44,7 +44,7 @@ namespace Asteroids.Entities.Enemies
             private SpriteRenderer spriteRenderer;
             private ExecuteOnCollision onCollision;
             private PolygonCollider2D collider;
-            private List<Vector2> physicsShape;
+            private static List<Vector2> physicsShape = new List<Vector2>();
 
             private SimpleSoundPlayer player;
 
@@ -54,7 +54,6 @@ namespace Asteroids.Entities.Enemies
                 onCollision = GameObject.AddComponent<ExecuteOnCollision>();
                 spriteRenderer = GameObject.AddComponent<SpriteRenderer>();
                 collider = GameObject.AddComponent<PolygonCollider2D>();
-                physicsShape = new List<Vector2>();
                 GameObject.layer = Data.layer;
                 GameObject.AddComponent<ScreenWrapper>();
 
