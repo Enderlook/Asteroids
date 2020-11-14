@@ -12,6 +12,11 @@ namespace Asteroids.AbilitySystem
     [CreateAssetMenu(menuName = "Asteroids/Ability System/Abilities/Projectile", fileName = "Projectile Ability")]
     public class ProjectileTrigger : Ability
     {
+        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Constructor construct = ProjectileConstructor;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer initialize = ProjectileInitializer;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer commonInitialize = ProjectileCommonInitializer;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Deinitializer deinitialize = ProjectileDeinitializer;
+
 #pragma warning disable CS0649
         [SerializeField, DrawTexture, Tooltip("Sprite of the projectile to fire")]
         private string sprite;
@@ -25,7 +30,7 @@ namespace Asteroids.AbilitySystem
 
         private AbilitiesManager abilitiesManager;
 
-        private Pool<Rigidbody2D> pool;
+        private BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder;
 
         private SimpleSoundPlayer soundPlayer;
 
@@ -33,38 +38,58 @@ namespace Asteroids.AbilitySystem
         {
             this.abilitiesManager = abilitiesManager;
             base.Initialize(abilitiesManager);
-            pool = new Pool<Rigidbody2D>(ProjectileConstructor, ProjectileInitializer, ProjectileDeinitializer);
+            builder = new BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>();
+            builder.flyweight = this;
+            builder.constructor = construct;
+            builder.initializer = initialize;
+            builder.commonInitializer = commonInitialize;
+            builder.deinitializer = deinitialize;
 
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
         }
 
-        private Rigidbody2D ProjectileConstructor()
+        private static Rigidbody2D ProjectileConstructor(in ProjectileTrigger flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
         {
             GameObject projectile = new GameObject("Projectile")
             {
-                layer = projectileLayer
+                layer = flyweight.projectileLayer
             };
 
             Rigidbody2D rigidbody2D = projectile.AddComponent<Rigidbody2D>();
             rigidbody2D.gravityScale = 0;
 
             SpriteRenderer spriteRenderer = projectile.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = Resources.Load<Sprite>(sprite);
+            spriteRenderer.sprite = Resources.Load<Sprite>(flyweight.sprite);
 
             projectile.AddComponent<PolygonCollider2D>();
 
             ReturnToPoolOnCollision returnToPoolOnCollision = projectile.AddComponent<ReturnToPoolOnCollision>();
-            returnToPoolOnCollision.pool = pool;
+            returnToPoolOnCollision.pool = flyweight.builder;
 
             return rigidbody2D;
         }
 
-        private void ProjectileInitializer(Rigidbody2D rigidbody2D) => rigidbody2D.gameObject.SetActive(true);
+        private static void ProjectileInitializer(in ProjectileTrigger flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
+        {
+        }
 
-        private void ProjectileDeinitializer(Rigidbody2D rigidbody2D)
+        private static void ProjectileDeinitializer(Rigidbody2D rigidbody2D)
         {
             rigidbody2D.velocity = default;
             rigidbody2D.gameObject.SetActive(false);
+        }
+
+        private static void ProjectileCommonInitializer(in ProjectileTrigger flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
+        {
+            // We enable the gameObject here instead in ProjectileInitializer, because that method is executed later
+            // and so it produces a bug because rigibodies doesn't work when their gameObjects are disabled
+            rigidbody2D.gameObject.SetActive(true);
+
+            // Don't use Rigidbody2D because it takes a frame to update and produces a visual bug
+            Transform transform = rigidbody2D.transform;
+            transform.position = parameters.position;
+            transform.rotation = parameters.rotation;
+            rigidbody2D.velocity = parameters.velocity;
         }
 
         public override void Execute()
@@ -72,21 +97,18 @@ namespace Asteroids.AbilitySystem
             Transform castPoint = abilitiesManager.CastPoint;
             Rigidbody2D playerRigidbody = abilitiesManager.Rigidbody2D;
 
-            Rigidbody2D rigidbody2D = pool.Get();
-
-            // Don't use Rigidbody2D because it takes a frame to update and produces a visual bug
-            Transform transform = rigidbody2D.transform;
-            transform.position = castPoint.position;
-            transform.rotation = Quaternion.Euler(new Vector3(0, 0, playerRigidbody.rotation));
-
-            rigidbody2D.velocity = (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity;
+            _ = builder.Create((
+                castPoint.position,
+                Quaternion.Euler(new Vector3(0, 0, playerRigidbody.rotation)),
+                (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity
+            ));
 
             soundPlayer.Play();
         }
 
         private class ReturnToPoolOnCollision : MonoBehaviour
         {
-            public Pool<Rigidbody2D> pool;
+            public IPool<Rigidbody2D, (Vector3 position, Quaternion rotation, Vector3 velocity)> pool;
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
             private void OnCollisionEnter2D(Collision2D collision) => pool.Store(GetComponent<Rigidbody2D>());
