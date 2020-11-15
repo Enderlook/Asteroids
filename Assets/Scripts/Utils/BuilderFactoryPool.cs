@@ -38,5 +38,7 @@
         public void Store(TObject obj) => pool.Store(obj);
 
         public bool TryGet(TParameter parameter, out TObject obj) => ((IPool<TObject, TParameter>)pool).TryGet(parameter, out obj);
+
+        public void ExtractIfHas(TObject obj) => ((IPool<TObject, TParameter>)pool).ExtractIfHas(obj);
     }
 }

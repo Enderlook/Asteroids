@@ -30,5 +30,11 @@ namespace Asteroids.Utils
         /// <param name="obj">Recycled object, if any.</param>
         /// <returns>Whenever there was an object to recycle or not.</returns>
         bool TryGet(TParameter parameter, out TObject obj);
+
+        /// <summary>
+        /// Forces the extraction of an element if it was under the control of this instance.
+        /// </summary>
+        /// <param name="obj">Element to extract.</param>
+        void ExtractIfHas(TObject obj);
     }
 }

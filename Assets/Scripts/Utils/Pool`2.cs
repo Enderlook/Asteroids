@@ -53,5 +53,8 @@ namespace Asteroids.Utils
             obj = Get(parameter);
             return true;
         }
+
+        /// <inheritdoc cref="IRecycler{TObject, TParameter}.ExtractIfHas(TObject)"/>
+        public void ExtractIfHas(TObject obj) => recycler.ExtractIfHas(obj);
     }
 }

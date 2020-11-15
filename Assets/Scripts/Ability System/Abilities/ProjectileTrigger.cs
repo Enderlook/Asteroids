@@ -55,8 +55,8 @@ namespace Asteroids.AbilitySystem
                 layer = flyweight.projectileLayer
             };
 
-            Rigidbody2D rigidbody2D = projectile.AddComponent<Rigidbody2D>();
-            rigidbody2D.gravityScale = 0;
+            Rigidbody2D rigidbody = projectile.AddComponent<Rigidbody2D>();
+            rigidbody.gravityScale = 0;
 
             SpriteRenderer spriteRenderer = projectile.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = Resources.Load<Sprite>(flyweight.sprite);
@@ -66,7 +66,39 @@ namespace Asteroids.AbilitySystem
             ReturnToPoolOnCollision returnToPoolOnCollision = projectile.AddComponent<ReturnToPoolOnCollision>();
             returnToPoolOnCollision.pool = flyweight.builder;
 
-            return rigidbody2D;
+            BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder = flyweight.builder;
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) CreateMemento()
+            {
+                bool enabled = rigidbody.gameObject.activeSelf; // Read from rigidbody to reduce closure size
+                Vector3 position = rigidbody.position;
+                float rotation = rigidbody.rotation;
+                Vector2 velocity = rigidbody.velocity;
+                float angularVelocity = rigidbody.angularVelocity;
+
+                // The memento object is simple, so we store it as a tuple
+                return (enabled, position, rotation, velocity, angularVelocity);
+            }
+
+            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) memento)
+            {
+                rigidbody.gameObject.SetActive(memento.enabled); // Read from rigidbody to reduce closure size
+                if (memento.enabled)
+                {
+                    // Since bullets are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                    builder.ExtractIfHas(rigidbody);
+
+                    rigidbody.position = memento.position;
+                    rigidbody.rotation = memento.rotation;
+                    rigidbody.velocity = memento.velocity;
+                    rigidbody.angularVelocity = memento.angularVelocity;
+                }
+                else
+                    builder.Store(rigidbody);
+            }
+
+            return rigidbody;
         }
 
         private static void ProjectileInitializer(in ProjectileTrigger flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
