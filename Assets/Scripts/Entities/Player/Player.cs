@@ -1,7 +1,6 @@
 ﻿using Asteroids.Events;
 
 using Enderlook.Unity.Components.ScriptableSound;
-using Enderlook.Unity.Extensions;
 
 using UnityEngine;
 
