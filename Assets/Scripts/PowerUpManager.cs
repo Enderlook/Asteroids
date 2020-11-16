@@ -4,7 +4,6 @@ using Asteroids.Events;
 
 using Enderlook.Unity.Serializables.Ranges;
 
-using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -42,6 +41,8 @@ namespace Asteroids
             cooldown = spawnTime;
             canSpawn = true;
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
+
+            // For gameplay reasons power ups are not tracked by the rewind feature
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
@@ -90,6 +91,8 @@ namespace Asteroids
 
             // We don't pool power ups because only a single one can be active at the same time
             // Pooling a single power up would be an overkill
+            // Also, the exercise didn't request for pooling, factory nor builder patterns in power ups
+            // Only decorator
 
             GameObject powerUp = new GameObject("Power up");
             Rigidbody2D rigidbody = powerUp.AddComponent<Rigidbody2D>();
@@ -177,7 +180,7 @@ namespace Asteroids
             public void PickUp()
             {
                 decorable.PickUp();
-                throw new NotImplementedException();
+                GlobalMementoManager.Rewind();
             }
         }
 

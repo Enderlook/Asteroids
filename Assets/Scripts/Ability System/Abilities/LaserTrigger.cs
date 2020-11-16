@@ -51,6 +51,19 @@ namespace Asteroids.AbilitySystem
                 }
                 UpdateLaser();
             }
+
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+
+            float CreateMemento() => currentDuration; // Memento of laser is only its duration, cooldown is already tracked in parent
+
+            void ConsumeMemento(float memento)
+            {
+                currentDuration = memento;
+                if (currentDuration > 0)
+                    lineRenderer.enabled = true;
+                else
+                    lineRenderer.enabled = false;
+            }
         }
 
         private void UpdateLaser()

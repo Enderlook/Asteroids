@@ -28,7 +28,16 @@ namespace Asteroids.AbilitySystem
 
         private float nextCast;
 
-        public virtual void Initialize(AbilitiesManager abilitiesManager) => nextCast = 0;
+        public virtual void Initialize(AbilitiesManager abilitiesManager)
+        {
+            nextCast = 0;
+
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+
+            float CreateMemento() => nextCast; // Memento of abilities is only its cooldown
+
+            void ConsumeMemento(float memento) => nextCast = memento;
+        }
 
         public virtual void Update()
         {

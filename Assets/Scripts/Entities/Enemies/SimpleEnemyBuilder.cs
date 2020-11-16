@@ -33,7 +33,7 @@ namespace Asteroids.Entities.Enemies
             deinitializer = deinitialize
         };
 
-        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
+        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool)
         {
             GameObject enemy = new GameObject(flyweight.name)
             {
@@ -44,27 +44,63 @@ namespace Asteroids.Entities.Enemies
             rigidbody.gravityScale = 0;
             rigidbody.mass = flyweight.Mass;
 
-            enemy.AddComponent<SpriteRenderer>();
-            enemy.AddComponent<PolygonCollider2D>();
+            SpriteRenderer spriteRenderer = enemy.AddComponent<SpriteRenderer>();
+            PolygonCollider2D collider = enemy.AddComponent<PolygonCollider2D>();
             enemy.AddComponent<ScreenWrapper>();
-
-            return enemy;
-        }
-
-        private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
-        {
-            GameObject enemy = Construct(flyweight, parameter);
 
             SimpleSoundPlayer player = SimpleSoundPlayer.CreateOneTimePlayer(flyweight.DeathSound, false, false);
             player.GetComponent<AudioSource>().outputAudioMixerGroup = flyweight.AudioMixerGroup;
 
             ExecuteOnDeath executeOnDeath = enemy.AddComponent<ExecuteOnDeath>();
             executeOnDeath.flyweight = flyweight;
-            executeOnDeath.pool = this;
+            executeOnDeath.pool = pool;
             executeOnDeath.player = player;
 
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+
             return enemy;
+
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) CreateMemento()
+            {
+                bool enabled = rigidbody.gameObject.activeSelf; // Read from rigidbody to reduce closure size
+                Vector3 position = rigidbody.position;
+                float rotation = rigidbody.rotation;
+                Vector2 velocity = rigidbody.velocity;
+                float angularVelocity = rigidbody.angularVelocity;
+                Sprite sprite = spriteRenderer.sprite;
+
+                // The memento object is simple, so we store it as a tuple
+                return (enabled, position, rotation, velocity, angularVelocity, sprite);
+            }
+
+            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) memento)
+            {
+                rigidbody.gameObject.SetActive(memento.enabled); // Read from rigidbody to reduce closure size
+                if (memento.enabled)
+                {
+                    // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                    pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+
+                    rigidbody.position = memento.position;
+                    rigidbody.rotation = memento.rotation;
+                    rigidbody.velocity = memento.velocity;
+                    rigidbody.angularVelocity = memento.angularVelocity;
+                    spriteRenderer.sprite = memento.sprite;
+
+                    int count = memento.sprite.GetPhysicsShapeCount();
+                    for (int i = 0; i < count; i++)
+                    {
+                        memento.sprite.GetPhysicsShape(i, physicsShape);
+                        collider.SetPath(i, physicsShape);
+                    }
+                }
+                else
+                    pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+            }
         }
+
+        private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
+            => Construct(flyweight, parameter, this);
 
         public static void CommonInitialize(in SimpleEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
         {
@@ -100,6 +136,8 @@ namespace Asteroids.Entities.Enemies
         public void Store(GameObject obj) => builder.Store(obj);
 
         public bool TryGet((Vector3 position, Vector3 speed) parameter, out GameObject obj) => builder.TryGet(parameter, out obj);
+
+        public void ExtractIfHas(GameObject obj) => builder.ExtractIfHas(obj);
 
         public sealed class ExecuteOnDeath : ExecuteOnCollision
         {

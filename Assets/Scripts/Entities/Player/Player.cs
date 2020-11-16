@@ -2,8 +2,6 @@
 
 using Enderlook.Unity.Components.ScriptableSound;
 
-using System.Collections;
-
 using UnityEngine;
 
 namespace Asteroids.Entities.Player
@@ -43,9 +41,9 @@ namespace Asteroids.Entities.Player
 
         private new Collider2D collider;
 
-        private WaitForSeconds invulnerabilityWait;
-
         private int scoreToNextLife;
+
+        private float invulnerabilityTime;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -64,9 +62,47 @@ namespace Asteroids.Entities.Player
             lifes = startingLifes;
             scoreToNextLife = scorePerLife;
 
-            invulnerabilityWait = new WaitForSeconds(invulnerabilityDuration);
-
             EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreChanged);
+
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+
+            (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) CreateMemento()
+            {
+                // The following features are not tracked by the memento for gameplay reasons:
+                // - Lifes
+                // - Invulnerability time
+                // - Score
+
+                Vector3 position = rigidbody.position;
+                float rotation = rigidbody.rotation;
+                Vector2 velocity = rigidbody.velocity;
+                float angularVelocity = rigidbody.angularVelocity;
+
+                // The memento object is simple, so we store it as a tuple
+                return (position, rotation, velocity, angularVelocity);
+            }
+
+            void ConsumeMemento((Vector3 position, float rotation, Vector2 velocity, float angularVelocity) memento)
+            {
+                rigidbody.position = memento.position;
+                rigidbody.rotation = memento.rotation;
+                rigidbody.velocity = memento.velocity;
+                rigidbody.angularVelocity = memento.angularVelocity;
+
+                // We always become the player invulnerable
+                BecomeInvulnerable();
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Update()
+        {
+            if (invulnerabilityTime > 0)
+            {
+                invulnerabilityTime -= Time.deltaTime;
+                if (invulnerabilityTime <= 0)
+                    collider.enabled = true;
+            }
         }
 
         private void OnScoreChanged(ScoreHasChangedEvent @event)
@@ -100,15 +136,14 @@ namespace Asteroids.Entities.Player
             rigidbody.position = Vector2.zero;
             rigidbody.rotation = 0;
             rigidbody.velocity = default;
+
+            BecomeInvulnerable();
+        }
+
+        private void BecomeInvulnerable()
+        {
             collider.enabled = false;
-
-            StartCoroutine(Work());
-
-            IEnumerator Work()
-            {
-                yield return invulnerabilityWait;
-                collider.enabled = true;
-            }
+            invulnerabilityTime = invulnerabilityDuration;
         }
     }
 }

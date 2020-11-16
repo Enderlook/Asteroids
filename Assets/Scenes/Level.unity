@@ -1305,6 +1305,7 @@ GameObject:
   - component: {fileID: 1049467944}
   - component: {fileID: 1049467943}
   - component: {fileID: 1049467945}
+  - component: {fileID: 1049467946}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1495,10 +1496,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 1049467938}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15e279ea6487c3242b07cdede8d7cf75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1049467946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049467938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e9300d2e2f831e4faaec0ecfa0ba1ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   spawnTime: 15
+  healthPackSprite: {fileID: 21300000, guid: b2a4d50a54556d944a260a3b9dba57e2, type: 3}
+  rewindPackSprite: {fileID: 21300000, guid: 6b1518dfc9bc0a749b22730cd66258e5, type: 3}
   speed:
     min: 1
     max: 3
