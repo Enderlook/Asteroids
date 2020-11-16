@@ -75,9 +75,14 @@ namespace Asteroids.Entities.Player
             {
                 newLife.Play();
                 scoreToNextLife += scorePerLife;
-                lifes++;
-                EventManager.Raise(PlayerHealthChangedEvent.Increase);
+                AddNewLife();
             }
+        }
+
+        public void AddNewLife()
+        {
+            lifes++;
+            EventManager.Raise(PlayerHealthChangedEvent.Increase);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
