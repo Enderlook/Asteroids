@@ -2,6 +2,7 @@
 using Asteroids.Entities.Player;
 using Asteroids.Events;
 
+using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Serializables.Ranges;
 
 using System.Collections.Generic;
@@ -25,6 +26,12 @@ namespace Asteroids
 
         [SerializeField, Tooltip("Rewind pack sprite.")]
         private Sprite rewindPackSprite;
+
+        [SerializeField, Tooltip("Multiplies the scale of the power ups.")]
+        private float scale;
+
+        [SerializeField, Layer, Tooltip("Determines the layer of the power ups.")]
+        private int layer;
 
         [SerializeField, Tooltip("Speed of the power up.")]
         private RangeFloat speed;
@@ -95,6 +102,8 @@ namespace Asteroids
             // Only decorator
 
             GameObject powerUp = new GameObject("Power up");
+            powerUp.layer = layer;
+            powerUp.transform.localScale *= scale;
             Rigidbody2D rigidbody = powerUp.AddComponent<Rigidbody2D>();
             powerUp.transform.position = position; // Use transform because rigidbody.position has a one frame delay
             rigidbody.velocity = speed;

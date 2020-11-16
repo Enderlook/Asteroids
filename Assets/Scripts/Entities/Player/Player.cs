@@ -1,6 +1,7 @@
 ﻿using Asteroids.Events;
 
 using Enderlook.Unity.Components.ScriptableSound;
+using Enderlook.Unity.Extensions;
 
 using UnityEngine;
 
@@ -27,6 +28,9 @@ namespace Asteroids.Entities.Player
 
         [SerializeField, Tooltip("Sound played on get new life.")]
         private SimpleSoundPlayer newLife;
+
+        [SerializeField, Tooltip("Layer to hit.")]
+        private LayerMask layerToHit;
 #pragma warning restore CS0649
 
         private static Player instance;
@@ -123,6 +127,9 @@ namespace Asteroids.Entities.Player
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            if (collider.gameObject.layer != (layerToHit | (1 << collider.gameObject.layer)))
+                return;
+
             deathSound.Play();
 
             if (lifes == 0)

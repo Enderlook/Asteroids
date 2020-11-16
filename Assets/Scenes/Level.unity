@@ -1514,6 +1514,8 @@ MonoBehaviour:
   spawnTime: 15
   healthPackSprite: {fileID: 21300000, guid: 9a65f4fdc18be8641b5acf405271e071, type: 3}
   rewindPackSprite: {fileID: 21300000, guid: f39eb41e4ddfd924fb418332a740dbaa, type: 3}
+  scale: 0.5
+  layer: 12
   speed:
     min: 1
     max: 3

@@ -327,6 +327,9 @@ MonoBehaviour:
   scorePerLife: 10000
   deathSound: {fileID: 3261058286310836659}
   newLife: {fileID: 876362552452713518}
+  layerToHit:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &3801145147293042392
 MonoBehaviour:
   m_ObjectHideFlags: 0
