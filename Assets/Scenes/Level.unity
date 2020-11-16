@@ -1512,8 +1512,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnTime: 15
-  healthPackSprite: {fileID: 21300000, guid: b2a4d50a54556d944a260a3b9dba57e2, type: 3}
-  rewindPackSprite: {fileID: 21300000, guid: 6b1518dfc9bc0a749b22730cd66258e5, type: 3}
+  healthPackSprite: {fileID: 21300000, guid: 9a65f4fdc18be8641b5acf405271e071, type: 3}
+  rewindPackSprite: {fileID: 21300000, guid: f39eb41e4ddfd924fb418332a740dbaa, type: 3}
   speed:
     min: 1
     max: 3
