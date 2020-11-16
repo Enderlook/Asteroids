@@ -43,7 +43,7 @@ namespace Asteroids.Entities.Player
 
         private new Collider2D collider;
 
-        private WaitForSeconds invlunerabilityWait;
+        private WaitForSeconds invulnerabilityWait;
 
         private int scoreToNextLife;
 
@@ -64,7 +64,7 @@ namespace Asteroids.Entities.Player
             lifes = startingLifes;
             scoreToNextLife = scorePerLife;
 
-            invlunerabilityWait = new WaitForSeconds(invulnerabilityDuration);
+            invulnerabilityWait = new WaitForSeconds(invulnerabilityDuration);
 
             EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreChanged);
         }
@@ -101,7 +101,7 @@ namespace Asteroids.Entities.Player
 
             IEnumerator Work()
             {
-                yield return invlunerabilityWait;
+                yield return invulnerabilityWait;
                 collider.enabled = true;
             }
         }
