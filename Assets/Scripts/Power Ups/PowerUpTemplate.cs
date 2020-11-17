@@ -32,7 +32,7 @@ namespace Asteroids.PowerUps
             GameObject powerUp = new GameObject("Power up");
             powerUp.transform.localScale *= scale;
 
-            powerUp.AddComponent<Rigidbody2D>();
+            powerUp.AddComponent<Rigidbody2D>().gravityScale = 0;
 
             SpriteRenderer renderer = powerUp.AddComponent<SpriteRenderer>();
             renderer.sprite = sprite;
