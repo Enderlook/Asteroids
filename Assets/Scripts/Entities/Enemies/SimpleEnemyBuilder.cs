@@ -105,20 +105,34 @@ namespace Asteroids.Entities.Enemies
             }
         }
 
-        private readonly static Func<(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), float, (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)> interpolateMementos = InterpolateMementos;
+        private static readonly Func<(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), float, (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)> interpolateMementos = InterpolateMementos;
 
         private static (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) InterpolateMementos(
             (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) a,
             (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) b,
             float delta
-            ) => (
-            delta > .5f ? b.enabled : a.enabled,
-            Vector3.Lerp(a.position, b.position, delta),
-            Mathf.LerpAngle(a.rotation, b.rotation, delta),
-            Vector2.Lerp(a.velocity, b.velocity, delta),
-            Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta),
-            delta > .5f ? b.sprite : a.sprite
-            );
+            )
+        {
+            // Handle resurrection
+            if (a.enabled != b.enabled)
+                return delta > .5f ? b : a;
+
+            // Handle screen wrapping
+            float height = Camera.main.orthographicSize * 2;
+            height *= .35f; // Allow offset error. Warning, this value may cause problem depending on GlobalMementoManager.storePerSecond and maximum enemy speed
+            if (Mathf.Abs(a.position.y - b.position.y) > height || Mathf.Abs(a.position.x - b.position.x) > height * Camera.main.aspect)
+                return delta > .5f ? b : a;
+
+            Debug.Assert(a.enabled == b.enabled);
+            return (
+             a.enabled,
+             Vector3.Lerp(a.position, b.position, delta),
+             Mathf.LerpAngle(a.rotation, b.rotation, delta),
+             Vector2.Lerp(a.velocity, b.velocity, delta),
+             Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta),
+             delta > .5f ? b.sprite : a.sprite
+             );
+        }
 
         private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
             => Construct(flyweight, parameter, this);

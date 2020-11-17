@@ -13,8 +13,8 @@ namespace Asteroids
     {
         private static GlobalMementoManager instance;
 
-        private const float expirationTime = 6;
-        private const float rewindTime = 4; // Rewind less than stored to prevent subtle bugs
+        private const float expirationTime = 10; // Two rewind power up can appear very close
+        private const float rewindTime = 5;
         private const int storePerSecond = 5;
         private static readonly int aproximateStoredmementos = Mathf.CeilToInt(storePerSecond * expirationTime);
 
@@ -118,13 +118,15 @@ namespace Asteroids
 
         public static void Rewind(float duration)
         {
-            instance.stopAt = Time.fixedTime + rewindTime;
-
-            Physics.autoSimulation = false;
-            EventManager.Raise(new StartRewindEvent());
-            instance.speed = rewindTime / duration;
-            foreach (IMementoManager manager in instance.managers)
-                manager.StartRewind();
+            if (instance.stopAt < Time.fixedTime) // Ignore rewind if we are rewinding
+            {
+                instance.stopAt = Time.fixedTime + rewindTime;
+                Physics.autoSimulation = false;
+                EventManager.Raise(new StartRewindEvent());
+                instance.speed = rewindTime / duration;
+                foreach (IMementoManager manager in instance.managers)
+                    manager.StartRewind();
+            }
         }
 
         public static void Subscribe<T>(Func<T> onStore, Action<T?> onRewind, Func<T, T, float, T> interpolate) where T : struct

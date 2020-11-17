@@ -34,6 +34,7 @@ namespace Asteroids.PowerUps
         private new Camera camera;
         private float cooldown;
         private AudioSource audioSource;
+        private GameObject powerUp;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -49,7 +50,7 @@ namespace Asteroids.PowerUps
         private void Update()
         {
             cooldown -= Time.deltaTime;
-            if (cooldown < 0)
+            if (cooldown < 0 && powerUp == null)
             {
                 cooldown = spawnTime;
                 SpawnPowerUp();
@@ -83,10 +84,10 @@ namespace Asteroids.PowerUps
 
             Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * this.speed.Value;
 
-            GameObject powerUp = templates.RandomPick().CreatePickup(audioSource, layer);
+            powerUp = templates.RandomPick().CreatePickup(audioSource, layer);
             powerUp.layer = layer;
             powerUp.transform.position = position; // Don't udpate from rigidbody because that has one frame delay
-            powerUp.GetComponent<Rigidbody2D>().velocity = speed;
+            powerUp.GetComponent<Rigidbody2D>().velocity = -speed;
         }
     }
 }

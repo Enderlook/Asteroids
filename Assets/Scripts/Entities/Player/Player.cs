@@ -107,12 +107,21 @@ namespace Asteroids.Entities.Player
                 (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) a,
                 (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) b,
                 float delta
-            ) => (
-                Vector3.Lerp(a.position, b.position, delta),
-                Mathf.Lerp(a.rotation, b.rotation, delta),
-                Vector2.Lerp(a.velocity, b.velocity, delta),
-                Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)
-            );
+            )
+        {
+            // Handle screen wrapping
+            float height = Camera.main.orthographicSize * 2;
+            height *= .9f; // Allow offset error
+            if (Mathf.Abs(a.position.y - b.position.y) > height || Mathf.Abs(a.position.x - b.position.x) > height * Camera.main.aspect)
+                return delta > .5f ? b : a;
+
+            return (
+             Vector3.Lerp(a.position, b.position, delta),
+             Mathf.Lerp(a.rotation, b.rotation, delta),
+             Vector2.Lerp(a.velocity, b.velocity, delta),
+             Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)
+         );
+        }
 
         private void OnStartRewind(StartRewindEvent @event) => collider.enabled = false;
 

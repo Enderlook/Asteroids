@@ -61,7 +61,7 @@ namespace Asteroids.PowerUps
         {
             private Renderer[] renderers;
 
-            private float destroyTime = 10;
+            private float destroyTime = 5;
             private float destroyIn;
 
             public IPickup pickup;
