@@ -37,25 +37,8 @@ namespace Asteroids.AbilitySystem
             lineRenderer = castPoint.GetComponent<LineRenderer>();
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
             results = new RaycastHit2D[FindObjectOfType<EnemySpawner>().MaxmiumAmountOfEnemies];
-        }
-
-        public override void Update()
-        {
-            base.Update();
-
-            if (currentDuration > 0)
-            {
-                currentDuration -= Time.deltaTime;
-                if (currentDuration <= 0)
-                {
-                    lineRenderer.enabled = false;
-                    return;
-                }
-                UpdateLaser();
-            }
 
             GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
-
             float CreateMemento() => currentDuration; // Memento of laser is only its duration, cooldown is already tracked in parent
 
             void ConsumeMemento(float? memento)
@@ -73,6 +56,25 @@ namespace Asteroids.AbilitySystem
                     currentDuration = 0;
                     lineRenderer.enabled = false;
                 }
+            }
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            if (GlobalMementoManager.IsRewinding)
+                return;
+
+            if (currentDuration > 0)
+            {
+                currentDuration -= Time.deltaTime;
+                if (currentDuration <= 0)
+                {
+                    lineRenderer.enabled = false;
+                    return;
+                }
+                UpdateLaser();
             }
         }
 

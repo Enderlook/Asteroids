@@ -50,6 +50,9 @@ namespace Asteroids.AbilitySystem
 
         public virtual void Update()
         {
+            if (GlobalMementoManager.IsRewinding)
+                return;
+
             if (Time.time > nextCast && castInput.Execute())
             {
                 nextCast = Time.time + cooldown;
