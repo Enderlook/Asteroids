@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Asteroids.Events;
+
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -10,41 +13,18 @@ namespace Asteroids
     {
         private static GlobalMementoManager instance;
 
-        private const float expirationTime = 5;
+        private const float expirationTime = 6;
+        private const float rewindTime = 4; // Rewind less than stored to prevent subtle bugs
 
-        /*
-         * It may look crazy to store 30 mementos per seconds per object, but actually it's not so crazy:
-         * 
-         * Each enemy memento is composed of (bool, Vector3, float, Vector2, float, Sprite). That is (1 + 3 + 1 + 2 + (1 + 1/2 + 1/2)) 40/48 bytes depending CPU arch.
-         * A level can't spawn more than 12 enemies.
-         * Imagine that all those enemies are big. Now you have 12 big enemies.
-         * All big enemies were killed an split into 2 medium enemies each one. Now you have 24 medium enemies.
-         * All medium enemies were killed an split into 2 small enemies each one. Now you have 48 small enemies.
-         * That means there can be up to 12 + 24 + 48 = 84 instances of enemies on memory.
-         * 
-         * A player memento is (Vector3, float, Vector2, float). That is 28 bytes.
-         * An ability memento is (float). That is 4 bytes.
-         * A laser memento is (float). That is 4 bytes.
-         * An enemy spawner memento is (int). That is 4 bytes. 
-         * 
-         * A bullet memento is (bool, Vector3, float, Vector2, float). That is 29 bytes.         * 
-         * Bullets are shooted each 0.35 seconds with a force of 10 and mass of 1 and the boundary is at 10 offset,
-         * and largest distances are diagonal.
-         * So there can be (1 / 0.35) * (((10^2 + 10^2) ^ 0.5) / (10 / 1)) = 4,04 = 5 instance on memory.
-         * 
-         * The total size of mementos per collection is 84 * 48 + 28 + 4 + 4 + 4 + 4 * 29 = 4.188 bytes = 4.08 kb.
-         * 
-         * The total size of mementos in memory is 4.188 * 30 * 5 = 628.200 bytes = 613.47 kb, not an huge deal.
-         * 
-         * In terms of allocations, 4.188 * 30 = 125.640 bytes/s = 122.69 kb/s is an huge deal.
-         * However, our mementos are value types, so we are not allocating/deallocating 122.366 kb/s.
-         * Instead value types are inlined in the underlying array of the queue (which is implemented as a circular array),
-         * so actually allocations only happens during the first 5 seconds until queues reaches their maximum size and no longer resize.
-         */
-        private const float storeCooldown = 1f / 30;
+        private static WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+
+        public static bool IsRewinding => instance.isRewinding;
 
         private List<IMementoManager> managers = new List<IMementoManager>();
-        private float cooldown;
+
+        private float rewindDuration;
+
+        private bool isRewinding;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -59,49 +39,99 @@ namespace Asteroids
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
-        private void Update()
+        private void FixedUpdate()
         {
-            cooldown -= Time.deltaTime;
-            if (cooldown < 0)
+            /*
+             * It may look crazy to store a memento per object per fixed update (50 fixed updates per second), but actually it's not so crazy:
+             * 
+             * Each enemy memento is composed of (bool, Vector3, float, Vector2, float, Sprite). That is (1 + 3 + 1 + 2 + (1 + 1/2 + 1/2)) 40/48 bytes depending CPU arch.
+             * A level can't spawn more than 12 enemies.
+             * Imagine that all those enemies are big. Now you have 12 big enemies.
+             * All big enemies were killed an split into 2 medium enemies each one. Now you have 24 medium enemies.
+             * All medium enemies were killed an split into 2 small enemies each one. Now you have 48 small enemies.
+             * That means there can be up to 12 + 24 + 48 = 84 instances of enemies on memory.
+             * 
+             * A player memento is (Vector3, float, Vector2, float). That is 28 bytes.
+             * An ability memento is (float). That is 4 bytes.
+             * A laser memento is (float). That is 4 bytes.
+             * An enemy spawner memento is (int). That is 4 bytes. 
+             * 
+             * A bullet memento is (bool, Vector3, float, Vector2, float). That is 29 bytes.
+             * Bullets are shooted each 0.35 seconds with a force of 10 and mass of 1 and the boundary is at 10 offset,
+             * and largest distances are diagonal.
+             * So there can be (1 / 0.35) * (((10^2 + 10^2) ^ 0.5) / (10 / 1)) = 4,04 = 5 instance on memory.
+             * 
+             * The total size of mementos per collection is 84 * 48 + 28 + 4 + 4 + 4 + 4 * 29 = 4,188 bytes = 4.08 kb.
+             * 
+             * The total size of mementos in memory is 4.188 * 50 * 5 = 1,047,000 bytes = 1,022.46 kb, not an huge deal.
+             * 
+             * In terms of allocations, 4,188 * 50 = 209,400 bytes/s = 204.49 kb/s is an huge deal.
+             * However, our mementos are value types, so we are not allocating/deallocating 204.49 kb/s.
+             * Instead, value types are inlined in the underlying array of the queue (which is implemented as a circular array),
+             * so actually, allocations only happens during the first 5 seconds until queues reaches their maximum size and no longer resize.
+             */
+
+            rewindDuration -= Time.fixedDeltaTime;
+            if (rewindDuration < 0)
             {
-                cooldown = storeCooldown;
                 foreach (IMementoManager manager in managers)
                     manager.Store();
             }
         }
 
-        public static void Rewind()
+        public static void Rewind(float duration)
         {
+            instance.isRewinding = true;
+            Physics.autoSimulation = false;
+            EventManager.Raise(new StartRewindEvent());
+            float speed = rewindTime / duration;
+            instance.rewindDuration = duration;
             foreach (IMementoManager manager in instance.managers)
-                manager.Rewind();
+                instance.StartCoroutine(manager.Rewind(speed));
+
+            instance.StartCoroutine(Work());
+            
+            IEnumerator Work()
+            {
+                float stopAt = Time.fixedTime + expirationTime;
+                while (Time.fixedTime < stopAt)
+                    yield return waitForFixedUpdate;
+                yield return null;
+                instance.isRewinding = false;
+                Physics.autoSimulation = true;
+                EventManager.Raise(new StopRewindEvent());
+            }
         }
 
-        public static void Subscribe<T>(Func<T> onStore, Action<T> onRewind)
+        public static void Subscribe<T>(Func<T> onStore, Action<T?> onRewind, Func<T, T, float, T> interpolate) where T : struct
         {
-            // We don't require to remove callbacks never because we this object and its originators are stop being used at the same time
+            // We don't require to remove callbacks never because this object and its originators are stop being used at the same time
 
-            MementoManager<T> manager = new MementoManager<T>(onStore, onRewind);
+            MementoManager<T> manager = new MementoManager<T>(onStore, onRewind, interpolate);
             instance.managers.Add(manager);
         }
 
         private interface IMementoManager
         {
             void Store();
-            void Rewind();
+
+            IEnumerator Rewind(float speed);
         }
 
-        public class MementoManager<T> : IMementoManager
+        public class MementoManager<T> : IMementoManager where T : struct
         {
             // We store Memento objects in an stongly typed fashion to avoid boxing and so reduce GC pressure
 
             private readonly Queue<(T memento, float expiration)> states = new Queue<(T memento, float expiration)>();
             private Func<T> onStore;
-            private Action<T> onRewind;
+            private Func<T, T, float, T> interpolate;
+            private Action<T?> onRewind;
 
-            public MementoManager(Func<T> onStore, Action<T> onRewind)
+            public MementoManager(Func<T> onStore, Action<T?> onRewind, Func<T, T, float, T> interpolate)
             {
                 this.onRewind = onRewind;
                 this.onStore = onStore;
+                this.interpolate = interpolate;
             }
 
             void IMementoManager.Store() => Store();
@@ -109,17 +139,68 @@ namespace Asteroids
             private void Store()
             {
                 T memento = onStore();
-                states.Enqueue((memento, Time.time + expirationTime));
-                while (states.TryPeek(out (T _, float expiration) pack) && pack.expiration < Time.time)
-                    _ = states.Dequeue();
+                states.Enqueue((memento, Time.fixedTime + expirationTime));
+                while (states.TryPeek(out (T _, float expiration) pack) && pack.expiration < Time.fixedTime)
+                    states.Dequeue();
             }
 
-            void IMementoManager.Rewind()
+            IEnumerator IMementoManager.Rewind(float speed)
             {
-                // Prevent error when memento is stored.
                 Store();
-                onRewind(states.Dequeue().memento);
+                Stack<(T memento, float expiration)> stack = new Stack<(T memento, float expiration)>(states.Count);
+                IEnumerator<(T memento, float expiration)> values = states.GetEnumerator();
+                Debug.Assert(values.MoveNext());
+                {
+                    (T memento, float expiration) last;
+                    (T memento, float expiration) current = values.Current;
+                    while (values.MoveNext())
+                    {
+                        last = current;
+                        current = values.Current;
+                        stack.Push((last.memento, current.expiration - last.expiration));
+                    }
+                }
+
+                float stopAt = Time.fixedTime + rewindTime;
+
+                float count = 0;
+                while (Time.fixedTime < stopAt)
+                {
+                    if (stack.TryPop(out (T memento, float expiration) current))
+                    {
+                        count += Time.fixedDeltaTime * speed;
+                        (T memento, float expiration) last;
+                        while (current.expiration < count)
+                        {
+                            last = current;
+                            count -= current.expiration;
+                            if (!stack.TryPop(out current))
+                            {
+                                onRewind(last.memento);
+                                yield return waitForFixedUpdate;
+                                break;
+                            }
+                        }
+
+                        if (stack.TryPeek(out (T memento, float expiration) next))
+                            onRewind(interpolate(current.memento, next.memento, count / current.expiration));
+                        else
+                            onRewind(current.memento);
+
+                        stack.Push(current);
+                        yield return waitForFixedUpdate;
+                    }
+                    else
+                    {
+                        onRewind(null);
+                        yield return waitForFixedUpdate;
+                    }
+                }
             }
         }
     }
+
+    public readonly struct StartRewindEvent { }
+
+    public readonly struct StopRewindEvent { }
 }

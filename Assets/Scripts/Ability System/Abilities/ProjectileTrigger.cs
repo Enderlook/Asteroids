@@ -3,6 +3,8 @@
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 
+using System;
+
 using UnityEngine;
 
 using Resources = Asteroids.Utils.Resources;
@@ -38,12 +40,14 @@ namespace Asteroids.AbilitySystem
         {
             this.abilitiesManager = abilitiesManager;
             base.Initialize(abilitiesManager);
-            builder = new BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>();
-            builder.flyweight = this;
-            builder.constructor = construct;
-            builder.initializer = initialize;
-            builder.commonInitializer = commonInitialize;
-            builder.deinitializer = deinitialize;
+            builder = new BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>
+            {
+                flyweight = this,
+                constructor = construct,
+                initializer = initialize,
+                commonInitializer = commonInitialize,
+                deinitializer = deinitialize
+            };
 
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
         }
@@ -67,7 +71,7 @@ namespace Asteroids.AbilitySystem
             returnToPoolOnCollision.pool = flyweight.builder;
 
             BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder = flyweight.builder;
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
 
             (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) CreateMemento()
             {
@@ -81,18 +85,23 @@ namespace Asteroids.AbilitySystem
                 return (enabled, position, rotation, velocity, angularVelocity);
             }
 
-            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) memento)
+            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity)? memento)
             {
-                rigidbody.gameObject.SetActive(memento.enabled); // Read from rigidbody to reduce closure size
-                if (memento.enabled)
+                if (memento.HasValue)
                 {
-                    // Since bullets are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                    builder.ExtractIfHas(rigidbody);
+                    (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) memento_ = memento.Value;
+                    if (memento_.enabled)
+                    {
+                        // Since bullets are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                        builder.ExtractIfHas(rigidbody);
 
-                    rigidbody.position = memento.position;
-                    rigidbody.rotation = memento.rotation;
-                    rigidbody.velocity = memento.velocity;
-                    rigidbody.angularVelocity = memento.angularVelocity;
+                        rigidbody.position = memento_.position;
+                        rigidbody.rotation = memento_.rotation;
+                        rigidbody.velocity = memento_.velocity;
+                        rigidbody.angularVelocity = memento_.angularVelocity;
+                    }
+                    else
+                        builder.Store(rigidbody);
                 }
                 else
                     builder.Store(rigidbody);
@@ -100,6 +109,20 @@ namespace Asteroids.AbilitySystem
 
             return rigidbody;
         }
+
+        private static readonly Func<(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity), (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity), float, (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity)> interpolateMementos = InterpolateMementos;
+
+        private static (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) InterpolateMementos(
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) a,
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity) b,
+            float delta
+            ) => (
+            delta > .5f ? b.enabled : a.enabled,
+            Vector3.Lerp(a.position, b.position, delta),
+            Mathf.LerpAngle(a.rotation, b.rotation, delta),
+            Vector2.Lerp(a.velocity, b.velocity, delta),
+            Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)
+            );
 
         private static void ProjectileInitializer(in ProjectileTrigger flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
         {

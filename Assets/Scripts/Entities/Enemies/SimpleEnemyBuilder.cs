@@ -4,6 +4,7 @@ using Asteroids.Utils;
 using Enderlook.Enumerables;
 using Enderlook.Unity.Components.ScriptableSound;
 
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace Asteroids.Entities.Enemies
             executeOnDeath.pool = pool;
             executeOnDeath.player = player;
 
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
 
             return enemy;
 
@@ -73,31 +74,51 @@ namespace Asteroids.Entities.Enemies
                 return (enabled, position, rotation, velocity, angularVelocity, sprite);
             }
 
-            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) memento)
+            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)? memento)
             {
-                rigidbody.gameObject.SetActive(memento.enabled); // Read from rigidbody to reduce closure size
-                if (memento.enabled)
+                if (memento.HasValue)
                 {
-                    // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                    pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
-
-                    rigidbody.position = memento.position;
-                    rigidbody.rotation = memento.rotation;
-                    rigidbody.velocity = memento.velocity;
-                    rigidbody.angularVelocity = memento.angularVelocity;
-                    spriteRenderer.sprite = memento.sprite;
-
-                    int count = memento.sprite.GetPhysicsShapeCount();
-                    for (int i = 0; i < count; i++)
+                    (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) memento_ = memento.Value;
+                    if (memento_.enabled)
                     {
-                        memento.sprite.GetPhysicsShape(i, physicsShape);
-                        collider.SetPath(i, physicsShape);
+                        // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                        pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+
+                        rigidbody.position = memento_.position;
+                        rigidbody.rotation = memento_.rotation;
+                        rigidbody.velocity = memento_.velocity;
+                        rigidbody.angularVelocity = memento_.angularVelocity;
+                        spriteRenderer.sprite = memento_.sprite;
+
+                        int count = memento_.sprite.GetPhysicsShapeCount();
+                        for (int i = 0; i < count; i++)
+                        {
+                            memento_.sprite.GetPhysicsShape(i, physicsShape);
+                            collider.SetPath(i, physicsShape);
+                        }
                     }
+                    else
+                        pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
                 }
                 else
                     pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
             }
         }
+
+        private readonly static Func<(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), float, (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)> interpolateMementos = InterpolateMementos;
+
+        private static (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) InterpolateMementos(
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) a,
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) b,
+            float delta
+            ) => (
+            delta > .5f ? b.enabled : a.enabled,
+            Vector3.Lerp(a.position, b.position, delta),
+            Mathf.LerpAngle(a.rotation, b.rotation, delta),
+            Vector2.Lerp(a.velocity, b.velocity, delta),
+            Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta),
+            delta > .5f ? b.sprite : a.sprite
+            );
 
         private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
             => Construct(flyweight, parameter, this);

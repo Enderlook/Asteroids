@@ -23,6 +23,9 @@ namespace Asteroids.Entities.Player
 
         private void FixedUpdate()
         {
+            if (GlobalMementoManager.IsRewinding)
+                return;
+
             Move();
             Rotate();
         }

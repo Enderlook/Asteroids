@@ -32,11 +32,8 @@ namespace Asteroids.Entities.Enemies
 
         protected IFactory<GameObject, (Vector3 position, Vector3 speed)> factory;
 
-        public override IFactory<GameObject, (Vector3 position, Vector3 speed)> GetFactory()
-        {
-            if (factory is null)
-                factory = new SimpleEnemyBuilder { Flyweight = this };
-            return factory;
-        }
+        public override IFactory<GameObject, (Vector3 position, Vector3 speed)> GetFactory() => factory;
+
+        public override void Initialize() => factory = new SimpleEnemyBuilder { Flyweight = this };
     }
 }

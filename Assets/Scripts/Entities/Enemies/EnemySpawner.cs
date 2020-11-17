@@ -6,6 +6,8 @@ using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 using Enderlook.Unity.Serializables.Ranges;
 
+using System;
+
 using UnityEngine;
 
 using Random = UnityEngine.Random;
@@ -35,6 +37,9 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Tooltip("Sound played when spawning new enemies.")]
         private SimpleSoundPlayer spawnSound;
+
+        [SerializeField, Layer, Tooltip("Layer of enemies, used to count them.")]
+        private int layer;
 #pragma warning restore CS0649
 
         private new Camera camera;
@@ -49,21 +54,45 @@ namespace Asteroids.Entities.Enemies
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
             EventManager.Subscribe<EnemySplittedEvent>(OnEnemySplitted);
+            EventManager.Subscribe<StopRewindEvent>(OnStopRewindEvent);
+
+            foreach (EnemyFlyweight template in enemyTemplates)
+                template.Initialize();
 
             remainingEnemies = SpawnEnemies();
 
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento);
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
 
             int CreateMemento() => remainingEnemies;
 
-            void ConsumeMemento(int memento) => remainingEnemies = memento;
+            void ConsumeMemento(int? memento)
+            {
+                if (memento is int m)
+                    remainingEnemies = m;
+            }
+        }
+
+        private static readonly Func<int, int, float, int> interpolateMementos = InterpolateMementos;
+
+        private static int InterpolateMementos(int a, int b, float delta) => Mathf.RoundToInt(Mathf.Lerp(a, b, delta));
+
+        public void OnStopRewindEvent(StopRewindEvent @event)
+        {
+            remainingEnemies = 0;
+            GameObject[] objects = FindObjectsOfType<GameObject>();
+            for (int i = 0; i < objects.Length; i++)
+            {
+                if (objects[i].activeSelf && objects[i].layer == layer)
+                    remainingEnemies++;
+            }
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()
         {
-            if (remainingEnemies == 0)
-                EventManager.Raise(LevelTerminationEvent.Win);
+            if (!GlobalMementoManager.IsRewinding)
+                if (remainingEnemies == 0)
+                    EventManager.Raise(LevelTerminationEvent.Win);
         }
 
         private void OnLevelTermination(LevelTerminationEvent @event)

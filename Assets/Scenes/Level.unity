@@ -1361,6 +1361,7 @@ MonoBehaviour:
     min: 1
     max: 5
   spawnSound: {fileID: 1049467943}
+  layer: 9
 --- !u!114 &1049467942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1498,6 +1499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e279ea6487c3242b07cdede8d7cf75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  q: 0
 --- !u!1 &1087003596
 GameObject:
   m_ObjectHideFlags: 0
