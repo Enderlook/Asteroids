@@ -42,6 +42,7 @@ namespace Asteroids.PowerUps
             audioSource.pitch = 1;
 
             PolygonCollider2D collider = powerUp.AddComponent<PolygonCollider2D>();
+            collider.isTrigger = true;
             int count = sprite.GetPhysicsShapeCount();
             for (int i = 0; i < count; i++)
             {
@@ -63,7 +64,7 @@ namespace Asteroids.PowerUps
         {
             public IPickup pickup;
 
-            private void OnCollisionEnter2D(Collision2D collision)
+            private void OnTriggerEnter2D(Collider2D collision)
             {
                 if (collision.gameObject.GetComponent<Player>() != null)
                 {
