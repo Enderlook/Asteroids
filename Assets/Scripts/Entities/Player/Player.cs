@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
-    [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(Collider2D)), RequireComponent(typeof(SpriteRenderer))]
     public class Player : MonoBehaviour
     {
 #pragma warning disable CS0649
@@ -49,6 +49,8 @@ namespace Asteroids.Entities.Player
 
         private float invulnerabilityTime;
 
+        private SpriteRenderer renderer;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
@@ -62,6 +64,7 @@ namespace Asteroids.Entities.Player
 
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
+            renderer = GetComponent<SpriteRenderer>();
 
             lifes = startingLifes;
             scoreToNextLife = scorePerLife;
@@ -134,7 +137,12 @@ namespace Asteroids.Entities.Player
             {
                 invulnerabilityTime -= Time.deltaTime;
                 if (invulnerabilityTime <= 0)
+                {
                     collider.enabled = true;
+                    renderer.color = Color.white;
+                }
+                else
+                    renderer.color = new Color(.5f, .5f, .5f);
             }
         }
 
