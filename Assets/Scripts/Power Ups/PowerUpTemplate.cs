@@ -1,5 +1,4 @@
-﻿using Asteroids.Entities;
-using Asteroids.Entities.Player;
+﻿using Asteroids.Entities.Player;
 using Asteroids.Events;
 
 using Enderlook.Unity.Attributes;
@@ -50,8 +49,6 @@ namespace Asteroids.PowerUps
                 collider.SetPath(i, physicsShape);
             }
 
-            powerUp.AddComponent<ScreenWrapper>();
-
             PickupBehaviour pickupBehaviour = powerUp.AddComponent<PickupBehaviour>();
             pickupBehaviour.pickup = GetPickup(audioSource);
 
@@ -62,8 +59,31 @@ namespace Asteroids.PowerUps
 
         public sealed class PickupBehaviour : MonoBehaviour
         {
+            private Renderer[] renderers;
+
+            private float destroyTime = 10;
+            private float destroyIn;
+
             public IPickup pickup;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+            private void Awake()
+            {
+                renderers = GetComponentsInChildren<Renderer>();
+                destroyIn = destroyTime;
+            }
+
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+            private void Update()
+            {
+                if (IsVisible())
+                    destroyIn = destroyTime;
+                destroyIn -= Time.deltaTime;
+                if (destroyIn < 0)
+                    Destroy(gameObject);
+            }
+
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
             private void OnTriggerEnter2D(Collider2D collision)
             {
                 if (collision.gameObject.GetComponent<Player>() != null)
@@ -71,6 +91,14 @@ namespace Asteroids.PowerUps
                     pickup.PickUp();
                     Destroy(gameObject);
                 }
+            }
+
+            private bool IsVisible()
+            {
+                foreach (Renderer renderer in renderers)
+                    if (renderer.isVisible)
+                        return true;
+                return false;
             }
         }
 

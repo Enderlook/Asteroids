@@ -33,7 +33,6 @@ namespace Asteroids.PowerUps
 
         private new Camera camera;
         private float cooldown;
-        private bool canSpawn;
         private AudioSource audioSource;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
@@ -41,8 +40,6 @@ namespace Asteroids.PowerUps
         {
             camera = Camera.main;
             cooldown = spawnTime;
-            canSpawn = true;
-            EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
             audioSource = GetComponent<AudioSource>();
 
             // For gameplay reasons power ups are not tracked by the rewind feature
@@ -51,19 +48,13 @@ namespace Asteroids.PowerUps
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()
         {
-            if (canSpawn)
+            cooldown -= Time.deltaTime;
+            if (cooldown < 0)
             {
-                cooldown -= Time.deltaTime;
-                if (cooldown < 0)
-                {
-                    canSpawn = false;
-                    cooldown = spawnTime;
-                    SpawnPowerUp();
-                }
+                cooldown = spawnTime;
+                SpawnPowerUp();
             }
         }
-
-        private void OnPowerUpPicked() => canSpawn = true;
 
         private void SpawnPowerUp()
         {
