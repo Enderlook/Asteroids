@@ -166,11 +166,7 @@ namespace Asteroids.Entities.Enemies
 
         public GameObject Create((Vector3 position, Vector3 speed) parameter) => builder.Create(parameter);
 
-        public GameObject Get((Vector3 position, Vector3 speed) parameter) => builder.Get(parameter);
-
         public void Store(GameObject obj) => builder.Store(obj);
-
-        public bool TryGet((Vector3 position, Vector3 speed) parameter, out GameObject obj) => builder.TryGet(parameter, out obj);
 
         public void ExtractIfHas(GameObject obj) => builder.ExtractIfHas(obj);
 

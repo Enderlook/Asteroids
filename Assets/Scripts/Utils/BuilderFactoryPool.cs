@@ -31,14 +31,10 @@
 
         private void Deinitialize(TObject obj) => deinitializer(obj);
 
-        public TObject Create(TParameter parameter) => pool.Get(parameter);
-
-        public TObject Get(TParameter parameter) => pool.Get(parameter);
+        public TObject Create(TParameter parameter) => pool.Create(parameter);
 
         public void Store(TObject obj) => pool.Store(obj);
 
-        public bool TryGet(TParameter parameter, out TObject obj) => ((IPool<TObject, TParameter>)pool).TryGet(parameter, out obj);
-
-        public void ExtractIfHas(TObject obj) => ((IPool<TObject, TParameter>)pool).ExtractIfHas(obj);
+        public void ExtractIfHas(TObject obj) => pool.ExtractIfHas(obj);
     }
 }

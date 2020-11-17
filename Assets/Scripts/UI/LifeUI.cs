@@ -35,7 +35,7 @@ namespace Asteroids.UI
                 OnDecrease();
         }
 
-        private void OnIncrease() => pool.Get();
+        private void OnIncrease() => pool.Create();
 
         private void OnDecrease()
         {
