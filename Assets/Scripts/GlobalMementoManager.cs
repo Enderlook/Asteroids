@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace Asteroids
 {
@@ -21,12 +22,16 @@ namespace Asteroids
 
         public static bool IsRewinding => instance.stopAt > Time.fixedTime;
 
+        [SerializeField]
+        private PostProcessVolume volume;
+
         private List<IMementoManager> managers = new List<IMementoManager>();
         private float stopAt;
         private float speed;
         private float toStore;
         private const float storeCooldown = 1f / storePerSecond;
         private float deltaRewind;
+        private const float volumeSpeed = 5;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -79,6 +84,7 @@ namespace Asteroids
             if (IsRewinding)
             {
                 // Rewind updates must be the same as fixed updates or the effect looks odd
+                volume.weight = Mathf.Min(volume.weight + Time.fixedDeltaTime * volumeSpeed, 1);
                 foreach (IMementoManager manager in managers)
                     manager.UpdateRewind(Time.fixedDeltaTime);
             }
@@ -89,6 +95,8 @@ namespace Asteroids
                     Physics.autoSimulation = true;
                     EventManager.Raise(new StopRewindEvent());
                 }
+
+                volume.weight = Mathf.Max(volume.weight - Time.fixedDeltaTime * volumeSpeed, 0);
 
                 if (storePerSecond == 50) // Physics updates are 50 per second unless manually changed, which is not our case
                 {
