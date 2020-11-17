@@ -29,17 +29,9 @@ namespace Asteroids.Entities.Enemies
 
         public GameObject Construct(in SplitEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
         {
-            GameObject enemy = SimpleEnemyBuilder.Construct(flyweight, parameter);
+            GameObject enemy = SimpleEnemyBuilder.Construct(flyweight, parameter, this);
 
             enemy.AddComponent<SplitOnDeath>().flyweight = flyweight;
-
-            SimpleSoundPlayer player = SimpleSoundPlayer.CreateOneTimePlayer(flyweight.DeathSound, false, false);
-            player.GetComponent<AudioSource>().outputAudioMixerGroup = flyweight.AudioMixerGroup;
-
-            SimpleEnemyBuilder.ExecuteOnDeath executeOnDeath = enemy.AddComponent<SimpleEnemyBuilder.ExecuteOnDeath>();
-            executeOnDeath.flyweight = flyweight;
-            executeOnDeath.pool = this;
-            executeOnDeath.player = player;
 
             return enemy;
         }
@@ -59,6 +51,7 @@ namespace Asteroids.Entities.Enemies
         public void Store(GameObject obj) => builder.Store(obj);
 
         public bool TryGet((Vector3 position, Vector3 speed) parameter, out GameObject obj) => builder.TryGet(parameter, out obj);
+        public void ExtractIfHas(GameObject obj) => builder.ExtractIfHas(obj);
 
         private sealed class SplitOnDeath : ExecuteOnCollision
         {

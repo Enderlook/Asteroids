@@ -4,6 +4,7 @@ using Enderlook.Unity.Components.ScriptableSound;
 using AvalonStudios.Additions.Utils.InputsManager;
 
 using UnityEngine;
+using System;
 
 namespace Asteroids.AbilitySystem
 {
@@ -28,10 +29,30 @@ namespace Asteroids.AbilitySystem
 
         private float nextCast;
 
-        public virtual void Initialize(AbilitiesManager abilitiesManager) => nextCast = 0;
+        public virtual void Initialize(AbilitiesManager abilitiesManager)
+        {
+            nextCast = 0;
+
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
+
+            float CreateMemento() => nextCast - Time.fixedDeltaTime; // Memento of abilities is only its cooldown
+
+            void ConsumeMemento(float? memento)
+            {
+                if (memento is float m)
+                    nextCast = m + Time.fixedDeltaTime;
+            }
+        }
+
+        private static readonly Func<float, float, float, float> interpolateMementos = InterpolateMementos;
+
+        private static float InterpolateMementos(float a, float b, float delta) => Mathf.Lerp(a, b, delta);
 
         public virtual void Update()
         {
+            if (GlobalMementoManager.IsRewinding)
+                return;
+
             if (Time.time > nextCast && castInput.Execute())
             {
                 nextCast = Time.time + cooldown;

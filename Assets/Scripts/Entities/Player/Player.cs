@@ -1,8 +1,10 @@
 ﻿using Asteroids.Events;
 
+using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
+using Enderlook.Unity.Extensions;
 
-using System.Collections;
+using System;
 
 using UnityEngine;
 
@@ -43,9 +45,9 @@ namespace Asteroids.Entities.Player
 
         private new Collider2D collider;
 
-        private WaitForSeconds invlunerabilityWait;
-
         private int scoreToNextLife;
+
+        private float invulnerabilityTime;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -64,9 +66,76 @@ namespace Asteroids.Entities.Player
             lifes = startingLifes;
             scoreToNextLife = scorePerLife;
 
-            invlunerabilityWait = new WaitForSeconds(invulnerabilityDuration);
-
             EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreChanged);
+            EventManager.Subscribe<StartRewindEvent>(OnStartRewind);
+            EventManager.Subscribe<StopRewindEvent>(OnStopRewind);
+
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
+
+            (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) CreateMemento()
+            {
+                // The following features are not tracked by the memento for gameplay reasons:
+                // - Lifes
+                // - Invulnerability time
+                // - Score
+
+                Vector3 position = rigidbody.position;
+                float rotation = rigidbody.rotation;
+                Vector2 velocity = rigidbody.velocity;
+                float angularVelocity = rigidbody.angularVelocity;
+
+                // The memento object is simple, so we store it as a tuple
+                return (position, rotation, velocity, angularVelocity);
+            }
+
+            void ConsumeMemento((Vector3 position, float rotation, Vector2 velocity, float angularVelocity)? memento)
+            {
+                if (memento.HasValue)
+                {
+                    (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) memento_ = memento.Value;
+                    rigidbody.position = memento_.position;
+                    rigidbody.rotation = memento_.rotation;
+                    rigidbody.velocity = memento_.velocity;
+                    rigidbody.angularVelocity = memento_.angularVelocity;
+                }
+            }
+        }
+
+        private static readonly Func<(Vector3 position, float rotation, Vector2 velocity, float angularVelocity), (Vector3 position, float rotation, Vector2 velocity, float angularVelocity), float, (Vector3 position, float rotation, Vector2 velocity, float angularVelocity)> interpolateMementos = InterpolateMementos;
+
+        private static (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) InterpolateMementos(
+                (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) a,
+                (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) b,
+                float delta
+            )
+        {
+            // Handle screen wrapping
+            float height = Camera.main.orthographicSize * 2;
+            height *= .9f; // Allow offset error
+            if (Mathf.Abs(a.position.y - b.position.y) > height || Mathf.Abs(a.position.x - b.position.x) > height * Camera.main.aspect)
+                return delta > .5f ? b : a;
+
+            return (
+             Vector3.Lerp(a.position, b.position, delta),
+             Mathf.Lerp(a.rotation, b.rotation, delta),
+             Vector2.Lerp(a.velocity, b.velocity, delta),
+             Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)
+         );
+        }
+
+        private void OnStartRewind(StartRewindEvent @event) => collider.enabled = false;
+
+        private void OnStopRewind(StopRewindEvent @event) => collider.enabled = true;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Update()
+        {
+            if (!GlobalMementoManager.IsRewinding && invulnerabilityTime > 0)
+            {
+                invulnerabilityTime -= Time.deltaTime;
+                if (invulnerabilityTime <= 0)
+                    collider.enabled = true;
+            }
         }
 
         private void OnScoreChanged(ScoreHasChangedEvent @event)
@@ -75,9 +144,14 @@ namespace Asteroids.Entities.Player
             {
                 newLife.Play();
                 scoreToNextLife += scorePerLife;
-                lifes++;
-                EventManager.Raise(PlayerHealthChangedEvent.Increase);
+                AddNewLife();
             }
+        }
+
+        public void AddNewLife()
+        {
+            lifes++;
+            EventManager.Raise(PlayerHealthChangedEvent.Increase);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -95,15 +169,14 @@ namespace Asteroids.Entities.Player
             rigidbody.position = Vector2.zero;
             rigidbody.rotation = 0;
             rigidbody.velocity = default;
+
+            BecomeInvulnerable();
+        }
+
+        private void BecomeInvulnerable()
+        {
             collider.enabled = false;
-
-            StartCoroutine(Work());
-
-            IEnumerator Work()
-            {
-                yield return invlunerabilityWait;
-                collider.enabled = true;
-            }
+            invulnerabilityTime = invulnerabilityDuration;
         }
     }
 }

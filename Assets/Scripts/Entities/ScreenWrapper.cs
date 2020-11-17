@@ -24,12 +24,18 @@ namespace Asteroids.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void FixedUpdate()
         {
+            if (GlobalMementoManager.IsRewinding)
+                return;
+
             if (IsVisible())
             {
                 isWrappingX = false;
                 isWrappingY = false;
                 return;
             }
+
+            // Prevent objects from getting stuck out of the screen
+            rigidbody.velocity = (rigidbody.velocity * (1 - Time.fixedDeltaTime * .3f)) - (rigidbody.position.normalized * Time.fixedDeltaTime);
 
             if (isWrappingX && isWrappingY)
                 return;

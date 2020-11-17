@@ -4,6 +4,7 @@ using Asteroids.Utils;
 using Enderlook.Enumerables;
 using Enderlook.Unity.Components.ScriptableSound;
 
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -33,7 +34,7 @@ namespace Asteroids.Entities.Enemies
             deinitializer = deinitialize
         };
 
-        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
+        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool)
         {
             GameObject enemy = new GameObject(flyweight.name)
             {
@@ -44,27 +45,97 @@ namespace Asteroids.Entities.Enemies
             rigidbody.gravityScale = 0;
             rigidbody.mass = flyweight.Mass;
 
-            enemy.AddComponent<SpriteRenderer>();
-            enemy.AddComponent<PolygonCollider2D>();
+            SpriteRenderer spriteRenderer = enemy.AddComponent<SpriteRenderer>();
+            PolygonCollider2D collider = enemy.AddComponent<PolygonCollider2D>();
             enemy.AddComponent<ScreenWrapper>();
-
-            return enemy;
-        }
-
-        private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
-        {
-            GameObject enemy = Construct(flyweight, parameter);
 
             SimpleSoundPlayer player = SimpleSoundPlayer.CreateOneTimePlayer(flyweight.DeathSound, false, false);
             player.GetComponent<AudioSource>().outputAudioMixerGroup = flyweight.AudioMixerGroup;
 
             ExecuteOnDeath executeOnDeath = enemy.AddComponent<ExecuteOnDeath>();
             executeOnDeath.flyweight = flyweight;
-            executeOnDeath.pool = this;
+            executeOnDeath.pool = pool;
             executeOnDeath.player = player;
 
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
+
             return enemy;
+
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) CreateMemento()
+            {
+                bool enabled = rigidbody.gameObject.activeSelf; // Read from rigidbody to reduce closure size
+                Vector3 position = rigidbody.position;
+                float rotation = rigidbody.rotation;
+                Vector2 velocity = rigidbody.velocity;
+                float angularVelocity = rigidbody.angularVelocity;
+                Sprite sprite = spriteRenderer.sprite;
+
+                // The memento object is simple, so we store it as a tuple
+                return (enabled, position, rotation, velocity, angularVelocity, sprite);
+            }
+
+            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)? memento)
+            {
+                if (memento.HasValue)
+                {
+                    (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) memento_ = memento.Value;
+                    if (memento_.enabled)
+                    {
+                        // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                        pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+
+                        rigidbody.position = memento_.position;
+                        rigidbody.rotation = memento_.rotation;
+                        rigidbody.velocity = memento_.velocity;
+                        rigidbody.angularVelocity = memento_.angularVelocity;
+                        spriteRenderer.sprite = memento_.sprite;
+
+                        int count = memento_.sprite.GetPhysicsShapeCount();
+                        for (int i = 0; i < count; i++)
+                        {
+                            memento_.sprite.GetPhysicsShape(i, physicsShape);
+                            collider.SetPath(i, physicsShape);
+                        }
+                    }
+                    else
+                        pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+                }
+                else
+                    pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+            }
         }
+
+        private static readonly Func<(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), float, (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)> interpolateMementos = InterpolateMementos;
+
+        private static (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) InterpolateMementos(
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) a,
+            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) b,
+            float delta
+            )
+        {
+            // Handle resurrection
+            if (a.enabled != b.enabled)
+                return delta > .5f ? b : a;
+
+            // Handle screen wrapping
+            float height = Camera.main.orthographicSize * 2;
+            height *= .35f; // Allow offset error. Warning, this value may cause problem depending on GlobalMementoManager.storePerSecond and maximum enemy speed
+            if (Mathf.Abs(a.position.y - b.position.y) > height || Mathf.Abs(a.position.x - b.position.x) > height * Camera.main.aspect)
+                return delta > .5f ? b : a;
+
+            Debug.Assert(a.enabled == b.enabled);
+            return (
+             a.enabled,
+             Vector3.Lerp(a.position, b.position, delta),
+             Mathf.LerpAngle(a.rotation, b.rotation, delta),
+             Vector2.Lerp(a.velocity, b.velocity, delta),
+             Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta),
+             delta > .5f ? b.sprite : a.sprite
+             );
+        }
+
+        private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
+            => Construct(flyweight, parameter, this);
 
         public static void CommonInitialize(in SimpleEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
         {
@@ -100,6 +171,8 @@ namespace Asteroids.Entities.Enemies
         public void Store(GameObject obj) => builder.Store(obj);
 
         public bool TryGet((Vector3 position, Vector3 speed) parameter, out GameObject obj) => builder.TryGet(parameter, out obj);
+
+        public void ExtractIfHas(GameObject obj) => builder.ExtractIfHas(obj);
 
         public sealed class ExecuteOnDeath : ExecuteOnCollision
         {

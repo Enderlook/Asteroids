@@ -2,6 +2,8 @@
 
 using Enderlook.Unity.Components.ScriptableSound;
 
+using System;
+
 using UnityEngine;
 
 namespace Asteroids.AbilitySystem
@@ -35,11 +37,34 @@ namespace Asteroids.AbilitySystem
             lineRenderer = castPoint.GetComponent<LineRenderer>();
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
             results = new RaycastHit2D[FindObjectOfType<EnemySpawner>().MaxmiumAmountOfEnemies];
+
+            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
+            float CreateMemento() => currentDuration; // Memento of laser is only its duration, cooldown is already tracked in parent
+
+            void ConsumeMemento(float? memento)
+            {
+                if (memento is float m)
+                {
+                    currentDuration = m;
+                    if (currentDuration > 0)
+                        lineRenderer.enabled = true;
+                    else
+                        lineRenderer.enabled = false;
+                }
+                else
+                {
+                    currentDuration = 0;
+                    lineRenderer.enabled = false;
+                }
+            }
         }
 
         public override void Update()
         {
             base.Update();
+
+            if (GlobalMementoManager.IsRewinding)
+                return;
 
             if (currentDuration > 0)
             {
@@ -52,6 +77,10 @@ namespace Asteroids.AbilitySystem
                 UpdateLaser();
             }
         }
+
+        private static readonly Func<float, float, float, float> interpolateMementos = InterpolateMementos;
+
+        private static float InterpolateMementos(float a, float b, float delta) => Mathf.Lerp(a, b, delta);
 
         private void UpdateLaser()
         {

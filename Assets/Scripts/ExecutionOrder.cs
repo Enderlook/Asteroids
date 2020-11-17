@@ -2,6 +2,7 @@
 {
     public enum ExecutionOrder
     {
+        O1_GlobalMementoManager = -1,
         O1_EventManager = -1,
         O2_Normal = 0,
         O3_LifeUI = 1,

@@ -2,12 +2,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Asteroids.Utils
 {
     /// <inheritdoc cref="IRecycler{TObject, TParameter}"/>
     public class Recycler<TObject, TParameter> : IRecycler<TObject, TParameter>
     {
+        private const BindingFlags BindingAttr = BindingFlags.NonPublic | BindingFlags.Instance;
+        private static readonly FieldInfo _array = typeof(Stack<TObject>).GetField("_array", BindingAttr);
+        private static readonly FieldInfo _size = typeof(Stack<TObject>).GetField("_size", BindingAttr);
+        private static readonly FieldInfo _version = typeof(Stack<TObject>).GetField("_version", BindingAttr);
+
         private Stack<TObject> pool;
 
         private Action<TObject, TParameter> enable;
@@ -74,6 +80,22 @@ namespace Asteroids.Utils
             if (!(disable is null))
                 disable(obj);
             pool.Push(obj);
+        }
+
+        /// <inheritdoc cref="IRecycler{TObject, TParameter}.ExtractIfHas(TObject)"/>
+        public void ExtractIfHas(TObject obj)
+        {
+            if (pool.Contains(obj))
+            {
+                TObject[] array = (TObject[])_array.GetValue(pool);
+                int index = Array.IndexOf(array, obj);
+                int size = (int)_size.GetValue(pool) - 1;
+                if (index < size)
+                    Array.Copy(array, index + 1, array, index, size - index);
+                array[size] = default;
+                _size.SetValue(pool, size);
+                _version.SetValue(pool, (int)_version.GetValue(pool) + 1);
+            }
         }
     }
 }
