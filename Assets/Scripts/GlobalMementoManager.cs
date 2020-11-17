@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+using UnityEditor;
+
 using UnityEngine;
 
 namespace Asteroids
@@ -18,13 +20,11 @@ namespace Asteroids
 
         private static WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
-        public static bool IsRewinding => instance.isRewinding;
+        public static bool IsRewinding => instance.stopAt > Time.fixedTime;
 
         private List<IMementoManager> managers = new List<IMementoManager>();
-
-        private float rewindDuration;
-
-        private bool isRewinding;
+        private float stopAt;
+        private float speed;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -71,36 +71,35 @@ namespace Asteroids
              * so actually, allocations only happens during the first 5 seconds until queues reaches their maximum size and no longer resize.
              */
 
-            rewindDuration -= Time.fixedDeltaTime;
-            if (rewindDuration < 0)
+            if (IsRewinding)
             {
+                float delta = Time.fixedDeltaTime * speed;
+                foreach (IMementoManager manager in managers)
+                    manager.UpdateRewind(delta);
+            }
+            else
+            {
+                if (!Physics.autoSimulation)
+                {
+                    Physics.autoSimulation = true;
+                    EventManager.Raise(new StopRewindEvent());
+                }
+
                 foreach (IMementoManager manager in managers)
                     manager.Store();
+            }
             }
         }
 
         public static void Rewind(float duration)
         {
-            instance.isRewinding = true;
+            instance.stopAt = Time.fixedTime + expirationTime;
+
             Physics.autoSimulation = false;
             EventManager.Raise(new StartRewindEvent());
-            float speed = rewindTime / duration;
-            instance.rewindDuration = duration;
+            instance.speed = rewindTime / duration;
             foreach (IMementoManager manager in instance.managers)
-                instance.StartCoroutine(manager.Rewind(speed));
-
-            instance.StartCoroutine(Work());
-            
-            IEnumerator Work()
-            {
-                float stopAt = Time.fixedTime + expirationTime;
-                while (Time.fixedTime < stopAt)
-                    yield return waitForFixedUpdate;
-                yield return null;
-                instance.isRewinding = false;
-                Physics.autoSimulation = true;
-                EventManager.Raise(new StopRewindEvent());
-            }
+                manager.StartRewind();
         }
 
         public static void Subscribe<T>(Func<T> onStore, Action<T?> onRewind, Func<T, T, float, T> interpolate) where T : struct
@@ -115,14 +114,19 @@ namespace Asteroids
         {
             void Store();
 
-            IEnumerator Rewind(float speed);
+            void StartRewind();
+
+            // We don't use Coroutines because they produced an insane bottleneck,
+            // this is extremely more performant and doesn't allocate
+            void UpdateRewind(float deltaTime);
         }
 
         public class MementoManager<T> : IMementoManager where T : struct
         {
             // We store Memento objects in an stongly typed fashion to avoid boxing and so reduce GC pressure
 
-            private readonly Queue<(T memento, float expiration)> states = new Queue<(T memento, float expiration)>();
+            private readonly Queue<(T memento, float expiration)> queue = new Queue<(T memento, float expiration)>();
+            private readonly Stack<(T memento, float delta)> stack = new Stack<(T memento, float delta)>();
             private Func<T> onStore;
             private Func<T, T, float, T> interpolate;
             private Action<T?> onRewind;
@@ -139,63 +143,53 @@ namespace Asteroids
             private void Store()
             {
                 T memento = onStore();
-                states.Enqueue((memento, Time.fixedTime + expirationTime));
-                while (states.TryPeek(out (T _, float expiration) pack) && pack.expiration < Time.fixedTime)
-                    states.Dequeue();
+                queue.Enqueue((memento, Time.fixedTime + expirationTime));
+                while (queue.TryPeek(out (T _, float expiration) pack) && pack.expiration < Time.fixedTime)
+                    queue.Dequeue();
             }
 
-            IEnumerator IMementoManager.Rewind(float speed)
+            void IMementoManager.StartRewind()
             {
                 Store();
-                Stack<(T memento, float expiration)> stack = new Stack<(T memento, float expiration)>(states.Count);
-                IEnumerator<(T memento, float expiration)> values = states.GetEnumerator();
+                IEnumerator<(T memento, float expiration)> values = queue.GetEnumerator();
                 Debug.Assert(values.MoveNext());
+                (T memento, float expiration) last;
+                (T memento, float expiration) current = values.Current;
+                while (values.MoveNext())
                 {
-                    (T memento, float expiration) last;
-                    (T memento, float expiration) current = values.Current;
-                    while (values.MoveNext())
+                    last = current;
+                    current = values.Current;
+                    stack.Push((last.memento, current.expiration - last.expiration));
+                }
+            }
+
+            void IMementoManager.UpdateRewind(float deltatime)
+            {
+                float count = 0;
+                if (stack.TryPop(out (T memento, float delta) current))
+                {
+                    count += deltatime;
+                    (T memento, float delta) last;
+                    while (current.delta < count)
                     {
                         last = current;
-                        current = values.Current;
-                        stack.Push((last.memento, current.expiration - last.expiration));
-                    }
-                }
-
-                float stopAt = Time.fixedTime + rewindTime;
-
-                float count = 0;
-                while (Time.fixedTime < stopAt)
-                {
-                    if (stack.TryPop(out (T memento, float expiration) current))
-                    {
-                        count += Time.fixedDeltaTime * speed;
-                        (T memento, float expiration) last;
-                        while (current.expiration < count)
+                        count -= current.delta;
+                        if (!stack.TryPop(out current))
                         {
-                            last = current;
-                            count -= current.expiration;
-                            if (!stack.TryPop(out current))
-                            {
-                                onRewind(last.memento);
-                                yield return waitForFixedUpdate;
-                                break;
-                            }
+                            onRewind(last.memento);
+                            return;
                         }
-
-                        if (stack.TryPeek(out (T memento, float expiration) next))
-                            onRewind(interpolate(current.memento, next.memento, count / current.expiration));
-                        else
-                            onRewind(current.memento);
-
-                        stack.Push(current);
-                        yield return waitForFixedUpdate;
                     }
+
+                    if (stack.TryPeek(out (T memento, float delta) next))
+                        onRewind(interpolate(current.memento, next.memento, count / current.delta));
                     else
-                    {
-                        onRewind(null);
-                        yield return waitForFixedUpdate;
-                    }
+                        onRewind(current.memento);
+
+                    stack.Push(current);
                 }
+                else
+                    onRewind(null);
             }
         }
     }
