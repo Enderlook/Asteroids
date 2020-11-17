@@ -94,7 +94,7 @@ namespace Asteroids.PowerUps
 
             GameObject powerUp = templates.RandomPick().CreatePickup(audioSource, layer);
             powerUp.layer = layer;
-            powerUp.transform.position = position; // Don't udpate frmo rigidbody because that has one frame delay
+            powerUp.transform.position = position; // Don't udpate from rigidbody because that has one frame delay
             powerUp.GetComponent<Rigidbody2D>().velocity = speed;
         }
     }
