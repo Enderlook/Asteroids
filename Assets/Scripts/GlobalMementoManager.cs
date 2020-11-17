@@ -14,7 +14,8 @@ namespace Asteroids
 
         private const float expirationTime = 6;
         private const float rewindTime = 4; // Rewind less than stored to prevent subtle bugs
-        private static readonly int aproximateStoredmementos = Mathf.CeilToInt(50 * expirationTime);
+        private const int storePerSecond = 5;
+        private static readonly int aproximateStoredmementos = Mathf.CeilToInt(storePerSecond * expirationTime);
 
         private static WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
@@ -23,6 +24,9 @@ namespace Asteroids
         private List<IMementoManager> managers = new List<IMementoManager>();
         private float stopAt;
         private float speed;
+        private float toStore;
+        private const float storeCooldown = 1f / storePerSecond;
+        private float deltaRewind;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -48,6 +52,7 @@ namespace Asteroids
              * All big enemies were killed an split into 2 medium enemies each one. Now you have 24 medium enemies.
              * All medium enemies were killed an split into 2 small enemies each one. Now you have 48 small enemies.
              * That means there can be up to 12 + 24 + 48 = 84 instances of enemies on memory.
+             * (Dead enemies also store mementos because they can ressurect and/or banaish)
              * 
              * A player memento is (Vector3, float, Vector2, float). That is 28 bytes.
              * An ability memento is (float). That is 4 bytes.
@@ -57,7 +62,7 @@ namespace Asteroids
              * A bullet memento is (bool, Vector3, float, Vector2, float). That is 29 bytes.
              * Bullets are shooted each 0.35 seconds with a force of 10 and mass of 1 and the boundary is at 10 offset,
              * and largest distances are diagonal.
-             * So there can be (1 / 0.35) * (((10^2 + 10^2) ^ 0.5) / (10 / 1)) = 4,04 = 5 instance on memory.
+             * So there can be (1 / 0.35) * (((10^2 + 10^2) ^ 0.5) / (10 / 1)) = 4,04 = 5 instances on memory.
              * 
              * The total size of mementos per collection is 84 * 48 + 28 + 4 + 4 + 4 + 4 * 29 = 4,188 bytes = 4.08 kb.
              * 
@@ -67,13 +72,15 @@ namespace Asteroids
              * However, our mementos are value types, so we are not allocating/deallocating 204.49 kb/s.
              * Instead, value types are inlined in the underlying array of the queue (which is implemented as a circular array),
              * so actually, allocations only happens during the first 5 seconds until queues reaches their maximum size and no longer resize.
+             * 
+             * Anyway, we only save a memento 5 times per second... but it's nice to know it
              */
 
             if (IsRewinding)
             {
-                float delta = Time.fixedDeltaTime * speed;
+                // Rewind updates must be the same as fixed updates or the effect looks odd
                 foreach (IMementoManager manager in managers)
-                    manager.UpdateRewind(delta);
+                    manager.UpdateRewind(Time.fixedDeltaTime);
             }
             else
             {
@@ -83,8 +90,21 @@ namespace Asteroids
                     EventManager.Raise(new StopRewindEvent());
                 }
 
-                foreach (IMementoManager manager in managers)
-                    manager.Store();
+                if (storePerSecond == 50) // Physics updates are 50 per second unless manually changed, which is not our case
+                {
+                    foreach (IMementoManager manager in managers)
+                        manager.Store();
+                }
+                else
+                {
+                    toStore -= Time.fixedDeltaTime;
+                    if (toStore < 0)
+                    {
+                        toStore = storeCooldown - toStore;
+                        foreach (IMementoManager manager in managers)
+                            manager.Store();
+                    }
+                }
             }
         }
 
@@ -173,9 +193,11 @@ namespace Asteroids
                 {
                     count += deltatime;
                     (T memento, float delta) last;
+                    float lastCount = count;
                     while (current.delta < count)
                     {
                         last = current;
+                        lastCount = count;
                         count -= current.delta;
                         if (!stack.TryPop(out current))
                         {
