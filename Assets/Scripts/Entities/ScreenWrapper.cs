@@ -31,6 +31,9 @@ namespace Asteroids.Entities
                 return;
             }
 
+            // Prevent objects from getting stuck out of the screen
+            rigidbody.velocity = (rigidbody.velocity * (1 - Time.fixedDeltaTime * .3f)) - (rigidbody.position.normalized * Time.fixedDeltaTime);
+
             if (isWrappingX && isWrappingY)
                 return;
 
@@ -50,10 +53,6 @@ namespace Asteroids.Entities
             }
 
             rigidbody.position = newPosition;
-
-            // Try to prevent bug where objects stays out of screen
-            // This make all objects being pulled to the center of the map
-            rigidbody.velocity = (rigidbody.velocity * (1 - Time.fixedDeltaTime * .3f)) - (rigidbody.position.normalized * Time.fixedDeltaTime);
         }
 
         private bool IsVisible()
