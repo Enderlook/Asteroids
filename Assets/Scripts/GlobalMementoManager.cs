@@ -90,7 +90,7 @@ namespace Asteroids
 
         public static void Rewind(float duration)
         {
-            instance.stopAt = Time.fixedTime + expirationTime;
+            instance.stopAt = Time.fixedTime + rewindTime;
 
             Physics.autoSimulation = false;
             EventManager.Raise(new StartRewindEvent());
@@ -131,6 +131,7 @@ namespace Asteroids
             private Func<T, T, float, T> interpolate;
             private Action<T?> onRewind;
 
+            private float count = 0;
             public MementoManager(Func<T> onStore, Action<T?> onRewind, Func<T, T, float, T> interpolate)
             {
                 this.onRewind = onRewind;
@@ -168,7 +169,6 @@ namespace Asteroids
 
             void IMementoManager.UpdateRewind(float deltatime)
             {
-                float count = 0;
                 if (stack.TryPop(out (T memento, float delta) current))
                 {
                     count += deltatime;
