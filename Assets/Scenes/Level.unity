@@ -2581,7 +2581,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e9300d2e2f831e4faaec0ecfa0ba1ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnTime: 10
+  spawnTime: 15
   templates:
   - {fileID: 11400000, guid: e3ad21b857887bf47bf74367da85e822, type: 2}
   - {fileID: 11400000, guid: 93d04442edbc9b146aeea7b92e9c9beb, type: 2}
