@@ -23,8 +23,8 @@ namespace Asteroids.UI
             pool = new Pool<Transform>(PoolConstructor, PoolEnable, PoolDisable);
             EventManager.Subscribe<Player.HealthChangedEvent>(OnHealthChange);
 
-            for (int i = 0; i < Player.StartingLifes; i++)
-                OnIncrease();
+         //   for (int i = 0; i < Player.StartingLifes; i++)
+           //     OnIncrease();
         }
 
         private void OnHealthChange(Player.HealthChangedEvent @event)
