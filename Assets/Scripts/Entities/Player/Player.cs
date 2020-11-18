@@ -31,7 +31,7 @@ namespace Asteroids.Entities.Player
 
         private static Player instance;
 
-        public static int StartingLifes => instance.startingLifes;
+        public static int Lifes => instance.lifes;
 
         public static int MaxLifes => instance.maxLifes;
 
@@ -125,17 +125,6 @@ namespace Asteroids.Entities.Player
         {
             collider.enabled = false;
             invulnerabilityTime = invulnerabilityDuration;
-        }
-
-        public readonly struct HealthChangedEvent
-        {
-            public readonly bool HasIncreased;
-
-            public HealthChangedEvent(bool hasIncreased) => HasIncreased = hasIncreased;
-
-            public static HealthChangedEvent Increase => new HealthChangedEvent(true);
-
-            public static HealthChangedEvent Decrease => new HealthChangedEvent(false);
         }
     }
 }

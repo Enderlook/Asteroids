@@ -1,13 +1,10 @@
-﻿using Asteroids.Scene;
-using Asteroids.Utils;
-
-using Enderlook.Unity.Components.ScriptableSound;
+﻿using Asteroids.Utils;
 
 using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
-    public class SplitEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
+    public partial class SplitEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
         private static readonly BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
         private static readonly BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;
@@ -49,25 +46,5 @@ namespace Asteroids.Entities.Enemies
         public void Store(GameObject obj) => builder.Store(obj);
 
         public void ExtractIfHas(GameObject obj) => builder.ExtractIfHas(obj);
-
-        private sealed class SplitOnDeath : ExecuteOnCollision
-        {
-            public SplitEnemyFlyweight flyweight;
-
-            public override void Execute()
-            {
-                for (int i = 0; i < flyweight.amountToSpawn; i++)
-                    _ = flyweight.enemyToSpawn.GetFactory().Create((transform.position, Random.insideUnitCircle * flyweight.initialSpeed.Value));
-
-                EventManager.Raise(new EnemySplittedEvent(flyweight.amountToSpawn));
-            }
-        }
-
-        public readonly struct EnemySplittedEvent
-        {
-            public readonly int Amount;
-
-            public EnemySplittedEvent(int amount) => Amount = amount;
-        }
     }
 }

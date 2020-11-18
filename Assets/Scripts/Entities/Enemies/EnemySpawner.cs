@@ -120,12 +120,5 @@ namespace Asteroids.Entities.Enemies
 
             enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
         }
-
-        public readonly struct EnemyDestroyedEvent
-        {
-            public readonly int Score;
-
-            public EnemyDestroyedEvent(int score) => Score = score;
-        }
     }
 }

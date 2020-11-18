@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O4_GameManager)]
-    public class GameManager : MonoBehaviour
+    public partial class GameManager : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Panel shown on loose.")]
@@ -53,26 +53,6 @@ namespace Asteroids.Scene
         {
             score += @event.Score;
             EventManager.Raise(new ScoreHasChangedEvent(score));
-        }
-
-        public readonly struct ScoreHasChangedEvent
-        {
-            public readonly int NewScore;
-
-            public ScoreHasChangedEvent(int newScore) => NewScore = newScore;
-        }
-
-        public readonly struct LevelTerminationEvent
-        {
-            public readonly bool HasWon;
-
-            public bool HasLost => !HasWon;
-
-            public LevelTerminationEvent(bool hasWon) => HasWon = hasWon;
-
-            public static LevelTerminationEvent Win => new LevelTerminationEvent(true);
-
-            public static LevelTerminationEvent Lose => new LevelTerminationEvent(false);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Asteroids.Scene;
-using Asteroids.Utils;
+﻿using Asteroids.Utils;
 
 using Enderlook.Enumerables;
 using Enderlook.Unity.Components.ScriptableSound;
@@ -96,19 +95,5 @@ namespace Asteroids.Entities.Enemies
         public void Store(GameObject obj) => builder.Store(obj);
 
         public void ExtractIfHas(GameObject obj) => builder.ExtractIfHas(obj);
-
-        public sealed class ExecuteOnDeath : ExecuteOnCollision
-        {
-            public SimpleEnemyFlyweight flyweight;
-            public IPool<GameObject, (Vector3 position, Vector3 speed)> pool;
-            public SimpleSoundPlayer player;
-
-            public override void Execute()
-            {
-                player.Play();
-                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(flyweight.ScoreWhenDestroyed));
-                pool.Store(gameObject);
-            }
-        }
     }
 }
