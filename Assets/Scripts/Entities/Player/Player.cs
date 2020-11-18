@@ -2,14 +2,12 @@
 
 using Enderlook.Unity.Components.ScriptableSound;
 
-using System;
-
 using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
     [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(Collider2D)), RequireComponent(typeof(SpriteRenderer))]
-    public class Player : MonoBehaviour
+    public partial class Player : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Amount of lifes the player start with.")]
@@ -68,65 +66,9 @@ namespace Asteroids.Entities.Player
             scoreToNextLife = scorePerLife;
 
             EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreChanged);
-            EventManager.Subscribe<StartRewindEvent>(OnStartRewind);
-            EventManager.Subscribe<StopRewindEvent>(OnStopRewind);
 
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
-
-            (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) CreateMemento()
-            {
-                // The following features are not tracked by the memento for gameplay reasons:
-                // - Lifes
-                // - Invulnerability time
-                // - Score
-
-                Vector3 position = rigidbody.position;
-                float rotation = rigidbody.rotation;
-                Vector2 velocity = rigidbody.velocity;
-                float angularVelocity = rigidbody.angularVelocity;
-
-                // The memento object is simple, so we store it as a tuple
-                return (position, rotation, velocity, angularVelocity);
-            }
-
-            void ConsumeMemento((Vector3 position, float rotation, Vector2 velocity, float angularVelocity)? memento)
-            {
-                if (memento.HasValue)
-                {
-                    (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) memento_ = memento.Value;
-                    rigidbody.position = memento_.position;
-                    rigidbody.rotation = memento_.rotation;
-                    rigidbody.velocity = memento_.velocity;
-                    rigidbody.angularVelocity = memento_.angularVelocity;
-                }
-            }
+            Memento.TrackForRewind(this);
         }
-
-        private static readonly Func<(Vector3 position, float rotation, Vector2 velocity, float angularVelocity), (Vector3 position, float rotation, Vector2 velocity, float angularVelocity), float, (Vector3 position, float rotation, Vector2 velocity, float angularVelocity)> interpolateMementos = InterpolateMementos;
-
-        private static (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) InterpolateMementos(
-                (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) a,
-                (Vector3 position, float rotation, Vector2 velocity, float angularVelocity) b,
-                float delta
-            )
-        {
-            // Handle screen wrapping
-            float height = Camera.main.orthographicSize * 2;
-            height *= .9f; // Allow offset error
-            if (Mathf.Abs(a.position.y - b.position.y) > height || Mathf.Abs(a.position.x - b.position.x) > height * Camera.main.aspect)
-                return delta > .5f ? b : a;
-
-            return (
-             Vector3.Lerp(a.position, b.position, delta),
-             Mathf.Lerp(a.rotation, b.rotation, delta),
-             Vector2.Lerp(a.velocity, b.velocity, delta),
-             Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)
-         );
-        }
-
-        private void OnStartRewind(StartRewindEvent @event) => collider.enabled = false;
-
-        private void OnStopRewind(StopRewindEvent @event) => collider.enabled = true;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()

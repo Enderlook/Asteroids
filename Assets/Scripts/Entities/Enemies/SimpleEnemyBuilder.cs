@@ -4,7 +4,6 @@ using Asteroids.Utils;
 using Enderlook.Enumerables;
 using Enderlook.Unity.Components.ScriptableSound;
 
-using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -13,7 +12,7 @@ using Resources = Asteroids.Utils.Resources;
 
 namespace Asteroids.Entities.Enemies
 {
-    public class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
+    public partial class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
         private static List<Vector2> physicsShape = new List<Vector2>();
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
@@ -57,81 +56,9 @@ namespace Asteroids.Entities.Enemies
             executeOnDeath.pool = pool;
             executeOnDeath.player = player;
 
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
+            Memento.TrackForRewind(pool, rigidbody, spriteRenderer, collider);
 
             return enemy;
-
-            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) CreateMemento()
-            {
-                bool enabled = rigidbody.gameObject.activeSelf; // Read from rigidbody to reduce closure size
-                Vector3 position = rigidbody.position;
-                float rotation = rigidbody.rotation;
-                Vector2 velocity = rigidbody.velocity;
-                float angularVelocity = rigidbody.angularVelocity;
-                Sprite sprite = spriteRenderer.sprite;
-
-                // The memento object is simple, so we store it as a tuple
-                return (enabled, position, rotation, velocity, angularVelocity, sprite);
-            }
-
-            void ConsumeMemento((bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)? memento)
-            {
-                if (memento.HasValue)
-                {
-                    (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) memento_ = memento.Value;
-                    if (memento_.enabled)
-                    {
-                        // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                        pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
-
-                        rigidbody.position = memento_.position;
-                        rigidbody.rotation = memento_.rotation;
-                        rigidbody.velocity = memento_.velocity;
-                        rigidbody.angularVelocity = memento_.angularVelocity;
-                        spriteRenderer.sprite = memento_.sprite;
-
-                        int count = memento_.sprite.GetPhysicsShapeCount();
-                        for (int i = 0; i < count; i++)
-                        {
-                            memento_.sprite.GetPhysicsShape(i, physicsShape);
-                            collider.SetPath(i, physicsShape);
-                        }
-                    }
-                    else
-                        pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
-                }
-                else
-                    pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
-            }
-        }
-
-        private static readonly Func<(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite), float, (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)> interpolateMementos = InterpolateMementos;
-
-        private static (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) InterpolateMementos(
-            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) a,
-            (bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite) b,
-            float delta
-            )
-        {
-            // Handle resurrection
-            if (a.enabled != b.enabled)
-                return delta > .5f ? b : a;
-
-            // Handle screen wrapping
-            float height = Camera.main.orthographicSize * 2;
-            height *= .35f; // Allow offset error. Warning, this value may cause problem depending on GlobalMementoManager.storePerSecond and maximum enemy speed
-            if (Mathf.Abs(a.position.y - b.position.y) > height || Mathf.Abs(a.position.x - b.position.x) > height * Camera.main.aspect)
-                return delta > .5f ? b : a;
-
-            Debug.Assert(a.enabled == b.enabled);
-            return (
-             a.enabled,
-             Vector3.Lerp(a.position, b.position, delta),
-             Mathf.LerpAngle(a.rotation, b.rotation, delta),
-             Vector2.Lerp(a.velocity, b.velocity, delta),
-             Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta),
-             delta > .5f ? b.sprite : a.sprite
-             );
         }
 
         private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)

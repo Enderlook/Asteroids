@@ -6,8 +6,6 @@ using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 using Enderlook.Unity.Serializables.Ranges;
 
-using System;
-
 using UnityEngine;
 
 using Random = UnityEngine.Random;
@@ -15,7 +13,7 @@ using Random = UnityEngine.Random;
 namespace Asteroids.Entities.Enemies
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O5_EnemySpawner)]
-    public class EnemySpawner : MonoBehaviour
+    public partial class EnemySpawner : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Initial amount of enemies.")]
@@ -46,9 +44,6 @@ namespace Asteroids.Entities.Enemies
 
         private int remainingEnemies;
 
-        private float cooldownCheck;
-        private float checkTime = 1;
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
@@ -57,39 +52,13 @@ namespace Asteroids.Entities.Enemies
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
             EventManager.Subscribe<EnemySplittedEvent>(OnEnemySplitted);
-            EventManager.Subscribe<StopRewindEvent>(OnStopRewindEvent);
 
             foreach (EnemyFlyweight template in enemyTemplates)
                 template.Initialize();
 
             remainingEnemies = SpawnEnemies();
 
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
-
-            int CreateMemento() => remainingEnemies;
-
-            void ConsumeMemento(int? memento)
-            {
-                if (memento is int m)
-                    remainingEnemies = m;
-            }
-
-            cooldownCheck = checkTime;
-        }
-
-        private static readonly Func<int, int, float, int> interpolateMementos = InterpolateMementos;
-
-        private static int InterpolateMementos(int a, int b, float delta) => Mathf.RoundToInt(Mathf.Lerp(a, b, delta));
-
-        public void OnStopRewindEvent(StopRewindEvent @event)
-        {
-            remainingEnemies = 0;
-            GameObject[] objects = FindObjectsOfType<GameObject>();
-            for (int i = 0; i < objects.Length; i++)
-            {
-                if (objects[i].activeSelf && objects[i].layer == layer)
-                    remainingEnemies++;
-            }
+            Memento.TrackForRewind(this);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
@@ -99,15 +68,6 @@ namespace Asteroids.Entities.Enemies
             {
                 if (remainingEnemies == 0)
                     EventManager.Raise(LevelTerminationEvent.Win);
-
-                // Sometimes the rewind can bug enemy count
-                // So we check if every a while
-                cooldownCheck -= Time.deltaTime;
-                if (cooldownCheck < 0)
-                {
-                    cooldownCheck = checkTime;
-                    OnStopRewindEvent(default);
-                }
             }
         }
 

@@ -8,7 +8,7 @@ using System;
 
 namespace Asteroids.AbilitySystem
 {
-    public abstract class Ability : ScriptableObject, IInitialize<AbilitiesManager>
+    public abstract partial class Ability : ScriptableObject, IInitialize<AbilitiesManager>
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Ability's name.")]
@@ -33,20 +33,8 @@ namespace Asteroids.AbilitySystem
         {
             nextCast = 0;
 
-            GlobalMementoManager.Subscribe(CreateMemento, ConsumeMemento, interpolateMementos);
-
-            float CreateMemento() => nextCast - Time.fixedDeltaTime; // Memento of abilities is only its cooldown
-
-            void ConsumeMemento(float? memento)
-            {
-                if (memento is float m)
-                    nextCast = m + Time.fixedDeltaTime;
-            }
+            Memento.TrackForRewind(this);
         }
-
-        private static readonly Func<float, float, float, float> interpolateMementos = InterpolateMementos;
-
-        private static float InterpolateMementos(float a, float b, float delta) => Mathf.Lerp(a, b, delta);
 
         public virtual void Update()
         {
