@@ -45,7 +45,7 @@ namespace Asteroids.Entities.Player
 
         private float invulnerabilityTime;
 
-        private SpriteRenderer renderer;
+        private new SpriteRenderer renderer;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
