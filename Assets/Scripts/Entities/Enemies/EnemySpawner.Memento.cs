@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Scene;
 
 using System;
 using System.Collections;

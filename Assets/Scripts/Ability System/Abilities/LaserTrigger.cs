@@ -1,4 +1,5 @@
 ﻿using Asteroids.Entities.Enemies;
+using Asteroids.Scene;
 
 using Enderlook.Unity.Components.ScriptableSound;
 

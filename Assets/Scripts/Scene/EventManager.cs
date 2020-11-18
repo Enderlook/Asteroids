@@ -4,7 +4,7 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.Events
+namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O1_EventManager)]
     public class EventManager : MonoBehaviour

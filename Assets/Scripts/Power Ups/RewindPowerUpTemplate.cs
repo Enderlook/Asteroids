@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Asteroids.Scene;
+
+using UnityEngine;
 
 namespace Asteroids.PowerUps
 {

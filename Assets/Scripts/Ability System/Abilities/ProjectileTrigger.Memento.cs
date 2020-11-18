@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Asteroids.Scene;
+
+using System;
 
 using UnityEngine;
 

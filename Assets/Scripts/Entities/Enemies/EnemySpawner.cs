@@ -1,5 +1,4 @@
-﻿using Asteroids.Events;
-using Asteroids.Scene;
+﻿using Asteroids.Scene;
 
 using Enderlook.Enumerables;
 using Enderlook.Unity.Attributes;
@@ -49,9 +48,9 @@ namespace Asteroids.Entities.Enemies
         {
             camera = Camera.main;
 
-            EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
+            EventManager.Subscribe<GameManager.LevelTerminationEvent>(OnLevelTermination);
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
-            EventManager.Subscribe<EnemySplittedEvent>(OnEnemySplitted);
+            EventManager.Subscribe<SplitEnemyBuilder.EnemySplittedEvent>(OnEnemySplitted);
 
             foreach (EnemyFlyweight template in enemyTemplates)
                 template.Initialize();
@@ -67,11 +66,11 @@ namespace Asteroids.Entities.Enemies
             if (!GlobalMementoManager.IsRewinding)
             {
                 if (remainingEnemies == 0)
-                    EventManager.Raise(LevelTerminationEvent.Win);
+                    EventManager.Raise(GameManager.LevelTerminationEvent.Win);
             }
         }
 
-        private void OnLevelTermination(LevelTerminationEvent @event)
+        private void OnLevelTermination(GameManager.LevelTerminationEvent @event)
         {
             if (@event.HasWon)
             {
@@ -82,7 +81,7 @@ namespace Asteroids.Entities.Enemies
 
         private void OnEnemyDestroyed(EnemyDestroyedEvent @event) => remainingEnemies--;
 
-        private void OnEnemySplitted(EnemySplittedEvent @event) => remainingEnemies += @event.Amount;
+        private void OnEnemySplitted(SplitEnemyBuilder.EnemySplittedEvent @event) => remainingEnemies += @event.Amount;
 
         private int SpawnEnemies()
         {
@@ -120,6 +119,13 @@ namespace Asteroids.Entities.Enemies
             Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
 
             enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
+        }
+
+        public readonly struct EnemyDestroyedEvent
+        {
+            public readonly int Score;
+
+            public EnemyDestroyedEvent(int score) => Score = score;
         }
     }
 }

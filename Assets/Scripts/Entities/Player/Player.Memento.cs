@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Scene;
 
 using System;
 
@@ -45,7 +45,7 @@ namespace Asteroids.Entities.Player
                 this.angularVelocity = angularVelocity;
             }
 
-            private Memento(Player player) : this(
+            public Memento(Player player) : this(
                 player.rigidbody.position,
                 player.rigidbody.rotation,
                 player.rigidbody.velocity,
@@ -73,13 +73,16 @@ namespace Asteroids.Entities.Player
             private static void ConsumeMemento(Memento? memento, Player player)
             {
                 if (memento is Memento memento_)
-                {
-                    Rigidbody2D rigidbody = player.rigidbody;
-                    rigidbody.position = memento_.position;
-                    rigidbody.rotation = memento_.rotation;
-                    rigidbody.velocity = memento_.velocity;
-                    rigidbody.angularVelocity = memento_.angularVelocity;
-                }
+                    memento_.Load(player);
+            }
+
+            public void Load(Player player)
+            {
+                Rigidbody2D rigidbody = player.rigidbody;
+                rigidbody.position = position;
+                rigidbody.rotation = rotation;
+                rigidbody.velocity = velocity;
+                rigidbody.angularVelocity = angularVelocity;
             }
 
             private static Memento InterpolateMementos(Memento a, Memento b, float delta)

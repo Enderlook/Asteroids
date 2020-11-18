@@ -1,5 +1,5 @@
 ﻿using Asteroids.Entities.Player;
-using Asteroids.Events;
+using Asteroids.Scene;
 using Asteroids.Utils;
 
 using UnityEngine;
@@ -21,13 +21,13 @@ namespace Asteroids.UI
         private void Awake()
         {
             pool = new Pool<Transform>(PoolConstructor, PoolEnable, PoolDisable);
-            EventManager.Subscribe<PlayerHealthChangedEvent>(OnHealthChange);
+            EventManager.Subscribe<Player.HealthChangedEvent>(OnHealthChange);
 
             for (int i = 0; i < Player.StartingLifes; i++)
                 OnIncrease();
         }
 
-        private void OnHealthChange(PlayerHealthChangedEvent @event)
+        private void OnHealthChange(Player.HealthChangedEvent @event)
         {
             if (@event.HasIncreased)
                 OnIncrease();

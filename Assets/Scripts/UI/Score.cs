@@ -1,5 +1,4 @@
-﻿using Asteroids.Events;
-using Asteroids.Scene;
+﻿using Asteroids.Scene;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,8 +20,8 @@ namespace Asteroids.UI
         private void Awake()
         {
             text = GetComponent<Text>();
-            EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreHasChanged);
-            EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
+            EventManager.Subscribe<GameManager.ScoreHasChangedEvent>(OnScoreHasChanged);
+            EventManager.Subscribe<GameManager.LevelTerminationEvent>(OnLevelTermination);
             target = GameManager.Score;
         }
 
@@ -40,12 +39,12 @@ namespace Asteroids.UI
             }
         }
 
-        private void OnLevelTermination(LevelTerminationEvent @event)
+        private void OnLevelTermination(GameManager.LevelTerminationEvent @event)
         {
             if (@event.HasLost)
                 unscaledTime = true;
         }
 
-        private void OnScoreHasChanged(ScoreHasChangedEvent @event) => target = @event.NewScore;
+        private void OnScoreHasChanged(GameManager.ScoreHasChangedEvent @event) => target = @event.NewScore;
     }
 }

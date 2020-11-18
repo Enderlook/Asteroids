@@ -1,4 +1,5 @@
-﻿using Asteroids.Utils;
+﻿using Asteroids.Scene;
+using Asteroids.Utils;
 
 using System;
 

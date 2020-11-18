@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Scene;
 
 using Enderlook.Unity.Components.ScriptableSound;
 
@@ -26,13 +26,13 @@ namespace Asteroids.UI
         private void Awake()
         {
             player = GetComponent<SoundPlayer>();
-            EventManager.Subscribe<PauseEvent>(OnPause);
-            EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
+            EventManager.Subscribe<PauseManager.PauseEvent>(OnPause);
+            EventManager.Subscribe<GameManager.LevelTerminationEvent>(OnLevelTermination);
         }
 
-        private void OnPause(PauseEvent @event) => player.Play(@event.IsPaused ? menu : play);
+        private void OnPause(PauseManager.PauseEvent @event) => player.Play(@event.IsPaused ? menu : play);
 
-        private void OnLevelTermination(LevelTerminationEvent @event)
+        private void OnLevelTermination(GameManager.LevelTerminationEvent @event)
         {
             if (@event.HasLost)
                 player.Play(gameOver, () => player.Play(menu));

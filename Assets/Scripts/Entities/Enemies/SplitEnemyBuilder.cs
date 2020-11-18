@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Scene;
 using Asteroids.Utils;
 
 using Enderlook.Unity.Components.ScriptableSound;
@@ -61,6 +61,13 @@ namespace Asteroids.Entities.Enemies
 
                 EventManager.Raise(new EnemySplittedEvent(flyweight.amountToSpawn));
             }
+        }
+
+        public readonly struct EnemySplittedEvent
+        {
+            public readonly int Amount;
+
+            public EnemySplittedEvent(int amount) => Amount = amount;
         }
     }
 }

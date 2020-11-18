@@ -1,12 +1,10 @@
-﻿using Asteroids.Events;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
-namespace Asteroids
+namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O1_GlobalMementoManager)]
     public class GlobalMementoManager : MonoBehaviour
@@ -99,10 +97,8 @@ namespace Asteroids
                 volume.weight = Mathf.Max(volume.weight - Time.fixedDeltaTime * volumeSpeed, 0);
 
                 if (storePerSecond == 50) // Physics updates are 50 per second unless manually changed, which is not our case
-                {
                     foreach (IMementoManager manager in managers)
                         manager.Store();
-                }
                 else
                 {
                     toStore -= Time.fixedDeltaTime;

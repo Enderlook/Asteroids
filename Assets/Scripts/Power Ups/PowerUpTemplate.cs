@@ -1,5 +1,5 @@
 ﻿using Asteroids.Entities.Player;
-using Asteroids.Events;
+using Asteroids.Scene;
 
 using Enderlook.Unity.Attributes;
 

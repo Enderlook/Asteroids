@@ -1,6 +1,4 @@
-﻿using Asteroids.Events;
-
-using System;
+﻿using Asteroids.Scene;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,11 +28,11 @@ namespace Asteroids.UI
         private void Awake()
         {
             pause = FindObjectOfType<PauseManager>();
-            EventManager.Subscribe<PauseEvent>(OnPause);
-            EventManager.Subscribe<LevelTerminationEvent>(OnLevelTermination);
+            EventManager.Subscribe<PauseManager.PauseEvent>(OnPause);
+            EventManager.Subscribe<GameManager.LevelTerminationEvent>(OnLevelTermination);
         }
 
-        private void OnLevelTermination(LevelTerminationEvent @event)
+        private void OnLevelTermination(GameManager.LevelTerminationEvent @event)
         {
             if (@event.HasLost)
             {
@@ -44,7 +42,7 @@ namespace Asteroids.UI
             }
         }
 
-        private void OnPause(PauseEvent @event)
+        private void OnPause(PauseManager.PauseEvent @event)
         {
             if (@event.IsPaused)
                 panels[0].SetActive(true);

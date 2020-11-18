@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Scene;
 
 using Enderlook.Unity.Components.ScriptableSound;
 
@@ -65,7 +65,7 @@ namespace Asteroids.Entities.Player
             lifes = startingLifes;
             scoreToNextLife = scorePerLife;
 
-            EventManager.Subscribe<ScoreHasChangedEvent>(OnScoreChanged);
+            EventManager.Subscribe<GameManager.ScoreHasChangedEvent>(OnScoreChanged);
 
             Memento.TrackForRewind(this);
         }
@@ -86,7 +86,7 @@ namespace Asteroids.Entities.Player
             }
         }
 
-        private void OnScoreChanged(ScoreHasChangedEvent @event)
+        private void OnScoreChanged(GameManager.ScoreHasChangedEvent @event)
         {
             if (scoreToNextLife <= @event.NewScore)
             {
@@ -99,7 +99,7 @@ namespace Asteroids.Entities.Player
         public void AddNewLife()
         {
             lifes++;
-            EventManager.Raise(PlayerHealthChangedEvent.Increase);
+            EventManager.Raise(HealthChangedEvent.Increase);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -107,11 +107,11 @@ namespace Asteroids.Entities.Player
             deathSound.Play();
 
             if (lifes == 0)
-                EventManager.Raise(LevelTerminationEvent.Lose);
+                EventManager.Raise(GameManager.LevelTerminationEvent.Lose);
             else
             {
                 lifes--;
-                EventManager.Raise(PlayerHealthChangedEvent.Decrease);
+                EventManager.Raise(HealthChangedEvent.Decrease);
             }
 
             rigidbody.position = Vector2.zero;
@@ -125,6 +125,17 @@ namespace Asteroids.Entities.Player
         {
             collider.enabled = false;
             invulnerabilityTime = invulnerabilityDuration;
+        }
+
+        public readonly struct HealthChangedEvent
+        {
+            public readonly bool HasIncreased;
+
+            public HealthChangedEvent(bool hasIncreased) => HasIncreased = hasIncreased;
+
+            public static HealthChangedEvent Increase => new HealthChangedEvent(true);
+
+            public static HealthChangedEvent Decrease => new HealthChangedEvent(false);
         }
     }
 }

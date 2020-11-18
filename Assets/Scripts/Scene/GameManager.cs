@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Entities.Enemies;
 using Asteroids.UI;
 
 using UnityEngine;
@@ -35,7 +35,7 @@ namespace Asteroids.Scene
             instance = this;
 
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelComplete);
-            EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
+            EventManager.Subscribe<EnemySpawner.EnemyDestroyedEvent>(OnEnemyDestroyed);
         }
 
         private void OnLevelComplete(LevelTerminationEvent @event)
@@ -49,10 +49,30 @@ namespace Asteroids.Scene
             }
         }
 
-        private void OnEnemyDestroyed(EnemyDestroyedEvent @event)
+        private void OnEnemyDestroyed(EnemySpawner.EnemyDestroyedEvent @event)
         {
             score += @event.Score;
             EventManager.Raise(new ScoreHasChangedEvent(score));
+        }
+
+        public readonly struct ScoreHasChangedEvent
+        {
+            public readonly int NewScore;
+
+            public ScoreHasChangedEvent(int newScore) => NewScore = newScore;
+        }
+
+        public readonly struct LevelTerminationEvent
+        {
+            public readonly bool HasWon;
+
+            public bool HasLost => !HasWon;
+
+            public LevelTerminationEvent(bool hasWon) => HasWon = hasWon;
+
+            public static LevelTerminationEvent Win => new LevelTerminationEvent(true);
+
+            public static LevelTerminationEvent Lose => new LevelTerminationEvent(false);
         }
     }
 }

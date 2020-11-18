@@ -1,4 +1,4 @@
-﻿using Asteroids.Events;
+﻿using Asteroids.Scene;
 using Asteroids.Utils;
 
 using Enderlook.Enumerables;
@@ -106,7 +106,7 @@ namespace Asteroids.Entities.Enemies
             public override void Execute()
             {
                 player.Play();
-                EventManager.Raise(new EnemyDestroyedEvent(flyweight.ScoreWhenDestroyed));
+                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(flyweight.ScoreWhenDestroyed));
                 pool.Store(gameObject);
             }
         }
