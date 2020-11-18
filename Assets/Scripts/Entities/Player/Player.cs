@@ -68,6 +68,8 @@ namespace Asteroids.Entities.Player
             EventManager.Subscribe<GameManager.ScoreHasChangedEvent>(OnScoreChanged);
 
             Memento.TrackForRewind(this);
+
+            GameSaver.SubscribePlayer(() => new State(this), (state) => state.Load(this));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]

@@ -1,4 +1,5 @@
-﻿using Asteroids.Utils;
+﻿using Asteroids.Scene;
+using Asteroids.Utils;
 
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
@@ -48,6 +49,14 @@ namespace Asteroids.AbilitySystem
             };
 
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
+            GameSaver.SubscribeProjectileTrigger(
+                () => new State(this),
+                (parameter) => {
+                    parameter.Item1.Load(this);
+                    foreach (ProjectileState state in parameter.Item2)
+                        state.Load(this, CreateBullet());
+                }
+            );
         }
 
         private static Rigidbody2D ProjectileConstructor(in ProjectileTrigger flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
@@ -70,7 +79,9 @@ namespace Asteroids.AbilitySystem
 
             BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder = flyweight.builder;
 
-            Memento.TrackForRewind(flyweight, rigidbody); 
+            Memento.TrackForRewind(flyweight, rigidbody);
+
+            GameSaver.SubscribeProjectileTriggerBullet(() => new ProjectileState(rigidbody));
 
             return rigidbody;
         }
@@ -98,18 +109,22 @@ namespace Asteroids.AbilitySystem
             rigidbody2D.velocity = parameters.velocity;
         }
 
-        public override void Execute()
+        public override void Execute() => CreateBullet();
+
+        private Rigidbody2D CreateBullet()
         {
             Transform castPoint = abilitiesManager.CastPoint;
             Rigidbody2D playerRigidbody = abilitiesManager.Rigidbody2D;
 
-            _ = builder.Create((
+            Rigidbody2D bullet = builder.Create((
                 castPoint.position,
                 Quaternion.Euler(new Vector3(0, 0, playerRigidbody.rotation)),
                 (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity
             ));
 
             soundPlayer.Play();
+
+            return bullet;
         }
 
         private class ReturnToPoolOnCollision : MonoBehaviour

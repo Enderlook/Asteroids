@@ -1,4 +1,5 @@
-﻿using Asteroids.Utils;
+﻿using Asteroids.Scene;
+using Asteroids.Utils;
 
 using Enderlook.Enumerables;
 using Enderlook.Unity.Components.ScriptableSound;
@@ -24,15 +25,31 @@ namespace Asteroids.Entities.Enemies
             set => builder.flyweight = value;
         }
 
-        public SimpleEnemyBuilder() => builder = new BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>
-        {
-            constructor = InnerConstruct,
-            commonInitializer = commonInitialize,
-            initializer = initialize,
-            deinitializer = deinitialize
-        };
+        private string id;
 
-        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool)
+        public SimpleEnemyBuilder(string id)
+        {
+            builder = new BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>
+                {
+                    constructor = InnerConstruct,
+                    commonInitializer = commonInitialize,
+                    initializer = initialize,
+                    deinitializer = deinitialize
+                };
+
+            this.id = id;
+
+            GameSaver.SubscribeEnemy(
+                id,
+                (states) =>
+                {
+                    foreach (EnemyState state in states)
+                        state.Load(this, Create(default));
+                }
+            );
+        }
+
+        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, string id)
         {
             GameObject enemy = new GameObject(flyweight.name)
             {
@@ -57,11 +74,13 @@ namespace Asteroids.Entities.Enemies
 
             Memento.TrackForRewind(pool, rigidbody, spriteRenderer, collider);
 
+            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, spriteRenderer));
+
             return enemy;
         }
 
         private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
-            => Construct(flyweight, parameter, this);
+            => Construct(flyweight, parameter, this, id);
 
         public static void CommonInitialize(in SimpleEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
         {

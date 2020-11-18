@@ -29,7 +29,7 @@ namespace Asteroids.AbilitySystem
 
             private Memento(float cooldown) => this.cooldown = cooldown;
 
-            private Memento(Ability ability) : this(ability.nextCast - Time.fixedDeltaTime) { }
+            public Memento(Ability ability) : this(ability.nextCast - Time.fixedDeltaTime) { }
 
             public static void TrackForRewind(Ability ability)
                 => GlobalMementoManager.Subscribe(
@@ -41,8 +41,10 @@ namespace Asteroids.AbilitySystem
             private static void ConsumeMemento(Memento? memento, Ability ability)
             {
                 if (memento is Memento memento_)
-                    ability.nextCast = memento_.cooldown + Time.fixedDeltaTime;
+                    memento_.Load(ability);
             }
+
+            public void Load(Ability ability) => ability.nextCast = cooldown + Time.fixedDeltaTime;
 
             private static Memento InterpolateMementos(Memento a, Memento b, float delta)
                 => new Memento(Mathf.Lerp(a.cooldown, b.cooldown, delta));

@@ -38,6 +38,7 @@ namespace Asteroids.AbilitySystem
             results = new RaycastHit2D[FindObjectOfType<EnemySpawner>().MaxmiumAmountOfEnemies];
 
             Memento.TrackForRewind(this);
+            GameSaver.SubscribeLaserTrigger(() => new State(this), (state) => ((State)state).Load(this));
         }
 
         public override void Update()

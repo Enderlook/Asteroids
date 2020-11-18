@@ -5,6 +5,8 @@ using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 using Enderlook.Unity.Serializables.Ranges;
 
+using System.Collections;
+
 using UnityEngine;
 
 using Random = UnityEngine.Random;
@@ -51,13 +53,19 @@ namespace Asteroids.Entities.Enemies
             EventManager.Subscribe<GameManager.LevelTerminationEvent>(OnLevelTermination);
             EventManager.Subscribe<EnemyDestroyedEvent>(OnEnemyDestroyed);
             EventManager.Subscribe<SplitEnemyBuilder.EnemySplittedEvent>(OnEnemySplitted);
+            EventManager.Subscribe<GameSaver.LoadEvent>(RecalculateEnemyCountManually);
 
             foreach (EnemyFlyweight template in enemyTemplates)
                 template.Initialize();
 
-            remainingEnemies = SpawnEnemies();
-
             Memento.TrackForRewind(this);
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Start()
+        {
+            if (remainingEnemies == 0)
+                remainingEnemies = SpawnEnemies();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
@@ -89,6 +97,17 @@ namespace Asteroids.Entities.Enemies
             for (int i = 0; i < maxEnemies; i++)
                 SpawnEnemy();
             return maxEnemies;
+        }
+
+        private void RecalculateEnemyCountManually()
+        {
+            remainingEnemies = 0;
+            GameObject[] objects = FindObjectsOfType<GameObject>();
+            for (int i = 0; i < objects.Length; i++)
+            {
+                if (objects[i].activeSelf && objects[i].layer == layer)
+                    remainingEnemies++;
+            }
         }
 
         private void SpawnEnemy()

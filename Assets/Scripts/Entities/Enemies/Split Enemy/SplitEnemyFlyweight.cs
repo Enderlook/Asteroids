@@ -24,7 +24,7 @@ namespace Asteroids.Entities.Enemies
         public override IFactory<GameObject, (Vector3 position, Vector3 speed)> GetFactory()
         {
             if (factory is null)
-                factory = new SplitEnemyBuilder { Flyweight = this };
+                factory = new SplitEnemyBuilder(name) { Flyweight = this};
             return factory;
         }
     }

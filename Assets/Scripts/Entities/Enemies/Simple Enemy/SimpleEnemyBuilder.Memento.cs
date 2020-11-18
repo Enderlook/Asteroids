@@ -43,7 +43,7 @@ namespace Asteroids.Entities.Enemies
                 this.sprite = sprite;
             }
 
-            private Memento(Rigidbody2D rigidbody, SpriteRenderer spriteRenderer) : this(
+            public Memento(Rigidbody2D rigidbody, SpriteRenderer spriteRenderer) : this(
                 rigidbody.gameObject.activeSelf,
                 rigidbody.position,
                 rigidbody.rotation,
@@ -60,29 +60,33 @@ namespace Asteroids.Entities.Enemies
 
             private static void ConsumeMemento(Memento? memento, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, Rigidbody2D rigidbody, SpriteRenderer spriteRenderer, PolygonCollider2D collider)
             {
-                if (memento.HasValue)
+                if (memento is Memento memento_)
                 {
-                    Memento memento_ = memento.Value;
-                    if (memento_.enabled)
+                    memento_.Load(pool, rigidbody, spriteRenderer, collider);
+                }
+                else
+                    pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+            }
+
+            public void Load(IPool<GameObject, (Vector3 position, Vector3 speed)> pool, Rigidbody2D rigidbody, SpriteRenderer spriteRenderer, PolygonCollider2D collider)
+            {
+                if (enabled)
+                {
+                    // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                    pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+
+                    rigidbody.position = position;
+                    rigidbody.rotation = rotation;
+                    rigidbody.velocity = velocity;
+                    rigidbody.angularVelocity = angularVelocity;
+                    spriteRenderer.sprite = sprite;
+
+                    int count = sprite.GetPhysicsShapeCount();
+                    for (int i = 0; i < count; i++)
                     {
-                        // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                        pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
-
-                        rigidbody.position = memento_.position;
-                        rigidbody.rotation = memento_.rotation;
-                        rigidbody.velocity = memento_.velocity;
-                        rigidbody.angularVelocity = memento_.angularVelocity;
-                        spriteRenderer.sprite = memento_.sprite;
-
-                        int count = memento_.sprite.GetPhysicsShapeCount();
-                        for (int i = 0; i < count; i++)
-                        {
-                            memento_.sprite.GetPhysicsShape(i, physicsShape);
-                            collider.SetPath(i, physicsShape);
-                        }
+                        sprite.GetPhysicsShape(i, physicsShape);
+                        collider.SetPath(i, physicsShape);
                     }
-                    else
-                        pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
                 }
                 else
                     pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size

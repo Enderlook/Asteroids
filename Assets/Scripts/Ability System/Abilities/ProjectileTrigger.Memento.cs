@@ -57,19 +57,22 @@ namespace Asteroids.AbilitySystem
             private static void ConsumeMemento(Memento? memento, ProjectileTrigger projectileTrigger, Rigidbody2D rigidbody)
             {
                 if (memento is Memento memento_)
-                {
-                    if (memento_.enabled)
-                    {
-                        // Since bullets are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                        projectileTrigger.builder.ExtractIfHas(rigidbody);
+                    memento_.Load(projectileTrigger, rigidbody);
+                else
+                    projectileTrigger.builder.Store(rigidbody);
+            }
 
-                        rigidbody.position = memento_.position;
-                        rigidbody.rotation = memento_.rotation;
-                        rigidbody.velocity = memento_.velocity;
-                        rigidbody.angularVelocity = memento_.angularVelocity;
-                    }
-                    else
-                        projectileTrigger.builder.Store(rigidbody);
+            public void Load(ProjectileTrigger projectileTrigger, Rigidbody2D rigidbody)
+            {
+                if (enabled)
+                {
+                    // Since bullets are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                    projectileTrigger.builder.ExtractIfHas(rigidbody);
+
+                    rigidbody.position = position;
+                    rigidbody.rotation = rotation;
+                    rigidbody.velocity = velocity;
+                    rigidbody.angularVelocity = angularVelocity;
                 }
                 else
                     projectileTrigger.builder.Store(rigidbody);

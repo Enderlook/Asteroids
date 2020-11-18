@@ -12,8 +12,8 @@ namespace Asteroids.AbilitySystem
 
         public void Initialize(AbilitiesManager manager)
         {
-            foreach (Ability ability in abilities)
-                ability.Initialize(manager);
+            for (int i = 0; i < abilities.Length; i++)
+                abilities[i].Initialize(manager);
         }
 
         public void Update()

@@ -12,7 +12,7 @@
             // Player state is a superset of Player memento, we can take advantage of that to keep DRY
             private readonly Memento memento;
 
-            private State(Player player)
+            public State(Player player)
             {
                 lifes = player.lifes;
                 scoreToNextLife = player.scorePerLife;
@@ -20,7 +20,7 @@
                 memento = new Memento(player);
             }
 
-            private void Load(Player player)
+            public void Load(Player player)
             {
                 player.lifes = lifes;
                 player.scoreToNextLife = scoreToNextLife;

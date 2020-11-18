@@ -22,8 +22,18 @@ namespace Asteroids.UI
         {
             pool = new Pool<Transform>(PoolConstructor, PoolEnable, PoolDisable);
             EventManager.Subscribe<Player.HealthChangedEvent>(OnHealthChange);
+            EventManager.Subscribe<GameSaver.LoadEvent>(OnLoad);
 
-            for (int i = 0; i < Player.StartingLifes; i++)
+            for (int i = 0; i < Player.Lifes; i++)
+                OnIncrease();
+        }
+
+        private void OnLoad()
+        {
+            while (transform.childCount > Player.Lifes)
+                OnDecrease();
+
+            while (transform.childCount < Player.Lifes)
                 OnIncrease();
         }
 
