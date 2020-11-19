@@ -14,23 +14,24 @@ namespace Asteroids.UI
         [SerializeField, Tooltip("Sprite used for life icons.")]
         private Sprite lifeSprite;
 #pragma warning restore CS0649
-        private Player player;
+
         private Pool<Transform> pool;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
-            player = FindObjectOfType<Player>();
+            PlayerModel player = FindObjectOfType<PlayerModel>();
+
             pool = new Pool<Transform>(PoolConstructor, PoolEnable, PoolDisable);
-            EventManager.Subscribe<Player.HealthChangedEvent>(OnHealthChange);
+            EventManager.Subscribe<PlayerController.HealthChangedEvent>(OnHealthChange);
 
             for (int i = 0; i < player.startingLifes; i++)
                 OnIncrease();
         }
 
-        private void OnHealthChange(Player.HealthChangedEvent @event)
+        private void OnHealthChange(PlayerController.HealthChangedEvent @event)
         {
-            if (@event.HasIncreased)
+            if (@event.IsIncrease)
                 OnIncrease();
             else
                 OnDecrease();

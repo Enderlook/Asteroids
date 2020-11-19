@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Asteroids.PowerUps
 {
-
     [CreateAssetMenu(menuName = "Asteroids/Power Ups/Health Pack")]
     public sealed class HealthPowerUpTemplate : PowerUpTemplate
     {
@@ -20,7 +19,7 @@ namespace Asteroids.PowerUps
             public void PickUp()
             {
                 decorable.PickUp();
-                FindObjectOfType<Player>().AddNewLife();
+                FindObjectOfType<PlayerController>().AddNewLifeByPowerUp();
             }
         }
     }
