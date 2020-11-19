@@ -30,6 +30,8 @@ namespace Asteroids.Scene
         public static void Subscribe<TEvent>(Action<TEvent> callback) => instance.manager.Subscribe(callback);
 
         /// <inheritdoc cref="EventManager{TEventBase}.Unsubscribe{TEvent}(Action{TEvent})"/>
+       
+        
         public static void Unsubscribe<TEvent>(Action<TEvent> callback) => instance.manager.Unsubscribe(callback);
 
         /// <inheritdoc cref="EventManager{TEventBase}.Subscribe{TEvent}(Action)"/>
