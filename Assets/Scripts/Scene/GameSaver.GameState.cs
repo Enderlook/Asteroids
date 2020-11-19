@@ -16,14 +16,14 @@ namespace Asteroids.Scene
         {
             private static readonly string path = Application.persistentDataPath + "save.data";
 
-            public readonly Player.State player;
+            public readonly PlayerController.State player;
             public readonly GameManager.State game;
             public readonly LaserTrigger.State laser;
             public readonly Ability.State projectile;
             public readonly List<ProjectileTrigger.ProjectileState> projectiles;
             public readonly Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies;
 
-            public GameState(Player.State player, GameManager.State game, LaserTrigger.State laser, Ability.State projectile, List<ProjectileTrigger.ProjectileState> projectiles, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
+            public GameState(PlayerController.State player, GameManager.State game, LaserTrigger.State laser, Ability.State projectile, List<ProjectileTrigger.ProjectileState> projectiles, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
             {
                 this.player = player;
                 this.game = game;

@@ -14,8 +14,8 @@ namespace Asteroids.Scene
     {
         private static GameSaver instance;
 
-        private Func<Player.State> savePlayer;
-        private Action<Player.State> loadPlayer;
+        private Func<PlayerController.State> savePlayer;
+        private Action<PlayerController.State> loadPlayer;
 
         private Func<GameManager.State> saveGameManager;
         private Action<GameManager.State> loadGameManager;
@@ -44,7 +44,7 @@ namespace Asteroids.Scene
 
         public static void Save()
         {
-            Player.State player = instance.savePlayer();
+            PlayerController.State player = instance.savePlayer();
             GameManager.State game = instance.saveGameManager();
             LaserTrigger.State laser = instance.saveLaserTrigger();
             Ability.State projectile = instance.saveProjectileTrigger();
@@ -80,7 +80,7 @@ namespace Asteroids.Scene
                 instance.loadEnemyBuilder[enemies.Key](enemies.Value);
         }
 
-        public static void SubscribePlayer(Func<Player.State> save, Action<Player.State> load)
+        public static void SubscribePlayer(Func<PlayerController.State> save, Action<PlayerController.State> load)
         {
             instance.savePlayer = save;
             instance.loadPlayer = load;

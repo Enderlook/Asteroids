@@ -6,14 +6,14 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
-    public partial class Player
+    public partial class PlayerController
     {
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the player state for rewinding
-             * Technically, the create and set memento methods should be members of the Originator (Player) class
+             * Technically, the create and set memento methods should be members of the Originator (PlayerController) class
              * according to the pure Memento pattern.
-             * However, that makes a bit convulted the Player class and increase its responsabilities amount.
+             * However, that makes a bit convulted the PlayerController class and increase its responsabilities amount.
              * 
              * This is why me add that logic in the Memento type and rewind here. So for the Player's point of view, it's only Memento.TrackForRewind(this).
              * Anyway, the implementation is not exposed because the Memento type is a nested type of the Player class
@@ -45,14 +45,15 @@ namespace Asteroids.Entities.Player
                 this.angularVelocity = angularVelocity;
             }
 
-            public Memento(Player player) : this(
+            public Memento(PlayerController player) : this(
                 player.rigidbody.position,
                 player.rigidbody.rotation,
                 player.rigidbody.velocity,
                 player.rigidbody.angularVelocity
-            ) {}
+            )
+            { }
 
-            public static void TrackForRewind(Player player)
+            public static void TrackForRewind(PlayerController player)
             {
                 // We handles anything related with Player's rewind here.
 
@@ -70,13 +71,13 @@ namespace Asteroids.Entities.Player
                 void OnStopRewind() => player.collider.enabled = true;
             }
 
-            private static void ConsumeMemento(Memento? memento, Player player)
+            private static void ConsumeMemento(Memento? memento, PlayerController player)
             {
                 if (memento is Memento memento_)
                     memento_.Load(player);
             }
 
-            public void Load(Player player)
+            public void Load(PlayerController player)
             {
                 Rigidbody2D rigidbody = player.rigidbody;
                 rigidbody.position = position;
@@ -102,4 +103,5 @@ namespace Asteroids.Entities.Player
             }
         }
     }
+
 }
