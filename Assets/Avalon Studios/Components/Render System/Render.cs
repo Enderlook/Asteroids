@@ -1,4 +1,5 @@
-﻿using AvalonStudios.Additions.Utils.CustomRandom;
+﻿using AvalonStudios.Additions.Attributes;
+using Random = AvalonStudios.Additions.Utils.Random;
 using AvalonStudios.Additions.Utils.InputsManager;
 
 using System.IO;
@@ -10,7 +11,7 @@ namespace AvalonStudios.Additions.Components.RenderSystem
     {
         public enum Format { JPG, PNG, RAW }
 
-        [Header("General")]
+        [StyledHeader("General")]
 
         [SerializeField, Tooltip("Image width.")]
         private int width = 1920;
@@ -21,7 +22,7 @@ namespace AvalonStudios.Additions.Components.RenderSystem
         [SerializeField, Tooltip("Optimize render system for many screenshots.")]
         private bool optimizeForManyScreenshots = true;
 
-        [Header("Setup")]
+        [StyledHeader("Setup")]
 
         [SerializeField, Tooltip("Input key to take the screenshot.")]
         private KeyInputManager screenshotInput = null;
@@ -48,7 +49,7 @@ namespace AvalonStudios.Additions.Components.RenderSystem
             camera = GetComponent<Camera>();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (screenshotInput.Execute() && Cooldown())
                 Screenshot();
@@ -82,6 +83,7 @@ namespace AvalonStudios.Additions.Components.RenderSystem
 
             RenderTexture.active = renderTexture;
             screenshot.ReadPixels(rect, 0, 0);
+            screenshot.Apply();
 
             camera.targetTexture = null;
             RenderTexture.active = null;
@@ -141,12 +143,12 @@ namespace AvalonStudios.Additions.Components.RenderSystem
                 Directory.CreateDirectory(folder);
             }
 
-            string randomName = CustomRandom.RandomString(6);
+            string randomName = Random.RandomString(6);
             string filename = $"{folder}/screen_{width}x{height}_{randomName}.{format}";
 
             while (File.Exists(filename))
             {
-                randomName = CustomRandom.RandomString(6);
+                randomName = Random.RandomString(6);
                 filename = $"{folder}/screen_{width}x{height}_{randomName}.{format}";
             }
 

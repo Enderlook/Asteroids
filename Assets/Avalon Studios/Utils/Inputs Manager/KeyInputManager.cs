@@ -5,15 +5,10 @@ namespace AvalonStudios.Additions.Utils.InputsManager
     [System.Serializable]
     public class KeyInputManager
     {
-        [SerializeField, Tooltip("Amount of inputs that can be activated.")]
+        [SerializeField]
         private KeyCode[] keys = null;
 
-        [SerializeField, 
-        Tooltip("How the input behaves.\n" +
-            "\n" +
-            "On: The inputs can be kept activated if the key/s are kept pressed.\n" +
-            "\n" +
-            "Off: The input will be activated each time the key is pressed.")]
+        [SerializeField]
         private bool canBeHoldDown = false;
 
         public bool Execute()
