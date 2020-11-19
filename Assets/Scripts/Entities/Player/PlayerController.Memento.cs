@@ -6,14 +6,15 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
-    public partial class Player
+    public partial class PlayerController
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the player state for rewinding
-             * Technically, the create and set memento methods should be members of the Originator (Player) class
+             * Technically, the create and set memento methods should be members of the Originator (PlayerController) class
              * according to the pure Memento pattern.
-             * However, that makes a bit convulted the Player class and increase its responsabilities amount.
+             * However, that makes a bit convulted the PlayerController class and increase its responsabilities amount.
              * 
              * This is why me add that logic in the Memento type and rewind here. So for the Player's point of view, it's only Memento.TrackForRewind(this).
              * Anyway, the implementation is not exposed because the Memento type is a nested type of the Player class
@@ -32,12 +33,12 @@ namespace Asteroids.Entities.Player
             // Cache delegate to reduce allocations
             private static readonly Func<Memento, Memento, float, Memento> interpolateMementos = InterpolateMementos;
 
-            private readonly Vector3 position;
+            private readonly SerializableVector2 position;
             private readonly float rotation;
-            private readonly Vector2 velocity;
+            private readonly SerializableVector2 velocity;
             private readonly float angularVelocity;
 
-            private Memento(Vector3 position, float rotation, Vector2 velocity, float angularVelocity)
+            private Memento(Vector2 position, float rotation, Vector2 velocity, float angularVelocity)
             {
                 this.position = position;
                 this.rotation = rotation;
@@ -45,14 +46,15 @@ namespace Asteroids.Entities.Player
                 this.angularVelocity = angularVelocity;
             }
 
-            public Memento(Player player) : this(
+            public Memento(PlayerController player) : this(
                 player.rigidbody.position,
                 player.rigidbody.rotation,
                 player.rigidbody.velocity,
                 player.rigidbody.angularVelocity
-            ) {}
+            )
+            { }
 
-            public static void TrackForRewind(Player player)
+            public static void TrackForRewind(PlayerController player)
             {
                 // We handles anything related with Player's rewind here.
 
@@ -70,13 +72,13 @@ namespace Asteroids.Entities.Player
                 void OnStopRewind() => player.collider.enabled = true;
             }
 
-            private static void ConsumeMemento(Memento? memento, Player player)
+            private static void ConsumeMemento(Memento? memento, PlayerController player)
             {
                 if (memento is Memento memento_)
                     memento_.Load(player);
             }
 
-            public void Load(Player player)
+            public void Load(PlayerController player)
             {
                 Rigidbody2D rigidbody = player.rigidbody;
                 rigidbody.position = position;
@@ -94,7 +96,7 @@ namespace Asteroids.Entities.Player
                     return delta > .5f ? b : a;
 
                 return new Memento(
-                    Vector3.Lerp(a.position, b.position, delta),
+                    Vector2.Lerp(a.position, b.position, delta),
                     Mathf.Lerp(a.rotation, b.rotation, delta),
                     Vector2.Lerp(a.velocity, b.velocity, delta),
                     Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)
@@ -102,4 +104,5 @@ namespace Asteroids.Entities.Player
             }
         }
     }
+
 }

@@ -14,7 +14,10 @@
         public Initializer commonInitializer;
         public Deinitializer deinitializer;
 
-        public BuilderFactoryPool() => pool = new Pool<TObject, TParameter>(ConstructFirstTime, Initialize, Deinitialize);
+        public BuilderFactoryPool()
+        {
+            pool = new Pool<TObject, TParameter>(ConstructFirstTime, Initialize, Deinitialize);
+        }
 
         private TObject ConstructFirstTime(TParameter parameter)
         {

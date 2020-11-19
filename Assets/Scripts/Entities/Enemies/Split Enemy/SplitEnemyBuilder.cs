@@ -1,4 +1,5 @@
-﻿using Asteroids.Utils;
+﻿using Asteroids.Scene;
+using Asteroids.Utils;
 
 using UnityEngine;
 
@@ -11,22 +12,39 @@ namespace Asteroids.Entities.Enemies
         private static readonly BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>.Deinitializer deinitialize = Deinitialize;
 
         private readonly BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)> builder;
+
         public SplitEnemyFlyweight Flyweight {
             get => builder.flyweight;
             set => builder.flyweight = value;
         }
 
-        public SplitEnemyBuilder() => builder = new BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>
+        private string id;
+
+        public SplitEnemyBuilder(string id)
         {
-            constructor = Construct,
-            commonInitializer = commonInitialize,
-            initializer = initialize,
-            deinitializer = deinitialize
-        };
+            builder = new BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>
+                {
+                    constructor = Construct,
+                    commonInitializer = commonInitialize,
+                    initializer = initialize,
+                    deinitializer = deinitialize
+                };
+
+            this.id = id;
+
+            GameSaver.SubscribeEnemy(
+                id,
+                (states) =>
+                {
+                    foreach (SimpleEnemyBuilder.EnemyState state in states)
+                        state.Load(this, Create(default));
+                }
+            );
+        }
 
         public GameObject Construct(in SplitEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
         {
-            GameObject enemy = SimpleEnemyBuilder.Construct(flyweight, parameter, this);
+            GameObject enemy = SimpleEnemyBuilder.Construct(flyweight, parameter, this, id);
 
             enemy.AddComponent<SplitOnDeath>().flyweight = flyweight;
 

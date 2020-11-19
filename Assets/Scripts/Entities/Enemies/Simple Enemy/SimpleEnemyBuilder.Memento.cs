@@ -9,6 +9,7 @@ namespace Asteroids.Entities.Enemies
 {
     public partial class SimpleEnemyBuilder
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the enemy state for rewinding
@@ -27,13 +28,13 @@ namespace Asteroids.Entities.Enemies
             private static readonly Func<Memento, Memento, float, Memento> interpolateMementos = InterpolateMementos;
 
             public readonly bool enabled;
-            public readonly Vector3 position;
+            public readonly SerializableVector2 position;
             public readonly float rotation;
-            public readonly Vector2 velocity;
+            public readonly SerializableVector2 velocity;
             public readonly float angularVelocity;
             public readonly Sprite sprite;
 
-            private Memento(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)
+            private Memento(bool enabled, Vector2 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)
             {
                 this.enabled = enabled;
                 this.position = position;
@@ -43,7 +44,7 @@ namespace Asteroids.Entities.Enemies
                 this.sprite = sprite;
             }
 
-            private Memento(Rigidbody2D rigidbody, SpriteRenderer spriteRenderer) : this(
+            public Memento(Rigidbody2D rigidbody, SpriteRenderer spriteRenderer) : this(
                 rigidbody.gameObject.activeSelf,
                 rigidbody.position,
                 rigidbody.rotation,
@@ -60,29 +61,33 @@ namespace Asteroids.Entities.Enemies
 
             private static void ConsumeMemento(Memento? memento, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, Rigidbody2D rigidbody, SpriteRenderer spriteRenderer, PolygonCollider2D collider)
             {
-                if (memento.HasValue)
+                if (memento is Memento memento_)
                 {
-                    Memento memento_ = memento.Value;
-                    if (memento_.enabled)
+                    memento_.Load(pool, rigidbody, spriteRenderer, collider);
+                }
+                else
+                    pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+            }
+
+            public void Load(IPool<GameObject, (Vector3 position, Vector3 speed)> pool, Rigidbody2D rigidbody, SpriteRenderer spriteRenderer, PolygonCollider2D collider)
+            {
+                if (enabled)
+                {
+                    // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
+                    pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
+
+                    rigidbody.position = position;
+                    rigidbody.rotation = rotation;
+                    rigidbody.velocity = velocity;
+                    rigidbody.angularVelocity = angularVelocity;
+                    spriteRenderer.sprite = sprite;
+
+                    int count = sprite.GetPhysicsShapeCount();
+                    for (int i = 0; i < count; i++)
                     {
-                        // Since enemies are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                        pool.ExtractIfHas(rigidbody.gameObject); // Read from rigidbody to reduce closure size
-
-                        rigidbody.position = memento_.position;
-                        rigidbody.rotation = memento_.rotation;
-                        rigidbody.velocity = memento_.velocity;
-                        rigidbody.angularVelocity = memento_.angularVelocity;
-                        spriteRenderer.sprite = memento_.sprite;
-
-                        int count = memento_.sprite.GetPhysicsShapeCount();
-                        for (int i = 0; i < count; i++)
-                        {
-                            memento_.sprite.GetPhysicsShape(i, physicsShape);
-                            collider.SetPath(i, physicsShape);
-                        }
+                        sprite.GetPhysicsShape(i, physicsShape);
+                        collider.SetPath(i, physicsShape);
                     }
-                    else
-                        pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
                 }
                 else
                     pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
@@ -107,7 +112,7 @@ namespace Asteroids.Entities.Enemies
                 Debug.Assert(a.enabled == b.enabled);
                 return new Memento(
                      a.enabled,
-                     Vector3.Lerp(a.position, b.position, delta),
+                     Vector2.Lerp(a.position, b.position, delta),
                      Mathf.LerpAngle(a.rotation, b.rotation, delta),
                      Vector2.Lerp(a.velocity, b.velocity, delta),
                      Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta),
