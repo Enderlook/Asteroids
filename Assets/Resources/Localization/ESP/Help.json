@@ -1,5 +1,5 @@
 {
     "Title" : "Asteroides",
-    "Help/Help" : "W para avanzar.\n\nA y D para rotar.\n\nESPACIO para disparar y E para cambiar de arma.\n\nEsc para pausar el juego.\n\nGanas 1 vida cada 10.000 puntos.\n\n¡Defiendete de los asteroides a toda costa!",
+    "Help/Help" : "W para avanzar.\n\nA y D para rotar.\n\nESPACIO para disparar y E para cambiar de arma.\n\nEsc para pausar el juego.\n\nGanas 1 vida cada 1.000 puntos.\n\n¡Defiendete de los asteroides a toda costa!",
     "Help/Back" : "Volver"
 }
