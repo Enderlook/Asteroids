@@ -367,6 +367,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CastPoint>k__BackingField: {fileID: 822242071}
   weaponPack: {fileID: 11400000, guid: 926450ad03c0ae14e8cd660e9b8393ae, type: 2}
+  <FireInput>k__BackingField:
+    keys: 20000000
+    canBeHoldDown: 1
   <ChangeWeaponInput>k__BackingField:
     keys: 65000000
     canBeHoldDown: 0

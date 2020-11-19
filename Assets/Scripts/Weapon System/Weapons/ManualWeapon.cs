@@ -31,17 +31,14 @@ namespace Asteroids.WeaponSystem
         private int projectileLayer;
 #pragma warning restore CS0649
 
-        private WeaponsManager weaponsManager;
-
         private BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder;
 
         private SimpleSoundPlayer soundPlayer;
 
         public override void Initialize(WeaponsManager weaponsManager)
         {
-            cooldown = 1.2f;
-            this.weaponsManager = weaponsManager;
             base.Initialize(weaponsManager);
+            cooldown = 1.2f;
             builder = new BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>
             {
                 flyweight = this,
@@ -103,13 +100,13 @@ namespace Asteroids.WeaponSystem
         protected override void Fire()
         {
             nextCast = Time.time + cooldown;
-            Transform castPoint = weaponsManager.CastPoint;
-            Rigidbody2D playerRigidbody = weaponsManager.Rigidbody2D;
+            Transform castPoint = manager.CastPoint;
+            Rigidbody2D playerRigidbody = manager.Rigidbody2D;
 
             _ = builder.Create((
                 castPoint.position,
                 Quaternion.Euler(new Vector3(0, 0, playerRigidbody.rotation)),
-                (Vector2)(weaponsManager.CastPoint.up * force) + playerRigidbody.velocity
+                (Vector2)(manager.CastPoint.up * force) + playerRigidbody.velocity
             ));
 
             soundPlayer.Play();

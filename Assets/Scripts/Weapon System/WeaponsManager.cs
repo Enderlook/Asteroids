@@ -17,6 +17,9 @@ namespace Asteroids.WeaponSystem
         [SerializeField, Tooltip("Weapon package.")]
         private WeaponsPack weaponPack;
 
+        [field: SerializeField, Tooltip("Fire input."), IsProperty]
+        public KeyInputManager FireInput { get; private set; }
+
         [field: SerializeField, Tooltip("Input to change weapon."), IsProperty]
         public KeyInputManager ChangeWeaponInput { get; private set; }
 #pragma warning restore CS0649

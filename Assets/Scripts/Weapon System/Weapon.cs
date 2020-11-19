@@ -22,13 +22,15 @@ namespace Asteroids.WeaponSystem
         protected Sound weaponSound;
 #pragma warning restore CS0649
 
+        protected WeaponsManager manager;
         protected KeyCode fireInput = KeyCode.Space;
 
         protected float cooldown;
         protected float nextCast;
 
-        public virtual void Initialize(WeaponsManager weaponsManager)
+        public virtual void Initialize(WeaponsManager manager)
         {
+            this.manager = manager;
             nextCast = 0;
             Memento.TrackForRewind(this);
         }
@@ -38,7 +40,7 @@ namespace Asteroids.WeaponSystem
             if (GlobalMementoManager.IsRewinding)
                 return;
 
-            if (Time.time > nextCast && Input.GetKey(fireInput))
+            if (Time.time > nextCast && manager.FireInput.Execute())
                 Fire();
         }
 

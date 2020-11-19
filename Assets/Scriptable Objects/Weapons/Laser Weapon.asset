@@ -19,4 +19,4 @@ MonoBehaviour:
   hitTargets:
     serializedVersion: 2
     m_Bits: 512
-  duration: 2
+  duration: 1
