@@ -1,0 +1,5 @@
+{
+    "Title" : "Asteroids",
+    "Help/Help" : "Press W to advance.\n\nPress A and D to rotate.\n\nPress spacebar to shoot and E to change weapons.\n\nPress escape to pause.\n\nEach 10.000 points you earn a life.\n\nAvoid asteroids at all cost!",
+    "Help/Back" : "Back"
+}

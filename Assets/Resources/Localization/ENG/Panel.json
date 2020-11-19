@@ -1,0 +1,9 @@
+{
+    "Title" : "Asteroids",
+    "Panel/Play" : "Play",
+    "Panel/Continue" : "Continue",
+    "Panel/Help" : "How To Play",
+    "Panel/Language" : "Language",
+    "Panel/Credits" : "Credits",
+    "Panel/Exit" : "Exit"
+}
