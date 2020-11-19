@@ -14,7 +14,7 @@ namespace AvalonStudios.Additions.Attributes
         {
             name = property.displayName.RenameAutoProperty();
             if (name != "")
-                EditorGUI.PropertyField(position, property, new GUIContent(name));
+                EditorGUI.PropertyField(position, property, new GUIContent(name), true);
         }
     }
 }

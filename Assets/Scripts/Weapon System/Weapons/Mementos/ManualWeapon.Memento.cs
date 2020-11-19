@@ -4,9 +4,9 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public partial class ProjectileTrigger
+    public partial class ManualWeapon
     {
         private readonly struct Memento
         {
@@ -37,7 +37,8 @@ namespace Asteroids.AbilitySystem
                 rigidbody.rotation,
                 rigidbody.velocity,
                 rigidbody.angularVelocity
-            ) { }
+            )
+            { }
 
             public Memento(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity)
             {
@@ -48,20 +49,20 @@ namespace Asteroids.AbilitySystem
                 this.angularVelocity = angularVelocity;
             }
 
-            public static void TrackForRewind(ProjectileTrigger projectileTrigger, Rigidbody2D rigidbody) => GlobalMementoManager.Subscribe(
+            public static void TrackForRewind(ManualWeapon manualWeapon, Rigidbody2D rigidbody) => GlobalMementoManager.Subscribe(
                     () => new Memento(rigidbody),
-                    (memento) => ConsumeMemento(memento, projectileTrigger, rigidbody),
+                    (memento) => ConsumeMemento(memento, manualWeapon, rigidbody),
                     interpolateMementos
                 );
 
-            private static void ConsumeMemento(Memento? memento, ProjectileTrigger projectileTrigger, Rigidbody2D rigidbody)
+            private static void ConsumeMemento(Memento? memento, ManualWeapon manualWeapon, Rigidbody2D rigidbody)
             {
                 if (memento is Memento memento_)
                 {
                     if (memento_.enabled)
                     {
                         // Since bullets are pooled, we must force the pool to give us control of this instance in case it was in his control.
-                        projectileTrigger.builder.ExtractIfHas(rigidbody);
+                        manualWeapon.builder.ExtractIfHas(rigidbody);
 
                         rigidbody.position = memento_.position;
                         rigidbody.rotation = memento_.rotation;
@@ -69,10 +70,10 @@ namespace Asteroids.AbilitySystem
                         rigidbody.angularVelocity = memento_.angularVelocity;
                     }
                     else
-                        projectileTrigger.builder.Store(rigidbody);
+                        manualWeapon.builder.Store(rigidbody);
                 }
                 else
-                    projectileTrigger.builder.Store(rigidbody);
+                    manualWeapon.builder.Store(rigidbody);
             }
 
             private static Memento InterpolateMementos(

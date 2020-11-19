@@ -4,9 +4,9 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public partial class LaserTrigger
+    public partial class LaserWeapon
     {
         private readonly struct Memento
         {
@@ -29,29 +29,29 @@ namespace Asteroids.AbilitySystem
 
             private Memento(float duration) => this.duration = duration;
 
-            private Memento(LaserTrigger laserTrigger) : this(laserTrigger.duration) { }
+            private Memento(LaserWeapon laserWeapon) : this(laserWeapon.duration) { }
 
-            public static void TrackForRewind(LaserTrigger laserTrigger)
+            public static void TrackForRewind(LaserWeapon laserWeapon)
                 => GlobalMementoManager.Subscribe(
-                    () => new Memento(laserTrigger), // Memento of laser is only its duration, cooldown is already tracked in parent
-                    (memento) => ConsumeMemento(memento, laserTrigger),
+                    () => new Memento(laserWeapon), // Memento of laser is only its duration, cooldown is already tracked in parent
+                    (memento) => ConsumeMemento(memento, laserWeapon),
                     interpolateMementos
                 );
 
-            private static void ConsumeMemento(Memento? memento, LaserTrigger laserTrigger)
+            private static void ConsumeMemento(Memento? memento, LaserWeapon laserWeapon)
             {
                 if (memento is Memento memento_)
                 {
-                    laserTrigger.currentDuration = memento_.duration;
-                    if (laserTrigger.currentDuration > 0)
-                        laserTrigger.lineRenderer.enabled = true;
+                    laserWeapon.currentDuration = memento_.duration;
+                    if (laserWeapon.currentDuration > 0)
+                        laserWeapon.lineRenderer.enabled = true;
                     else
-                        laserTrigger.lineRenderer.enabled = false;
+                        laserWeapon.lineRenderer.enabled = false;
                 }
                 else
                 {
-                    laserTrigger.currentDuration = 0;
-                    laserTrigger.lineRenderer.enabled = false;
+                    laserWeapon.currentDuration = 0;
+                    laserWeapon.lineRenderer.enabled = false;
                 }
             }
 

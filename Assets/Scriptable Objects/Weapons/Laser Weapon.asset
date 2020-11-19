@@ -9,18 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 116b83205eb32b94a8662423e6ef8d7e, type: 3}
-  m_Name: Laser
+  m_Script: {fileID: 11500000, guid: 8b5200b0093d31f4baba20f64c82ccdf, type: 3}
+  m_Name: Laser Weapon
   m_EditorClassIdentifier: 
-  abilityName: 
+  weaponName: Laser
   description: 
-  cooldown: 1
-  castInput:
-    keys: 65000000
-    canBeHoldDown: 1
-  abilitySound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
-  distance: 20
+  weaponSound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
+  distance: 30
   hitTargets:
     serializedVersion: 2
     m_Bits: 512
-  duration: 0.5
+  duration: 2

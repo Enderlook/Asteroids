@@ -9,16 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1a829375630e9a4fa218dd1a87e361f, type: 3}
-  m_Name: Bullet Gun
+  m_Script: {fileID: 11500000, guid: d586f26dd9ff05f459bbb0d72f0ab54b, type: 3}
+  m_Name: Beam Weapon
   m_EditorClassIdentifier: 
-  abilityName: 
+  weaponName: Beam Weapon
   description: 
-  cooldown: 0.35
-  castInput:
-    keys: 20000000
-    canBeHoldDown: 1
-  abilitySound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}
+  weaponSound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}
   sprite: Abilities/laserBlue02
   force: 10
   projectileLayer: 10

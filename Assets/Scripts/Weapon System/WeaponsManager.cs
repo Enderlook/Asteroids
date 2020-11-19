@@ -1,19 +1,24 @@
-﻿using Enderlook.Unity.Attributes;
+﻿using AvalonStudios.Additions.Attributes;
+using AvalonStudios.Additions.Utils.InputsManager;
+
+using IsProperty = Enderlook.Unity.Attributes.IsPropertyAttribute;
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    [RequireComponent(typeof(Rigidbody2D))]
-    public class AbilitiesManager : MonoBehaviour
+    public class WeaponsManager : MonoBehaviour
     {
 #pragma warning disable CS0649
-        [field: Header("Setup")]
+        [field: StyledHeader("Setup")]
         [field: SerializeField, IsProperty, Tooltip("Cast position")]
         public Transform CastPoint { get; private set; }
 
-        [SerializeField, Tooltip("Abilities.")]
-        private AbilitiesPack abilitiesPack;
+        [SerializeField, Tooltip("Weapon package.")]
+        private WeaponsPack weaponPack;
+
+        [field: SerializeField, Tooltip("Input to change weapon."), IsProperty]
+        public KeyInputManager ChangeWeaponInput { get; private set; }
 #pragma warning restore CS0649
 
         public Rigidbody2D Rigidbody2D { get; private set; }
@@ -22,14 +27,11 @@ namespace Asteroids.AbilitySystem
         private void Awake()
         {
             Rigidbody2D = GetComponent<Rigidbody2D>();
-            abilitiesPack.Initialize(this);
+            weaponPack?.Initialize(this);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()
-        {
-            if (abilitiesPack != null)
-                abilitiesPack.Update();
-        }
+            =>  weaponPack?.Update();
     }
 }

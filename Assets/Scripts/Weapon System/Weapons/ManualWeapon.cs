@@ -1,5 +1,7 @@
 ﻿using Asteroids.Utils;
 
+using AvalonStudios.Additions.Attributes;
+
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 
@@ -7,17 +9,18 @@ using UnityEngine;
 
 using Resources = Asteroids.Utils.Resources;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    [CreateAssetMenu(menuName = "Asteroids/Ability System/Abilities/Projectile", fileName = "Projectile Ability")]
-    public partial class ProjectileTrigger : Ability
+    [CreateAssetMenu(menuName = "Asteroids/Weapon System/Weapons/Components/Manual Weapon", fileName = "Manual Weapon")]
+    public partial class ManualWeapon : Weapon
     {
-        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Constructor construct = ProjectileConstructor;
-        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer initialize = ProjectileInitializer;
-        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer commonInitialize = ProjectileCommonInitializer;
-        private static readonly BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Deinitializer deinitialize = ProjectileDeinitializer;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Constructor construct = ProjectileConstructor;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer initialize = ProjectileInitializer;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer commonInitialize = ProjectileCommonInitializer;
+        private static readonly BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Deinitializer deinitialize = ProjectileDeinitializer;
 
 #pragma warning disable CS0649
+        [StyledHeader("Setup")]
         [SerializeField, DrawTexture, Tooltip("Sprite of the projectile to fire")]
         private string sprite;
 
@@ -28,17 +31,18 @@ namespace Asteroids.AbilitySystem
         private int projectileLayer;
 #pragma warning restore CS0649
 
-        private AbilitiesManager abilitiesManager;
+        private WeaponsManager weaponsManager;
 
-        private BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder;
+        private BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder;
 
         private SimpleSoundPlayer soundPlayer;
 
-        public override void Initialize(AbilitiesManager abilitiesManager)
+        public override void Initialize(WeaponsManager weaponsManager)
         {
-            this.abilitiesManager = abilitiesManager;
-            base.Initialize(abilitiesManager);
-            builder = new BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)>
+            cooldown = 1.2f;
+            this.weaponsManager = weaponsManager;
+            base.Initialize(weaponsManager);
+            builder = new BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>
             {
                 flyweight = this,
                 constructor = construct,
@@ -47,10 +51,10 @@ namespace Asteroids.AbilitySystem
                 deinitializer = deinitialize
             };
 
-            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
+            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(weaponSound, false, false);
         }
 
-        private static Rigidbody2D ProjectileConstructor(in ProjectileTrigger flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
+        private static Rigidbody2D ProjectileConstructor(in ManualWeapon flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
         {
             GameObject projectile = new GameObject("Projectile")
             {
@@ -68,16 +72,14 @@ namespace Asteroids.AbilitySystem
             ReturnToPoolOnCollision returnToPoolOnCollision = projectile.AddComponent<ReturnToPoolOnCollision>();
             returnToPoolOnCollision.pool = flyweight.builder;
 
-            BuilderFactoryPool<Rigidbody2D, ProjectileTrigger, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder = flyweight.builder;
+            BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder = flyweight.builder;
 
-            Memento.TrackForRewind(flyweight, rigidbody); 
+            Memento.TrackForRewind(flyweight, rigidbody);
 
             return rigidbody;
         }
 
-        private static void ProjectileInitializer(in ProjectileTrigger flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
-        {
-        }
+        private static void ProjectileInitializer(in ManualWeapon flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters){}
 
         private static void ProjectileDeinitializer(Rigidbody2D rigidbody2D)
         {
@@ -85,7 +87,7 @@ namespace Asteroids.AbilitySystem
             rigidbody2D.gameObject.SetActive(false);
         }
 
-        private static void ProjectileCommonInitializer(in ProjectileTrigger flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
+        private static void ProjectileCommonInitializer(in ManualWeapon flyweight, Rigidbody2D rigidbody2D, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
         {
             // We enable the gameObject here instead in ProjectileInitializer, because that method is executed later
             // and so it produces a bug because rigibodies doesn't work when their gameObjects are disabled
@@ -98,15 +100,16 @@ namespace Asteroids.AbilitySystem
             rigidbody2D.velocity = parameters.velocity;
         }
 
-        public override void Execute()
+        protected override void Fire()
         {
-            Transform castPoint = abilitiesManager.CastPoint;
-            Rigidbody2D playerRigidbody = abilitiesManager.Rigidbody2D;
+            nextCast = Time.time + cooldown;
+            Transform castPoint = weaponsManager.CastPoint;
+            Rigidbody2D playerRigidbody = weaponsManager.Rigidbody2D;
 
             _ = builder.Create((
                 castPoint.position,
                 Quaternion.Euler(new Vector3(0, 0, playerRigidbody.rotation)),
-                (Vector2)(abilitiesManager.CastPoint.up * force) + playerRigidbody.velocity
+                (Vector2)(weaponsManager.CastPoint.up * force) + playerRigidbody.velocity
             ));
 
             soundPlayer.Play();

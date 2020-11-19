@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 3962719958744909301}
   - component: {fileID: 8166211258791238537}
   - component: {fileID: 7746794580776982559}
-  - component: {fileID: 3801145147293042392}
+  - component: {fileID: 2180440159768780934}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -327,7 +327,7 @@ MonoBehaviour:
   scorePerLife: 1000
   deathSound: {fileID: 3261058286310836659}
   newLife: {fileID: 876362552452713518}
---- !u!114 &3801145147293042392
+--- !u!114 &2180440159768780934
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -336,11 +336,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 3962719958744909296}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b918cde03ccbee449c348d76574d094, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a0790ab36bbd1b42b9b6086f06b3bcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   <CastPoint>k__BackingField: {fileID: 822242071}
-  abilitiesPack: {fileID: 11400000, guid: 4875ddb658962484ba8766cdde3bc948, type: 2}
+  weaponPack: {fileID: 11400000, guid: 926450ad03c0ae14e8cd660e9b8393ae, type: 2}
+  <ChangeWeaponInput>k__BackingField:
+    keys: 65000000
+    canBeHoldDown: 0
 --- !u!1 &5065919064842005875
 GameObject:
   m_ObjectHideFlags: 0
