@@ -12,7 +12,6 @@ public static class JsonSerializer {
 
     public static Dictionary<string, object> LoadJson(string absolutePath) {
         string text = File.ReadAllText(absolutePath);
-        
         return (Dictionary<string, object>)Json.Deserialize(text);
     }
     

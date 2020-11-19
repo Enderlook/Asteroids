@@ -1,4 +1,5 @@
 ﻿using AvalonStudios.Additions.Extensions;
+using AvalonStudios.Additions.Attributes;
 
 using System;
 using System.Collections.Generic;
@@ -8,39 +9,66 @@ using MiniJSON;
 
 using UnityEngine;
 
+using Resources = Asteroids.Utils.Resources;
+
 namespace Asteroids.Localization
 {
     public class LocalizationManager : MonoBehaviour
     {
-        [SerializeField, Tooltip("Root folder.")]
+        [SerializeField, Tooltip("Root folder."), ReadOnly]
         private string rootDirectory = "/Resources/Localization";
 
         public Dictionary<SystemLanguage, Dictionary<string, string>> texts = new Dictionary<SystemLanguage, Dictionary<string, string>>();
 
-        public static LocalizationManager Instance { get; private set; }
+        public static LocalizationManager instance = null;
+        public static LocalizationManager Instance
+        {
+            get
+            {
+                if (instance.IsNull())
+                {
+                    GameObject obj = new GameObject();
+                    obj.name = "Localization Manager";
+                    instance = obj.AddComponent<LocalizationManager>();
+                }
+                return instance;
+            }
+        }
+        public delegate void ChangeLanguageEventHandler(LocalizationManager localizationManager);
+        public event ChangeLanguageEventHandler OnChangeLanguage;
 
         public static SystemLanguage Language { get; private set; } = SystemLanguage.English;
 
 
         private void Awake()
         {
-            if (Instance.IsNull())
+            if (instance.IsNull())
             {
-                Instance = this;
+                instance = this;
                 LoadTexts();
+                DontDestroyOnLoad(this);
             }
             else Destroy(this);
         }
 
         private void Start()
         {
-            Debug.Log("Lenguaje OS: " + Application.systemLanguage);
+            //Debug.Log("Lenguaje OS: " + Application.systemLanguage);
 
             Language = Application.systemLanguage;
         }
 
-        public void SwitchLanguage() =>
-            Language = Language == SystemLanguage.Spanish ? SystemLanguage.English : SystemLanguage.Spanish;
+        private void OnDestroy()
+        {
+            OnChangeLanguage = null;
+        }
+
+        public void SwitchLanguage(string lang)
+        {
+            Language = LanguageMapper.Map(lang.ToUpper());
+            if (!OnChangeLanguage.IsNull())
+                OnChangeLanguage(this);
+        }
 
         private void LoadTexts()
         {
@@ -72,12 +100,12 @@ namespace Asteroids.Localization
         {
             SystemLanguage lang = LanguageMapper.Map(language.ToUpper());
 
-            foreach (var item in fileContent)
+            foreach (KeyValuePair<string, object> item in fileContent)
             {
                 if (!texts.ContainsKey(lang)) texts.Add(lang, new Dictionary<string, string>());
 
                 texts[lang].Add($"{fileName}/{item.Key}", item.Value.ToString());
-                Debug.Log($"{lang} --- {fileName}/{item.Key} --- {item.Value}");
+                //Debug.Log($"{lang} --- {fileName}/{item.Key} --- {item.Value}");
             }
         }
 
@@ -92,5 +120,16 @@ namespace Asteroids.Localization
             return texts[Language][key];
         }
 
+        public void AddLanguageChangedListener(ChangeLanguageEventHandler listener)
+        {
+            if (!OnChangeLanguage.IsNull())
+                OnChangeLanguage += listener;
+        }
+
+        public void RemoveLanguageChangedListener(ChangeLanguageEventHandler listener)
+        {
+            if (!OnChangeLanguage.IsNull())
+                OnChangeLanguage -= listener;
+        }
     }
 }

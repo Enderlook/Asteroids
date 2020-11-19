@@ -1,9 +1,12 @@
 {
     "Title" : "Asteroids",
-    "Panel/Play" : "Play",
-    "Panel/Continue" : "Continue",
-    "Panel/Help" : "How To Play",
-    "Panel/Language" : "Language",
-    "Panel/Credits" : "Credits",
-    "Panel/Exit" : "Exit"
+    "Play" : "Play",
+    "Continue" : "Continue",
+    "Help" : "How To Play",
+    "Language" : "Language",
+    "Credits" : "Credits",
+    "Exit" : "Exit",
+    "Menu" : "Menu",
+    "Save" : "Save",
+    "Restart" : "Restart"
 }

@@ -4,7 +4,6 @@ namespace Asteroids.Localization
 {
     public static class LanguageMapper
     {
-
         public static SystemLanguage Map(string lang)
         {
             switch (lang)
