@@ -6,7 +6,7 @@ namespace Asteroids.Scene
 {
     public class GameSaver
     {
-        private Func<Player.State> savePlayer;
+       /* private Func<Player.State> savePlayer;
 
         private GameState SaveGame()
         {
@@ -17,6 +17,6 @@ namespace Asteroids.Scene
         private struct GameState
         {
             private Player.State player;
-        }
+        }*/
     }
 }
