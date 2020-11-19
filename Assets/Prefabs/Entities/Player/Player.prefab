@@ -141,10 +141,10 @@ GameObject:
   - component: {fileID: 3962719958744909299}
   - component: {fileID: 3962719958744909301}
   - component: {fileID: 8166211258791238537}
-  - component: {fileID: 3801145147293042392}
   - component: {fileID: 3468075810710175319}
   - component: {fileID: 5171125466367872765}
   - component: {fileID: 2799394326698991048}
+  - component: {fileID: 3962719959775652459}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -311,20 +311,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b85aad3e5790714eb59702a42a01733, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3801145147293042392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3962719958744909296}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b918cde03ccbee449c348d76574d094, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <CastPoint>k__BackingField: {fileID: 822242071}
-  abilitiesPack: {fileID: 11400000, guid: 4875ddb658962484ba8766cdde3bc948, type: 2}
 --- !u!114 &3468075810710175319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,6 +353,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0beb6bfbfbed443a3577c8a1771db8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3962719959775652459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3962719958744909296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a0790ab36bbd1b42b9b6086f06b3bcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <CastPoint>k__BackingField: {fileID: 822242071}
+  weaponPack: {fileID: 11400000, guid: 926450ad03c0ae14e8cd660e9b8393ae, type: 2}
+  <ChangeWeaponInput>k__BackingField:
+    keys: 65000000
+    canBeHoldDown: 0
 --- !u!1 &5065919064842005875
 GameObject:
   m_ObjectHideFlags: 0
