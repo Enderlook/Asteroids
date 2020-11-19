@@ -6,14 +6,15 @@ namespace Asteroids.Entities.Player
 {
     public partial class PlayerController : MonoBehaviour
     {
+        private PlayerModel model;
+
         private new Rigidbody2D rigidbody;
         private new Collider2D collider;
 
-        private int lifes;
         private int scoreToNextLife;
         private float invulnerabilityTime;
 
-        private PlayerModel model;
+        public int Lifes { get; private set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -23,12 +24,14 @@ namespace Asteroids.Entities.Player
 
             model = GetComponent<PlayerModel>();
 
-            lifes = model.startingLifes;
+            Lifes = model.startingLifes;
             scoreToNextLife = model.scorePerLife;
 
             EventManager.Subscribe<GameManager.ScoreHasChangedEvent>(OnScoreChanged);
 
             Memento.TrackForRewind(this);
+
+            GameSaver.SubscribePlayer(() => new State(this), (state) => state.Load(this));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
@@ -56,27 +59,27 @@ namespace Asteroids.Entities.Player
 
         private void AddNewLifeByScore()
         {
-            if (lifes >= model.maxLifes)
+            if (Lifes >= model.maxLifes)
                 return;
-            lifes++;
+            Lifes++;
             EventManager.Raise(HealthChangedEvent.IncreaseByScore);
         }
 
         public void AddNewLifeByPowerUp()
         {
-            if (lifes >= model.maxLifes)
+            if (Lifes >= model.maxLifes)
                 return;
-            lifes++;
+            Lifes++;
             EventManager.Raise(HealthChangedEvent.IncreaseByPowerUp);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (lifes == 0)
+            if (Lifes == 0)
                 EventManager.Raise(GameManager.LevelTerminationEvent.Lose);
             else
             {
-                lifes--;
+                Lifes--;
                 EventManager.Raise(HealthChangedEvent.Decrease);
             }
 

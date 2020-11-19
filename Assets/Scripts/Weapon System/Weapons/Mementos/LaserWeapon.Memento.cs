@@ -4,10 +4,11 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.WeaponSystem
+namespace Asteroids.AbilitySystem
 {
-    public partial class LaserWeapon
+    public partial class LaserTrigger
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the laser state for rewinding
@@ -29,30 +30,35 @@ namespace Asteroids.WeaponSystem
 
             private Memento(float duration) => this.duration = duration;
 
-            private Memento(LaserWeapon laserWeapon) : this(laserWeapon.duration) { }
+            public Memento(LaserTrigger laserTrigger) : this(laserTrigger.currentDuration) { }
 
-            public static void TrackForRewind(LaserWeapon laserWeapon)
+            public static void TrackForRewind(LaserTrigger laserTrigger)
                 => GlobalMementoManager.Subscribe(
-                    () => new Memento(laserWeapon), // Memento of laser is only its duration, cooldown is already tracked in parent
-                    (memento) => ConsumeMemento(memento, laserWeapon),
+                    () => new Memento(laserTrigger), // Memento of laser is only its duration, cooldown is already tracked in parent
+                    (memento) => ConsumeMemento(memento, laserTrigger),
                     interpolateMementos
                 );
 
-            private static void ConsumeMemento(Memento? memento, LaserWeapon laserWeapon)
+            private static void ConsumeMemento(Memento? memento, LaserTrigger laserTrigger)
             {
                 if (memento is Memento memento_)
                 {
-                    laserWeapon.currentDuration = memento_.duration;
-                    if (laserWeapon.currentDuration > 0)
-                        laserWeapon.lineRenderer.enabled = true;
-                    else
-                        laserWeapon.lineRenderer.enabled = false;
+                    memento_.Load(laserTrigger);
                 }
                 else
                 {
-                    laserWeapon.currentDuration = 0;
-                    laserWeapon.lineRenderer.enabled = false;
+                    laserTrigger.currentDuration = 0;
+                    laserTrigger.lineRenderer.enabled = false;
                 }
+            }
+
+            public void Load(LaserTrigger laserTrigger)
+            {
+                laserTrigger.currentDuration = duration;
+                if (laserTrigger.currentDuration > 0)
+                    laserTrigger.lineRenderer.enabled = true;
+                else
+                    laserTrigger.lineRenderer.enabled = false;
             }
 
             private static Memento InterpolateMementos(Memento a, Memento b, float delta)

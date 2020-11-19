@@ -5,6 +5,7 @@ using Enderlook.Unity.Components.ScriptableSound;
 
 using UnityEngine;
 using UnityEngine.Audio;
+
 namespace Asteroids.Entities.Enemies
 {
     [CreateAssetMenu(menuName = "Asteroids/Enemies/Simple Enemy Flyweight")]
@@ -34,6 +35,6 @@ namespace Asteroids.Entities.Enemies
 
         public override IFactory<GameObject, (Vector3 position, Vector3 speed)> GetFactory() => factory;
 
-        public override void Initialize() => factory = new SimpleEnemyBuilder { Flyweight = this };
+        public override void Initialize() => factory = new SimpleEnemyBuilder(name) { Flyweight = this };
     }
 }

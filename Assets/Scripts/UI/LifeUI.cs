@@ -16,16 +16,28 @@ namespace Asteroids.UI
 #pragma warning restore CS0649
 
         private Pool<Transform> pool;
+        private PlayerController playerController;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
             PlayerModel player = FindObjectOfType<PlayerModel>();
+            playerController = FindObjectOfType<PlayerController>();
 
             pool = new Pool<Transform>(PoolConstructor, PoolEnable, PoolDisable);
             EventManager.Subscribe<PlayerController.HealthChangedEvent>(OnHealthChange);
+            EventManager.Subscribe<GameSaver.LoadEvent>(OnLoad);
 
             for (int i = 0; i < player.startingLifes; i++)
+                OnIncrease();
+        }
+
+        private void OnLoad()
+        {
+            while (transform.childCount > playerController.Lifes)
+                OnDecrease();
+
+            while (transform.childCount < playerController.Lifes)
                 OnIncrease();
         }
 

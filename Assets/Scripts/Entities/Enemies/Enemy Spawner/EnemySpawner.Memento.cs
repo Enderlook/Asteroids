@@ -44,20 +44,9 @@ namespace Asteroids.Entities.Enemies
                     interpolateMementos
                 );
 
-                EventManager.Subscribe<StopRewindEvent>(OnStopRewindEvent);
+                EventManager.Subscribe<StopRewindEvent>(() => enemySpawner.RecalculateEnemyCountManually());
 
                 enemySpawner.StartCoroutine(CheckEnemyCount());
-
-                void OnStopRewindEvent()
-                {
-                    enemySpawner.remainingEnemies = 0;
-                    GameObject[] objects = FindObjectsOfType<GameObject>();
-                    for (int i = 0; i < objects.Length; i++)
-                    {
-                        if (objects[i].activeSelf && objects[i].layer == enemySpawner.layer)
-                            enemySpawner.remainingEnemies++;
-                    }
-                }
 
                 IEnumerator CheckEnemyCount()
                 {
@@ -68,7 +57,7 @@ namespace Asteroids.Entities.Enemies
 
                         // Sometimes the rewind can bug enemy count
                         // So we check if every a while
-                        OnStopRewindEvent();
+                        enemySpawner.RecalculateEnemyCountManually();
                     }
                 }
             }

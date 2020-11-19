@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace Asteroids.UI
 {
@@ -16,6 +17,9 @@ namespace Asteroids.UI
 
         [SerializeField, Tooltip("Panels to toggle.")]
         private GameObject[] panels;
+
+        [SerializeField, Tooltip("This button is disable if we don't have a save file.")]
+        private Button disableIfNotSave;
 #pragma warning restore CS0649
 
         private PauseManager pause;
@@ -30,6 +34,8 @@ namespace Asteroids.UI
             pause = FindObjectOfType<PauseManager>();
             EventManager.Subscribe<PauseManager.PauseEvent>(OnPause);
             EventManager.Subscribe<GameManager.LevelTerminationEvent>(OnLevelTermination);
+            if (disableIfNotSave != null)
+                disableIfNotSave.interactable = GameSaver.HasSaveFile();
         }
 
         private void OnLevelTermination(GameManager.LevelTerminationEvent @event)
@@ -78,8 +84,9 @@ namespace Asteroids.UI
             }
         }
 
-        public void GoToGame()
+        public void GoToGame(bool @continue)
         {
+            GameSaver.requestLoad = @continue;
             if (pause != null)
                 pause.UnPause();
             Load(1);

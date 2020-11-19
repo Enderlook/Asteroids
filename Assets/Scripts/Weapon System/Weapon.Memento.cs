@@ -4,10 +4,11 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.WeaponSystem
+namespace Asteroids.AbilitySystem
 {
-    public abstract partial class Weapon
+    public abstract partial class Ability
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the abilities state for rewinding
@@ -29,20 +30,22 @@ namespace Asteroids.WeaponSystem
 
             private Memento(float cooldown) => this.cooldown = cooldown;
 
-            private Memento(Weapon weapon) : this(weapon.nextCast - Time.fixedDeltaTime) { }
+            public Memento(Ability ability) : this(ability.nextCast - Time.fixedDeltaTime) { }
 
-            public static void TrackForRewind(Weapon weapon)
+            public static void TrackForRewind(Ability ability)
                 => GlobalMementoManager.Subscribe(
-                    () => new Memento(weapon), // Memento of ability is only its cooldown
-                    (memento) => ConsumeMemento(memento, weapon),
+                    () => new Memento(ability), // Memento of ability is only its cooldown
+                    (memento) => ConsumeMemento(memento, ability),
                     interpolateMementos
                 );
 
-            private static void ConsumeMemento(Memento? memento, Weapon weapon)
+            private static void ConsumeMemento(Memento? memento, Ability ability)
             {
                 if (memento is Memento memento_)
-                    weapon.nextCast = memento_.cooldown + Time.fixedDeltaTime;
+                    memento_.Load(ability);
             }
+
+            public void Load(Ability ability) => ability.nextCast = cooldown + Time.fixedDeltaTime;
 
             private static Memento InterpolateMementos(Memento a, Memento b, float delta)
                 => new Memento(Mathf.Lerp(a.cooldown, b.cooldown, delta));

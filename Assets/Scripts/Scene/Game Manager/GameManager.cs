@@ -36,6 +36,8 @@ namespace Asteroids.Scene
 
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelComplete);
             EventManager.Subscribe<EnemySpawner.EnemyDestroyedEvent>(OnEnemyDestroyed);
+
+            GameSaver.SubscribeGameManager(() => new State(this), (state) => state.Load(this));
         }
 
         private void OnLevelComplete(LevelTerminationEvent @event)
