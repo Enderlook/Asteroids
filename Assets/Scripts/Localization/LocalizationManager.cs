@@ -45,17 +45,11 @@ namespace Asteroids.Localization
             if (instance.IsNull())
             {
                 instance = this;
+                Language = Application.systemLanguage;
                 LoadTexts();
                 DontDestroyOnLoad(this);
             }
             else Destroy(this);
-        }
-
-        private void Start()
-        {
-            //Debug.Log("Lenguaje OS: " + Application.systemLanguage);
-
-            Language = Application.systemLanguage;
         }
 
         private void OnDestroy()
