@@ -8,6 +8,7 @@ namespace Asteroids.AbilitySystem
 {
     public abstract partial class Ability
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the abilities state for rewinding

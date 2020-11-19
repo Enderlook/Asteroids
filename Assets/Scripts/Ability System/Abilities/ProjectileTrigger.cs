@@ -4,6 +4,8 @@ using Asteroids.Utils;
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 
+using System.Collections;
+
 using UnityEngine;
 
 using Resources = Asteroids.Utils.Resources;
@@ -52,9 +54,15 @@ namespace Asteroids.AbilitySystem
             GameSaver.SubscribeProjectileTrigger(
                 () => new State(this),
                 (parameter) => {
-                    parameter.Item1.Load(this);
-                    foreach (ProjectileState state in parameter.Item2)
-                        state.Load(this, CreateBullet());
+                    // Fixes null reference exception bug with SimpleSoundPlayer
+                    abilitiesManager.StartCoroutine(Work());
+                    IEnumerator Work()
+                    {
+                        yield return null;
+                        parameter.Item1.Load(this);
+                        foreach (ProjectileState state in parameter.Item2)
+                            state.Load(this, CreateBullet());
+                    }
                 }
             );
         }

@@ -12,6 +12,8 @@ namespace Asteroids.Scene
     [DefaultExecutionOrder((int)ExecutionOrder.O1_GameSaver)]
     public partial class GameSaver : MonoBehaviour
     {
+        public static bool requestLoad;
+
         private static GameSaver instance;
 
         private Func<PlayerController.State> savePlayer;
@@ -42,7 +44,19 @@ namespace Asteroids.Scene
             }
         }
 
-        public static void Save()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Start()
+        {
+            // We can't load during Awake because we don't have registered loaders yet
+
+            if (requestLoad)
+            {
+                requestLoad = false;
+                Load();
+            }
+        }
+
+        public void Save()
         {
             PlayerController.State player = instance.savePlayer();
             GameManager.State game = instance.saveGameManager();
@@ -69,7 +83,7 @@ namespace Asteroids.Scene
 
         public static bool HasSaveFile() => GameState.HasSaveFile();
 
-        public static void Load()
+        private void Load()
         {
             GameState gameState = GameState.ReadFile();
             instance.loadPlayer(gameState.player);
@@ -78,6 +92,8 @@ namespace Asteroids.Scene
             instance.loadProjectileTrigger((gameState.projectile, gameState.projectiles));
             foreach (KeyValuePair<string, List<SimpleEnemyBuilder.EnemyState>> enemies in gameState.enemies)
                 instance.loadEnemyBuilder[enemies.Key](enemies.Value);
+
+            EventManager.Raise(new LoadEvent());
         }
 
         public static void SubscribePlayer(Func<PlayerController.State> save, Action<PlayerController.State> load)
@@ -113,7 +129,10 @@ namespace Asteroids.Scene
         public static void SubscribeEnemy(string id, Func<SimpleEnemyBuilder.EnemyState> save)
         {
             if (!instance.saveEnemies.TryGetValue(id, out List<Func<SimpleEnemyBuilder.EnemyState>> list))
+            {
                 list = new List<Func<SimpleEnemyBuilder.EnemyState>>();
+                instance.saveEnemies.Add(id, list);
+            }
             list.Add(save);
         }
 

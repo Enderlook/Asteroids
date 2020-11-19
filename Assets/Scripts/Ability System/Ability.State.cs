@@ -1,7 +1,10 @@
-﻿namespace Asteroids.AbilitySystem
+﻿using System;
+
+namespace Asteroids.AbilitySystem
 {
     public abstract partial class Ability
     {
+        [Serializable]
         public readonly struct State
         {
             // This class is in charge of storing and setting the ability state to save the game.

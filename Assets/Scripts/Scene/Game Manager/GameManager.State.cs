@@ -1,7 +1,10 @@
-﻿namespace Asteroids.Scene
+﻿using System;
+
+namespace Asteroids.Scene
 {
     public partial class GameManager
     {
+        [Serializable]
         public readonly struct State
         {
             // This struct is in charge of storing and setting the game managaer state to save the game.

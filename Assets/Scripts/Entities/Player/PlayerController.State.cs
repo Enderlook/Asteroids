@@ -1,7 +1,10 @@
-﻿namespace Asteroids.Entities.Player
+﻿using System;
+
+namespace Asteroids.Entities.Player
 {
     public partial class PlayerController
     {
+        [Serializable]
         public readonly struct State
         {
             // This struct is in charge of storing and setting the player state to save the game.

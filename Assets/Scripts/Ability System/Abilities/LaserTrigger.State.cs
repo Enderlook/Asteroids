@@ -1,12 +1,16 @@
-﻿namespace Asteroids.AbilitySystem
+﻿using System;
+
+namespace Asteroids.AbilitySystem
 {
     public partial class LaserTrigger
     {
+        [Serializable]
         public new readonly struct State
         {
             // This class is in charge of storing and setting the laser trigger state to save the game.
 
-            private readonly float currentDuration;
+            // Laser state is a superset of Laser memento, we can take advantage of that to keep DRY
+            private readonly Memento memento;
 
             // Laser state requires also to save the base class Ability state
             // and since we are using structs for perfomance we don't have inheritance
@@ -15,14 +19,14 @@
 
             public State(LaserTrigger laserTrigger)
             {
-                currentDuration = laserTrigger.currentDuration;
+                memento = new Memento(laserTrigger);
                 parentState = new Ability.State(laserTrigger);
             }
 
             public void Load(LaserTrigger laserTrigger)
             {
                 parentState.Load(laserTrigger);
-                laserTrigger.currentDuration = currentDuration;
+                memento.Load(laserTrigger);
             }
         }
     }

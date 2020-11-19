@@ -8,6 +8,7 @@ namespace Asteroids.AbilitySystem
 {
     public partial class ProjectileTrigger
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the bullets state for rewinding
@@ -26,9 +27,9 @@ namespace Asteroids.AbilitySystem
             private static readonly Func<Memento, Memento, float, Memento> interpolateMementos = InterpolateMementos;
 
             public readonly bool enabled;
-            public readonly Vector3 position;
+            public readonly SerializableVector2 position;
             public readonly float rotation;
-            public readonly Vector2 velocity;
+            public readonly SerializableVector2 velocity;
             public readonly float angularVelocity;
 
             public Memento(Rigidbody2D rigidbody) : this(
@@ -39,7 +40,7 @@ namespace Asteroids.AbilitySystem
                 rigidbody.angularVelocity
             ) { }
 
-            public Memento(bool enabled, Vector3 position, float rotation, Vector2 velocity, float angularVelocity)
+            public Memento(bool enabled, Vector2 position, float rotation, Vector2 velocity, float angularVelocity)
             {
                 this.enabled = enabled;
                 this.position = position;
@@ -84,7 +85,7 @@ namespace Asteroids.AbilitySystem
                 float delta
                 ) => new Memento(
                     delta > .5f ? b.enabled : a.enabled,
-                    Vector3.Lerp(a.position, b.position, delta),
+                    Vector2.Lerp(a.position, b.position, delta),
                     Mathf.LerpAngle(a.rotation, b.rotation, delta),
                     Vector2.Lerp(a.velocity, b.velocity, delta),
                     Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)

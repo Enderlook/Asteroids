@@ -1,10 +1,12 @@
-﻿
+﻿using System;
+
 using UnityEngine;
 
 namespace Asteroids.AbilitySystem
 {
     public partial class ProjectileTrigger
     {
+        [Serializable]
         public readonly struct ProjectileState
         {
             // This class is in charge of storing and setting a projectile state to save the game.

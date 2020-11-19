@@ -2,6 +2,7 @@
 using Asteroids.Entities.Enemies;
 using Asteroids.Entities.Player;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -12,9 +13,11 @@ namespace Asteroids.Scene
 {
     public partial class GameSaver
     {
+        [Serializable]
         private class GameState
         {
-            private static readonly string path = Application.persistentDataPath + "save.data";
+            private static readonly string path = Application.persistentDataPath;
+            private static readonly string pathAndName = path + "/save.sav";
 
             public readonly PlayerController.State player;
             public readonly GameManager.State game;
@@ -35,7 +38,8 @@ namespace Asteroids.Scene
 
             public void SaveToFile()
             {
-                FileStream fileStream = new FileStream(path, FileMode.Create);
+                Directory.CreateDirectory(path);
+                FileStream fileStream = new FileStream(pathAndName, FileMode.Create);
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(fileStream, this);
                 fileStream.Flush();
@@ -43,11 +47,16 @@ namespace Asteroids.Scene
                 fileStream.Dispose();
             }
 
-            public static bool HasSaveFile() => File.Exists(path);
+            public static bool HasSaveFile()
+            {
+                Directory.CreateDirectory(path);
+                return File.Exists(pathAndName);
+            }
 
             public static GameState ReadFile()
             {
-                FileStream fileStream = new FileStream(path, FileMode.Open);
+                Directory.CreateDirectory(path);
+                FileStream fileStream = new FileStream(pathAndName, FileMode.Open);
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 GameState gameState = (GameState)binaryFormatter.Deserialize(fileStream);
                 fileStream.Flush();

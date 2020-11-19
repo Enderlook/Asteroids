@@ -14,6 +14,7 @@ namespace Asteroids.Entities.Enemies
 {
     public partial class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
+        private static Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
         private static List<Vector2> physicsShape = new List<Vector2>();
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;
@@ -74,7 +75,7 @@ namespace Asteroids.Entities.Enemies
 
             Memento.TrackForRewind(pool, rigidbody, spriteRenderer, collider);
 
-            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, spriteRenderer));
+            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
 
             return enemy;
         }
@@ -91,7 +92,9 @@ namespace Asteroids.Entities.Enemies
             rigidbody.velocity = parameter.speed;
             rigidbody.rotation = 0;
 
-            Sprite sprite = Resources.Load<Sprite>(flyweight.Sprites.RandomPick());
+            string path = flyweight.Sprites.RandomPick();
+            Sprite sprite = Resources.Load<Sprite>(path);
+            sprites[sprite] = path;
 
             enemy.GetComponent<SpriteRenderer>().sprite = sprite;
 

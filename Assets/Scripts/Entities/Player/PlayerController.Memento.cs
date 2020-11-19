@@ -8,6 +8,7 @@ namespace Asteroids.Entities.Player
 {
     public partial class PlayerController
     {
+        [Serializable]
         private readonly struct Memento
         {
             /* This struct is in charge of storing and setting the player state for rewinding
@@ -32,12 +33,12 @@ namespace Asteroids.Entities.Player
             // Cache delegate to reduce allocations
             private static readonly Func<Memento, Memento, float, Memento> interpolateMementos = InterpolateMementos;
 
-            private readonly Vector3 position;
+            private readonly SerializableVector2 position;
             private readonly float rotation;
-            private readonly Vector2 velocity;
+            private readonly SerializableVector2 velocity;
             private readonly float angularVelocity;
 
-            private Memento(Vector3 position, float rotation, Vector2 velocity, float angularVelocity)
+            private Memento(Vector2 position, float rotation, Vector2 velocity, float angularVelocity)
             {
                 this.position = position;
                 this.rotation = rotation;
@@ -95,7 +96,7 @@ namespace Asteroids.Entities.Player
                     return delta > .5f ? b : a;
 
                 return new Memento(
-                    Vector3.Lerp(a.position, b.position, delta),
+                    Vector2.Lerp(a.position, b.position, delta),
                     Mathf.Lerp(a.rotation, b.rotation, delta),
                     Vector2.Lerp(a.velocity, b.velocity, delta),
                     Mathf.Lerp(a.angularVelocity, b.angularVelocity, delta)

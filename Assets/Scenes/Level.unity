@@ -1335,14 +1335,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1855099375}
         m_MethodName: GoToGame
-        m_Mode: 1
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 1
+          m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &858687678
 MonoBehaviour:
@@ -2356,9 +2356,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1666264352}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 1887327846}
+        m_MethodName: Save
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3028,7 +3028,7 @@ PrefabInstance:
     - target: {fileID: 7084110365319984700, guid: 4ab6e5001e2bd354ab5ce471ffce273b,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8671153876861092221, guid: 4ab6e5001e2bd354ab5ce471ffce273b, type: 3}
