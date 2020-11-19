@@ -10,8 +10,8 @@ namespace Asteroids.Entities.Player
     public partial class Player : MonoBehaviour
     {
 #pragma warning disable CS0649
-        [SerializeField, Tooltip("Amount of lifes the player start with.")]
-        private int startingLifes;
+       [SerializeField, Tooltip("Amount of lifes the player start with.")]
+        public int startingLifes;
 
         [SerializeField, Tooltip("Maximum amount of lifes the player can have.")]
         private int maxLifes;
@@ -50,6 +50,7 @@ namespace Asteroids.Entities.Player
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
+            
             if (instance != null)
             {
                 Debug.LogError($"{nameof(Player)} can't have more than one instance at the same time.");
@@ -67,7 +68,7 @@ namespace Asteroids.Entities.Player
 
             EventManager.Subscribe<GameManager.ScoreHasChangedEvent>(OnScoreChanged);
 
-            Memento.TrackForRewind(this);
+             Memento.TrackForRewind(this);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
