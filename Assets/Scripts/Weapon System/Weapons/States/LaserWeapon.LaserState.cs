@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public partial class LaserTrigger
+    public partial class LaserWeapon
     {
         [Serializable]
         public new readonly struct State
@@ -15,19 +15,20 @@ namespace Asteroids.AbilitySystem
             // Laser state requires also to save the base class Ability state
             // and since we are using structs for perfomance we don't have inheritance
             // so we rely on composition
-            private readonly Ability.State parentState;
+            private readonly Weapon.State parentState;
 
-            public State(LaserTrigger laserTrigger)
+            public State(LaserWeapon laserTrigger)
             {
                 memento = new Memento(laserTrigger);
-                parentState = new Ability.State(laserTrigger);
+                parentState = new Weapon.State(laserTrigger);
             }
 
-            public void Load(LaserTrigger laserTrigger)
+            public void Load(LaserWeapon laserTrigger)
             {
                 parentState.Load(laserTrigger);
                 memento.Load(laserTrigger);
             }
         }
     }
+
 }

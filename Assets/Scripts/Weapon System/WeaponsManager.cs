@@ -17,8 +17,11 @@ namespace Asteroids.WeaponSystem
         [SerializeField, Tooltip("Weapon package.")]
         private WeaponsPack weaponPack;
 
+        //[field: SerializeField, Tooltip("Fire input."), IsProperty]
+        //public KeyInputManager FireInput { get; private set; }
+
         [field: SerializeField, Tooltip("Fire input."), IsProperty]
-        public KeyInputManager FireInput { get; private set; }
+        public KeyCode FireInput { get; private set; } = KeyCode.Space;
 
         [field: SerializeField, Tooltip("Input to change weapon."), IsProperty]
         public KeyInputManager ChangeWeaponInput { get; private set; }

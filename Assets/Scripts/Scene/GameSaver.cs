@@ -1,4 +1,4 @@
-﻿using Asteroids.AbilitySystem;
+﻿using Asteroids.WeaponSystem;
 using Asteroids.Entities.Enemies;
 using Asteroids.Entities.Player;
 
@@ -22,12 +22,12 @@ namespace Asteroids.Scene
         private Func<GameManager.State> saveGameManager;
         private Action<GameManager.State> loadGameManager;
 
-        private Func<LaserTrigger.State> saveLaserTrigger;
-        private Action<LaserTrigger.State> loadLaserTrigger;
+        private Func<LaserWeapon.State> saveLaserTrigger;
+        private Action<LaserWeapon.State> loadLaserTrigger;
 
-        private Func<ProjectileTrigger.State> saveProjectileTrigger;
-        private Action<(ProjectileTrigger.State, List<ProjectileTrigger.ProjectileState>)> loadProjectileTrigger;
-        private List<Func<ProjectileTrigger.ProjectileState>> saveProjectileTriggerBullets = new List<Func<ProjectileTrigger.ProjectileState>>();
+        private Func<ManualWeapon.State> saveProjectileTrigger;
+        private Action<(ManualWeapon.State, List<ManualWeapon.ProjectileState>)> loadProjectileTrigger;
+        private List<Func<ManualWeapon.ProjectileState>> saveProjectileTriggerBullets = new List<Func<ManualWeapon.ProjectileState>>();
 
         private Dictionary<string, List<Func<SimpleEnemyBuilder.EnemyState>>> saveEnemies = new Dictionary<string, List<Func<SimpleEnemyBuilder.EnemyState>>>();
         private Dictionary<string, Action<List<SimpleEnemyBuilder.EnemyState>>> loadEnemyBuilder = new Dictionary<string, Action<List<SimpleEnemyBuilder.EnemyState>>>();
@@ -63,11 +63,11 @@ namespace Asteroids.Scene
 
             PlayerController.State player = instance.savePlayer();
             GameManager.State game = instance.saveGameManager();
-            LaserTrigger.State laser = instance.saveLaserTrigger();
-            Ability.State projectile = instance.saveProjectileTrigger();
+            LaserWeapon.State laser = instance.saveLaserTrigger();
+            Weapon.State projectile = instance.saveProjectileTrigger();
 
-            List<ProjectileTrigger.ProjectileState> projectiles = new List<ProjectileTrigger.ProjectileState>(instance.saveProjectileTriggerBullets.Count);
-            foreach (Func<ProjectileTrigger.ProjectileState> save in instance.saveProjectileTriggerBullets)
+            List<ManualWeapon.ProjectileState> projectiles = new List<ManualWeapon.ProjectileState>(instance.saveProjectileTriggerBullets.Count);
+            foreach (Func<ManualWeapon.ProjectileState> save in instance.saveProjectileTriggerBullets)
                 projectiles.Add(save());
 
             Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies = new Dictionary<string, List<SimpleEnemyBuilder.EnemyState>>(instance.saveEnemies.Count);
@@ -111,19 +111,19 @@ namespace Asteroids.Scene
             instance.loadGameManager = load;
         }
 
-        public static void SubscribeLaserTrigger(Func<LaserTrigger.State> save, Action<LaserTrigger.State> load)
+        public static void SubscribeLaserTrigger(Func<LaserWeapon.State> save, Action<LaserWeapon.State> load)
         {
             instance.saveLaserTrigger = save;
             instance.loadLaserTrigger = load;
         }
 
-        public static void SubscribeProjectileTrigger(Func<ProjectileTrigger.State> save, Action<(ProjectileTrigger.State, List<ProjectileTrigger.ProjectileState>)> load)
+        public static void SubscribeProjectileTrigger(Func<ManualWeapon.State> save, Action<(ManualWeapon.State, List<ManualWeapon.ProjectileState>)> load)
         {
             instance.saveProjectileTrigger = save;
             instance.loadProjectileTrigger = load;
         }
 
-        public static void SubscribeProjectileTriggerBullet(Func<ProjectileTrigger.ProjectileState> save)
+        public static void SubscribeProjectileTriggerBullet(Func<ManualWeapon.ProjectileState> save)
             => instance.saveProjectileTriggerBullets.Add(save);
 
         public static void SubscribeEnemy(string id, Action<List<SimpleEnemyBuilder.EnemyState>> load)

@@ -22,8 +22,9 @@ namespace Asteroids.WeaponSystem
         protected Sound weaponSound;
 #pragma warning restore CS0649
 
+        public bool CanBeHoldDown { get; protected set; } = false;
+        
         protected WeaponsManager manager;
-        protected KeyCode fireInput = KeyCode.Space;
 
         protected float cooldown;
         protected float nextCast;
@@ -35,12 +36,13 @@ namespace Asteroids.WeaponSystem
             Memento.TrackForRewind(this);
         }
 
-        public virtual void Update()
+        public virtual void Execute(bool canBeHoldDown)
         {
             if (GlobalMementoManager.IsRewinding)
                 return;
 
-            if (Time.time > nextCast && manager.FireInput.Execute())
+            bool isPressed = canBeHoldDown ? Input.GetKey(manager.FireInput) : Input.GetKeyDown(manager.FireInput);
+            if (Time.time > nextCast && isPressed)
                 Fire();
         }
 

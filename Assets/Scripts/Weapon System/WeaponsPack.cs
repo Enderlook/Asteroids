@@ -26,10 +26,10 @@ namespace Asteroids.WeaponSystem
                 if (i == 0)
                 {
                     selectedWeapon = i;
-                    weapons[i].Initialize(manager);
+                    weapons[i]?.Initialize(manager);
                 }
                 else
-                    weapons[i].Initialize(manager);
+                    weapons[i]?.Initialize(manager);
             }
         }
 
@@ -37,7 +37,7 @@ namespace Asteroids.WeaponSystem
         {
             SwitchWeapon();
 
-            weapons[selectedWeapon].Update();
+            weapons[selectedWeapon]?.Execute(weapons[selectedWeapon].CanBeHoldDown);
         }
 
         private void SwitchWeapon()

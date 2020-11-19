@@ -1,4 +1,4 @@
-﻿using Asteroids.AbilitySystem;
+﻿using Asteroids.WeaponSystem;
 using Asteroids.Entities.Enemies;
 using Asteroids.Entities.Player;
 
@@ -21,12 +21,12 @@ namespace Asteroids.Scene
 
             public readonly PlayerController.State player;
             public readonly GameManager.State game;
-            public readonly LaserTrigger.State laser;
-            public readonly Ability.State projectile;
-            public readonly List<ProjectileTrigger.ProjectileState> projectiles;
+            public readonly LaserWeapon.State laser;
+            public readonly Weapon.State projectile;
+            public readonly List<ManualWeapon.ProjectileState> projectiles;
             public readonly Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies;
 
-            public GameState(PlayerController.State player, GameManager.State game, LaserTrigger.State laser, Ability.State projectile, List<ProjectileTrigger.ProjectileState> projectiles, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
+            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
             {
                 this.player = player;
                 this.game = game;

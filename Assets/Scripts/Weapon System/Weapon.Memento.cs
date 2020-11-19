@@ -4,9 +4,9 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public abstract partial class Ability
+    public abstract partial class Weapon
     {
         [Serializable]
         private readonly struct Memento
@@ -30,22 +30,22 @@ namespace Asteroids.AbilitySystem
 
             private Memento(float cooldown) => this.cooldown = cooldown;
 
-            public Memento(Ability ability) : this(ability.nextCast - Time.fixedDeltaTime) { }
+            public Memento(Weapon weapon) : this(weapon.nextCast - Time.fixedDeltaTime) { }
 
-            public static void TrackForRewind(Ability ability)
+            public static void TrackForRewind(Weapon weapon)
                 => GlobalMementoManager.Subscribe(
-                    () => new Memento(ability), // Memento of ability is only its cooldown
-                    (memento) => ConsumeMemento(memento, ability),
+                    () => new Memento(weapon), // Memento of ability is only its cooldown
+                    (memento) => ConsumeMemento(memento, weapon),
                     interpolateMementos
                 );
 
-            private static void ConsumeMemento(Memento? memento, Ability ability)
+            private static void ConsumeMemento(Memento? memento, Weapon weapon)
             {
                 if (memento is Memento memento_)
-                    memento_.Load(ability);
+                    memento_.Load(weapon);
             }
 
-            public void Load(Ability ability) => ability.nextCast = cooldown + Time.fixedDeltaTime;
+            public void Load(Weapon weapon) => weapon.nextCast = cooldown + Time.fixedDeltaTime;
 
             private static Memento InterpolateMementos(Memento a, Memento b, float delta)
                 => new Memento(Mathf.Lerp(a.cooldown, b.cooldown, delta));

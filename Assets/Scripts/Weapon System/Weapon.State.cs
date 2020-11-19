@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public abstract partial class Ability
+    public partial class Weapon
     {
         [Serializable]
         public readonly struct State
@@ -12,9 +12,9 @@ namespace Asteroids.AbilitySystem
             // Ability state the same as Ability memento, we can take advantage of that to keep DRY
             private readonly Memento memento;
 
-            public State(Ability ability) => memento = new Memento(ability);
+            public State(Weapon weapon) => memento = new Memento(weapon);
 
-            public void Load(Ability ability) => memento.Load(ability);
+            public void Load(Weapon weapon) => memento.Load(weapon);
         }
     }
 }

@@ -2,9 +2,9 @@
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public partial class ProjectileTrigger
+    public partial class ManualWeapon
     {
         [Serializable]
         public readonly struct ProjectileState
@@ -16,7 +16,7 @@ namespace Asteroids.AbilitySystem
 
             public ProjectileState(Rigidbody2D rigidbody) => memento = new Memento(rigidbody);
 
-            public void Load(ProjectileTrigger projectileTrigger, Rigidbody2D rigidbody) => memento.Load(projectileTrigger, rigidbody);
+            public void Load(ManualWeapon projectileTrigger, Rigidbody2D rigidbody) => memento.Load(projectileTrigger, rigidbody);
         }
     }
 }

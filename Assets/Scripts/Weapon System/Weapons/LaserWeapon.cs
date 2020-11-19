@@ -1,16 +1,19 @@
 ﻿using Asteroids.Entities.Enemies;
 using Asteroids.Scene;
 
+using AvalonStudios.Additions.Attributes;
+
 using Enderlook.Unity.Components.ScriptableSound;
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    [CreateAssetMenu(menuName = "Asteroids/Ability System/Abilities/Raycast", fileName = "Raycast Projectile Ability")]
-    public partial class LaserTrigger : Ability
+    [CreateAssetMenu(menuName = "Asteroids/Weapon System/Weapons/Components/Laser Weapon", fileName = "Laser Weapon")]
+    public partial class LaserWeapon : Weapon
     {
 #pragma warning disable CS0649
+        [StyledHeader("Setup")]
         [SerializeField, Tooltip("Raycast distance.")]
         private float distance;
 
@@ -29,21 +32,23 @@ namespace Asteroids.AbilitySystem
         private float currentDuration;
         private RaycastHit2D[] results;
 
-        public override void Initialize(AbilitiesManager abilitiesManager)
+        public override void Initialize(WeaponsManager weaponsManager)
         {
-            base.Initialize(abilitiesManager);
-            castPoint = abilitiesManager.CastPoint;
+            base.Initialize(weaponsManager);
+            cooldown = 1;
+            CanBeHoldDown = true;
+            castPoint = weaponsManager.CastPoint;
             lineRenderer = castPoint.GetComponent<LineRenderer>();
-            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(abilitySound, false, false);
+            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(weaponSound, false, false);
             results = new RaycastHit2D[FindObjectOfType<EnemySpawner>().MaxmiumAmountOfEnemies];
 
             Memento.TrackForRewind(this);
             GameSaver.SubscribeLaserTrigger(() => new State(this), (state) => ((State)state).Load(this));
         }
 
-        public override void Update()
+        public override void Execute(bool canBeHoldDown)
         {
-            base.Update();
+            base.Execute(canBeHoldDown);
 
             if (GlobalMementoManager.IsRewinding)
                 return;
@@ -72,8 +77,9 @@ namespace Asteroids.AbilitySystem
             lineRenderer.SetPosition(0, new Vector3(0, distance, 0));
         }
 
-        public override void Execute()
+        protected override void Fire()
         {
+            nextCast = Time.time + cooldown;
             currentDuration = duration;
             lineRenderer.enabled = true;
             soundPlayer.Play();

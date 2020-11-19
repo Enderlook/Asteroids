@@ -4,9 +4,9 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.AbilitySystem
+namespace Asteroids.WeaponSystem
 {
-    public partial class LaserTrigger
+    public partial class LaserWeapon
     {
         [Serializable]
         private readonly struct Memento
@@ -30,16 +30,16 @@ namespace Asteroids.AbilitySystem
 
             private Memento(float duration) => this.duration = duration;
 
-            public Memento(LaserTrigger laserTrigger) : this(laserTrigger.currentDuration) { }
+            public Memento(LaserWeapon laserTrigger) : this(laserTrigger.currentDuration) { }
 
-            public static void TrackForRewind(LaserTrigger laserTrigger)
+            public static void TrackForRewind(LaserWeapon laserTrigger)
                 => GlobalMementoManager.Subscribe(
                     () => new Memento(laserTrigger), // Memento of laser is only its duration, cooldown is already tracked in parent
                     (memento) => ConsumeMemento(memento, laserTrigger),
                     interpolateMementos
                 );
 
-            private static void ConsumeMemento(Memento? memento, LaserTrigger laserTrigger)
+            private static void ConsumeMemento(Memento? memento, LaserWeapon laserTrigger)
             {
                 if (memento is Memento memento_)
                 {
@@ -52,7 +52,7 @@ namespace Asteroids.AbilitySystem
                 }
             }
 
-            public void Load(LaserTrigger laserTrigger)
+            public void Load(LaserWeapon laserTrigger)
             {
                 laserTrigger.currentDuration = duration;
                 if (laserTrigger.currentDuration > 0)
