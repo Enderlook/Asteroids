@@ -1,4 +1,5 @@
 ﻿using AvalonStudios.Additions.Extensions;
+using AvalonStudios.Additions.Utils.Interfaces;
 using AvalonStudios.Additions.Attributes;
 
 using System;
@@ -13,7 +14,9 @@ using Resources = Asteroids.Utils.Resources;
 
 namespace Asteroids.Localization
 {
-    public class LocalizationManager : MonoBehaviour
+    public delegate void ChangeLanguageEventHandler(LocalizationManager localizationManager);
+
+    public class LocalizationManager : MonoBehaviour, IEvents<ChangeLanguageEventHandler>
     {
         [SerializeField, Tooltip("Root folder."), ReadOnly]
         private string rootDirectory = "/Resources/Localization";
@@ -34,7 +37,8 @@ namespace Asteroids.Localization
                 return instance;
             }
         }
-        public delegate void ChangeLanguageEventHandler(LocalizationManager localizationManager);
+
+        
         public event ChangeLanguageEventHandler OnChangeLanguage;
 
         public static SystemLanguage Language { get; private set; } = SystemLanguage.English;
@@ -99,7 +103,6 @@ namespace Asteroids.Localization
                 if (!texts.ContainsKey(lang)) texts.Add(lang, new Dictionary<string, string>());
 
                 texts[lang].Add($"{fileName}/{item.Key}", item.Value.ToString());
-                //Debug.Log($"{lang} --- {fileName}/{item.Key} --- {item.Value}");
             }
         }
 
@@ -114,13 +117,13 @@ namespace Asteroids.Localization
             return texts[Language][key];
         }
 
-        public void AddLanguageChangedListener(ChangeLanguageEventHandler listener)
+        public void Subscribe(ChangeLanguageEventHandler listener)
         {
             if (!OnChangeLanguage.IsNull())
                 OnChangeLanguage += listener;
         }
 
-        public void RemoveLanguageChangedListener(ChangeLanguageEventHandler listener)
+        public void Unsubscribe(ChangeLanguageEventHandler listener)
         {
             if (!OnChangeLanguage.IsNull())
                 OnChangeLanguage -= listener;

@@ -18,13 +18,20 @@ namespace Asteroids.Localization
         private void Start()
         {
             localizationManager = LocalizationManager.Instance;
-            localizationManager.AddLanguageChangedListener(OnChangeLanguage);
+            localizationManager.Subscribe(OnChangeLanguage);
 
             OnChangeLanguage(localizationManager);
         }
 
-        private void OnDestroy() => localizationManager.RemoveLanguageChangedListener(OnChangeLanguage);
+        private void Update()
+        {
+            localizationManager.Subscribe(OnChangeLanguage);
 
-        private void OnChangeLanguage(LocalizationManager localizationManager) => component.text = LocalizationManager.Instance.GetText(key);
+            OnChangeLanguage(localizationManager);
+        }
+
+        private void OnDestroy() => localizationManager.Unsubscribe(OnChangeLanguage);
+
+        private void OnChangeLanguage(LocalizationManager localizationManager) => component.text = localizationManager.GetText(key);
     }
 }
