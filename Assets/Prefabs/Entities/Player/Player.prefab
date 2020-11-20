@@ -139,7 +139,6 @@ GameObject:
   - component: {fileID: 3962719958744909297}
   - component: {fileID: 3962719958744909300}
   - component: {fileID: 3962719958744909299}
-  - component: {fileID: 3962719958744909301}
   - component: {fileID: 8166211258791238537}
   - component: {fileID: 3468075810710175319}
   - component: {fileID: 5171125466367872765}
@@ -284,21 +283,6 @@ PolygonCollider2D:
       - {x: 0.19, y: -0.325}
       - {x: 0.32, y: -0.355}
       - {x: 0.39, y: -0.36499998}
---- !u!114 &3962719958744909301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3962719958744909296}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a9b3d05434e0bf4a980b07ee0f76f6f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  accelerationSpeed: 20
-  maximumSpeed: 5
-  rotationSpeed: 180
 --- !u!114 &8166211258791238537
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,6 +313,9 @@ MonoBehaviour:
   <scorePerLife>k__BackingField: 1000
   deathSound: {fileID: 3261058286310836659}
   newLifeSound: {fileID: 876362552452713518}
+  accelerationSpeed: 20
+  maximumSpeed: 5
+  rotationSpeed: 180
 --- !u!114 &5171125466367872765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,9 +354,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CastPoint>k__BackingField: {fileID: 822242071}
   weaponPack: {fileID: 11400000, guid: 926450ad03c0ae14e8cd660e9b8393ae, type: 2}
-  <FireInput>k__BackingField:
-    keys: 20000000
-    canBeHoldDown: 1
+  <FireInput>k__BackingField: 32
   <ChangeWeaponInput>k__BackingField:
     keys: 65000000
     canBeHoldDown: 0

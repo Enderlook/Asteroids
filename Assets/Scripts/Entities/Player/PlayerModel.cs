@@ -28,5 +28,16 @@ namespace Asteroids.Entities.Player
         public void PlayDeathSound() => deathSound.Play();
 
         public void PlayNewLifeSound() => newLifeSound.Play();
+
+
+
+        [SerializeField, Tooltip("Acceleration per second.")]
+        public float accelerationSpeed;
+
+        [SerializeField, Tooltip("Maximum allowed speed.")]
+        public float maximumSpeed;
+
+        [SerializeField, Tooltip("Angles rotated per second.")]
+        public float rotationSpeed;
     }
 }
