@@ -19,15 +19,6 @@ namespace Asteroids.Localization
         {
             localizationManager = LocalizationManager.Instance;
             localizationManager.Subscribe(OnChangeLanguage);
-
-            OnChangeLanguage(localizationManager);
-        }
-
-        private void Update()
-        {
-            localizationManager.Subscribe(OnChangeLanguage);
-
-            OnChangeLanguage(localizationManager);
         }
 
         private void OnDestroy() => localizationManager.Unsubscribe(OnChangeLanguage);

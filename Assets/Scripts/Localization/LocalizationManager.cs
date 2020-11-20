@@ -37,9 +37,8 @@ namespace Asteroids.Localization
                 return instance;
             }
         }
-
         
-        public event ChangeLanguageEventHandler OnChangeLanguage;
+        public static event ChangeLanguageEventHandler OnChangeLanguage;
 
         public static SystemLanguage Language { get; private set; } = SystemLanguage.English;
 
@@ -56,10 +55,7 @@ namespace Asteroids.Localization
             else Destroy(this);
         }
 
-        private void OnDestroy()
-        {
-            OnChangeLanguage = null;
-        }
+        private void OnDestroy() => OnChangeLanguage = null;
 
         public void SwitchLanguage(string lang)
         {
@@ -117,16 +113,8 @@ namespace Asteroids.Localization
             return texts[Language][key];
         }
 
-        public void Subscribe(ChangeLanguageEventHandler listener)
-        {
-            if (!OnChangeLanguage.IsNull())
-                OnChangeLanguage += listener;
-        }
+        public void Subscribe(ChangeLanguageEventHandler listener) => OnChangeLanguage += listener;
 
-        public void Unsubscribe(ChangeLanguageEventHandler listener)
-        {
-            if (!OnChangeLanguage.IsNull())
-                OnChangeLanguage -= listener;
-        }
+        public void Unsubscribe(ChangeLanguageEventHandler listener) => OnChangeLanguage -= listener;
     }
 }

@@ -6,10 +6,7 @@ namespace Asteroids.Localization
     {
         private LocalizationManager localizationManager;
 
-        private void Start()
-        {
-            localizationManager = LocalizationManager.Instance;
-        }
+        private void Start() => localizationManager = LocalizationManager.Instance;
 
         public void ChangeLanguage(string lang) => localizationManager.SwitchLanguage(lang);
     }
