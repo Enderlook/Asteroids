@@ -33,6 +33,7 @@ namespace Asteroids.Scene
                 return;
             }
             instance = this;
+            Cursor.visible = false;
 
             EventManager.Subscribe<LevelTerminationEvent>(OnLevelComplete);
             EventManager.Subscribe<EnemySpawner.EnemyDestroyedEvent>(OnEnemyDestroyed);

@@ -38,10 +38,17 @@ namespace Asteroids.UI
                 disableIfNotSave.interactable = GameSaver.HasSaveFile();
         }
 
+        private void Start()
+        {
+            if (MAIN_MENU_SCENE == SceneManager.GetActiveScene().buildIndex)
+                Cursor.visible = true;
+        }
+
         private void OnLevelTermination(GameManager.LevelTerminationEvent @event)
         {
             if (@event.HasLost)
             {
+                Cursor.visible = true;
                 isLock = true;
                 for (int i = 0; i < panels.Length; i++)
                     panels[i].SetActive(false);
