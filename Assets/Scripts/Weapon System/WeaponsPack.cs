@@ -24,18 +24,15 @@ namespace Asteroids.WeaponSystem
             for (int i = 0; i < weapons.Length; i++)
             {
                 if (i == 0)
-                {
                     selectedWeapon = i;
-                    weapons[i]?.Initialize(manager);
-                }
-                else
-                    weapons[i]?.Initialize(manager);
+                weapons[i]?.Initialize(manager);
             }
         }
 
         public void Update()
         {
-            SwitchWeapon();
+            if (!weapons[selectedWeapon].StopAction)
+                SwitchWeapon();
 
             weapons[selectedWeapon]?.Execute(weapons[selectedWeapon].CanBeHoldDown);
         }

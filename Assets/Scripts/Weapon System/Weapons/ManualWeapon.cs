@@ -41,7 +41,7 @@ namespace Asteroids.WeaponSystem
         {
             base.Initialize(weaponsManager);
             cooldown = .5f;
-            CanBeHoldDown = false;
+            CanBeHoldDown = true;
 
             builder = new BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>
             {

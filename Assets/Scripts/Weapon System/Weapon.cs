@@ -23,6 +23,7 @@ namespace Asteroids.WeaponSystem
 #pragma warning restore CS0649
 
         public bool CanBeHoldDown { get; protected set; } = false;
+        public bool StopAction { get; protected set; } = false;
         
         protected WeaponsManager manager;
 
@@ -32,6 +33,7 @@ namespace Asteroids.WeaponSystem
         public virtual void Initialize(WeaponsManager manager)
         {
             this.manager = manager;
+            StopAction = false;
             nextCast = 0;
             Memento.TrackForRewind(this);
         }

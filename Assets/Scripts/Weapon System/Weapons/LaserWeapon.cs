@@ -35,8 +35,8 @@ namespace Asteroids.WeaponSystem
         public override void Initialize(WeaponsManager weaponsManager)
         {
             base.Initialize(weaponsManager);
-            cooldown = 1;
-            CanBeHoldDown = true;
+            cooldown = duration + 1.5f;
+            CanBeHoldDown = false;
             castPoint = weaponsManager.CastPoint;
             lineRenderer = castPoint.GetComponent<LineRenderer>();
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(weaponSound, false, false);
@@ -55,9 +55,11 @@ namespace Asteroids.WeaponSystem
 
             if (currentDuration > 0)
             {
+                StopAction = true;
                 currentDuration -= Time.deltaTime;
                 if (currentDuration <= 0)
                 {
+                    StopAction = false;
                     lineRenderer.enabled = false;
                     return;
                 }
