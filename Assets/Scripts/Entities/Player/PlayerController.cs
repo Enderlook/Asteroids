@@ -50,17 +50,13 @@ namespace Asteroids.Entities.Player
             if (GlobalMementoManager.IsRewinding)
                 return;
 
-            Move();
-            Rotate();
-        }
+            //MYA1-P2
+            if (TryGetMoveCommand() is MoveCommand moveCommand)
+                moveCommand.Execute();
 
-        private void Move()
-        {
-            rigidbody.AddRelativeForce(Vector2.up * Mathf.Max(Input.GetAxis("Vertical"), 0) * model.accelerationSpeed, ForceMode2D.Force);
-            rigidbody.velocity = Vector2.ClampMagnitude(rigidbody.velocity, model.maximumSpeed);
+            if (TryGetRotateCommand() is RotateCommand rotateCommand)
+                rotateCommand.Execute();
         }
-
-        private void Rotate() => rigidbody.SetRotation(rigidbody.rotation - Input.GetAxis("Horizontal") * model.rotationSpeed * Time.deltaTime);
 
         private void OnScoreChanged(GameManager.ScoreHasChangedEvent @event)
         {
