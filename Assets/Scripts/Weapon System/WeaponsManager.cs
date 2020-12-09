@@ -17,9 +17,6 @@ namespace Asteroids.WeaponSystem
         [SerializeField, Tooltip("Weapon package.")]
         private WeaponsPack weaponPack;
 
-        //[field: SerializeField, Tooltip("Fire input."), IsProperty]
-        //public KeyInputManager FireInput { get; private set; }
-
         [field: SerializeField, Tooltip("Fire input."), IsProperty]
         public KeyCode FireInput { get; private set; } = KeyCode.Space;
 
@@ -37,7 +34,6 @@ namespace Asteroids.WeaponSystem
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
-        private void Update()
-            =>  weaponPack?.Update();
+        private void Update() =>  weaponPack?.Update();
     }
 }
