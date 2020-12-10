@@ -18,7 +18,7 @@ namespace Asteroids.WeaponSystem
         public void Initialize(WeaponsManager manager)
         {
             this.manager = manager;
-            if (weapons.IsNull())
+            if (weapons == null)
                 return;
 
             for (int i = 0; i < weapons.Length; i++)
