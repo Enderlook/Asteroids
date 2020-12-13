@@ -27,12 +27,12 @@ namespace Asteroids.Entities.Enemies
             // Cache delegate to reduce allocations
             private static readonly Func<Memento, Memento, float, Memento> interpolateMementos = InterpolateMementos;
 
-            public readonly bool enabled;
-            public readonly SerializableVector2 position;
-            public readonly float rotation;
-            public readonly SerializableVector2 velocity;
-            public readonly float angularVelocity;
-            public readonly Sprite sprite;
+            private readonly bool enabled;
+            private readonly SerializableVector2 position;
+            private readonly float rotation;
+            private readonly SerializableVector2 velocity;
+            private readonly float angularVelocity;
+            private readonly Sprite sprite;
 
             private Memento(bool enabled, Vector2 position, float rotation, Vector2 velocity, float angularVelocity, Sprite sprite)
             {

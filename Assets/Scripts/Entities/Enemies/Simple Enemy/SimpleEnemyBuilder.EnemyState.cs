@@ -16,12 +16,12 @@ namespace Asteroids.Entities.Enemies
         {
             // This class is in charge of storing and setting the ability state to save the game.
 
-            public readonly bool enabled;
-            public readonly SerializableVector2 position;
-            public readonly float rotation;
-            public readonly SerializableVector2 velocity;
-            public readonly float angularVelocity;
-            public readonly string sprite;
+            private readonly bool enabled;
+            private readonly SerializableVector2 position;
+            private readonly float rotation;
+            private readonly SerializableVector2 velocity;
+            private readonly float angularVelocity;
+            private readonly string sprite;
 
             public EnemyState(Rigidbody2D rigidbody, string sprite)
             {

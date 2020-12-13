@@ -26,11 +26,11 @@ namespace Asteroids.WeaponSystem
             // Cache delegate to reduce allocations
             private static readonly Func<Memento, Memento, float, Memento> interpolateMementos = InterpolateMementos;
 
-            public readonly bool enabled;
-            public readonly SerializableVector2 position;
-            public readonly float rotation;
-            public readonly SerializableVector2 velocity;
-            public readonly float angularVelocity;
+            private readonly bool enabled;
+            private readonly SerializableVector2 position;
+            private readonly float rotation;
+            private readonly SerializableVector2 velocity;
+            private readonly float angularVelocity;
 
             public Memento(Rigidbody2D rigidbody) : this(
                 rigidbody.gameObject.activeSelf,
