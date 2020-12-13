@@ -47,5 +47,7 @@ namespace Asteroids.WeaponSystem
             if (manager.ChangeWeaponInput.Execute())
                 selectedWeapon = selectedWeapon >= weapons.Length - 1 ? 0 : selectedWeapon + 1;
         }
+
+        public void OnDrawGizmos() => weapons[selectedWeapon].OnDrawGizmos();
     }
 }

@@ -53,5 +53,7 @@ namespace Asteroids.WeaponSystem
         }
 
         protected abstract void Fire();
+
+        public virtual void OnDrawGizmos() { }
     }
 }

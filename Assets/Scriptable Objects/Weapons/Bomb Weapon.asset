@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 020ff4ce15d1d534584ba4a0450e3986, type: 3}
+  m_Name: Bomb Weapon
+  m_EditorClassIdentifier: 
+  weaponName: Bomb
+  description: 
+  weaponSound: {fileID: 11400000, guid: 0ca732cf523035d4ea04fb1b32ef1dfd, type: 2}
+  cooldown: 2
+  <CanBeHoldDown>k__BackingField: 0
+  spriteBomb: Weapons/Bomb_03
+  bombLayer: 14
+  bombScale: 0.25
+  explodeKey:
+    keys: 71000000
+    canBeHoldDown: 0
+  chainDelay: 0.1
+  explodeAnimation: {fileID: 9100000, guid: 842f17c70ffd6c6418038dc585d74e25, type: 2}
+  explodeScale: 0.5
+  explodeLayer: 10
+  explodeSound: {fileID: 8300000, guid: cbec6eb6175772b4bb0461030cdf264e, type: 3}

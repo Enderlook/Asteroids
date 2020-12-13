@@ -24,9 +24,11 @@ namespace Asteroids.Scene
             public readonly LaserWeapon.State laser;
             public readonly Weapon.State projectile;
             public readonly List<ManualWeapon.ProjectileState> projectiles;
+            public readonly BombWeapon.State bomb;
+            public readonly List<BombWeapon.Bomb.State> bombs;
             public readonly Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies;
 
-            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
+            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
             {
                 this.player = player;
                 this.game = game;
@@ -34,6 +36,8 @@ namespace Asteroids.Scene
                 this.projectile = projectile;
                 this.projectiles = projectiles;
                 this.enemies = enemies;
+                this.bomb = bomb;
+                this.bombs = bombs;
             }
 
             public void SaveToFile()

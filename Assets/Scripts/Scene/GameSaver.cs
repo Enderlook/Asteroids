@@ -31,6 +31,10 @@ namespace Asteroids.Scene
 
         private Dictionary<string, List<Func<SimpleEnemyBuilder.EnemyState>>> saveEnemies = new Dictionary<string, List<Func<SimpleEnemyBuilder.EnemyState>>>();
         private Dictionary<string, Action<List<SimpleEnemyBuilder.EnemyState>>> loadEnemyBuilder = new Dictionary<string, Action<List<SimpleEnemyBuilder.EnemyState>>>();
+        
+        private Func<BombWeapon.State> saveBombTrigger;
+        private Action<(BombWeapon.State, List<BombWeapon.Bomb.State>)> loadBombTrigger;
+        private List<Func<BombWeapon.Bomb.State>> saveBombsTrigger = new List<Func<BombWeapon.Bomb.State>>();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -65,6 +69,7 @@ namespace Asteroids.Scene
             GameManager.State game = instance.saveGameManager();
             LaserWeapon.State laser = instance.saveLaserTrigger();
             Weapon.State projectile = instance.saveProjectileTrigger();
+            BombWeapon.State bomb = instance.saveBombTrigger();
 
             List<ManualWeapon.ProjectileState> projectiles = new List<ManualWeapon.ProjectileState>(instance.saveProjectileTriggerBullets.Count);
             foreach (Func<ManualWeapon.ProjectileState> save in instance.saveProjectileTriggerBullets)
@@ -80,7 +85,11 @@ namespace Asteroids.Scene
                     enemies_.Add(enemy());
             }
 
-            GameState gameState = new GameState(player, game, laser, projectile, projectiles, enemies);
+            List<BombWeapon.Bomb.State> bombs = new List<BombWeapon.Bomb.State>(instance.saveBombsTrigger.Count);
+            foreach (Func<BombWeapon.Bomb.State> save in instance.saveBombsTrigger)
+                bombs.Add(save());
+
+            GameState gameState = new GameState(player, game, laser, projectile, projectiles, bomb, bombs, enemies);
             gameState.SaveToFile();
         }
 
@@ -93,6 +102,7 @@ namespace Asteroids.Scene
             instance.loadGameManager(gameState.game);
             instance.loadLaserTrigger(gameState.laser);
             instance.loadProjectileTrigger((gameState.projectile, gameState.projectiles));
+            instance.loadBombTrigger((gameState.bomb, gameState.bombs));
             foreach (KeyValuePair<string, List<SimpleEnemyBuilder.EnemyState>> enemies in gameState.enemies)
                 instance.loadEnemyBuilder[enemies.Key](enemies.Value);
 
@@ -123,8 +133,17 @@ namespace Asteroids.Scene
             instance.loadProjectileTrigger = load;
         }
 
+        public static void SubscribeBombTrigger(Func<BombWeapon.State> save, Action<(BombWeapon.State, List<BombWeapon.Bomb.State>)> load)
+        {
+            instance.saveBombTrigger = save;
+            instance.loadBombTrigger = load;
+        }
+
         public static void SubscribeProjectileTriggerBullet(Func<ManualWeapon.ProjectileState> save)
             => instance.saveProjectileTriggerBullets.Add(save);
+
+        public static void SubscribeBombsTrigger(Func<BombWeapon.Bomb.State> save)
+            => instance.saveBombsTrigger.Add(save);
 
         public static void SubscribeEnemy(string id, Action<List<SimpleEnemyBuilder.EnemyState>> load)
             => instance.loadEnemyBuilder.Add(id, load);
