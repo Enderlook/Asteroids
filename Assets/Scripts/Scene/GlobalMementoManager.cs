@@ -20,8 +20,10 @@ namespace Asteroids.Scene
 
         public static bool IsRewinding => instance.stopAt > Time.fixedTime;
 
+#pragma warning disable CS0649
         [SerializeField]
         private PostProcessVolume volume;
+#pragma warning restore CS0649
 
         private List<IMementoManager> managers = new List<IMementoManager>();
         private float stopAt;

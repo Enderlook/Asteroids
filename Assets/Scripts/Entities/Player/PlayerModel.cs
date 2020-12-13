@@ -7,6 +7,7 @@ namespace Asteroids.Entities.Player
 {
     public class PlayerModel : MonoBehaviour
     {
+#pragma warning disable CS0649
         [field: SerializeField, IsProperty, Tooltip("Amount of lifes the player start with.")]
         public int startingLifes { get; private set; }
 
@@ -24,6 +25,7 @@ namespace Asteroids.Entities.Player
 
         [SerializeField, Tooltip("Sound played on get new life by score.")]
         private SimpleSoundPlayer newLifeSound;
+#pragma warning restore CS0649
 
         public void PlayDeathSound() => deathSound.Play();
 
