@@ -1,9 +1,9 @@
 ﻿using AvalonStudios.Additions.Attributes;
 using AvalonStudios.Additions.Utils.InputsManager;
 
-using IsProperty = Enderlook.Unity.Attributes.IsPropertyAttribute;
-
 using UnityEngine;
+
+using IsProperty = Enderlook.Unity.Attributes.IsPropertyAttribute;
 
 namespace Asteroids.WeaponSystem
 {
