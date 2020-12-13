@@ -20,14 +20,18 @@ namespace Asteroids.WeaponSystem
 
         [SerializeField, Tooltip("Sound produced on shoot.")]
         protected Sound weaponSound;
+
+        [SerializeField, Tooltip("Time between attacks.")]
+        protected float cooldown;
+
+        [field: SerializeField, IsProperty, Tooltip("Whenever the weapon can be held down.")]
+        public bool CanBeHoldDown { get; private set; }
 #pragma warning restore CS0649
 
-        public bool CanBeHoldDown { get; protected set; } = false;
         public bool StopAction { get; protected set; } = false;
         
         protected WeaponsManager manager;
 
-        protected float cooldown;
         protected float nextCast;
 
         public virtual void Initialize(WeaponsManager manager)

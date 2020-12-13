@@ -15,6 +15,8 @@ MonoBehaviour:
   weaponName: Beam Weapon
   description: 
   weaponSound: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6, type: 2}
+  cooldown: 0.5
+  <CanBeHoldDown>k__BackingField: 1
   sprite: Weapons/laserBlue02
   force: 10
   projectileLayer: 10

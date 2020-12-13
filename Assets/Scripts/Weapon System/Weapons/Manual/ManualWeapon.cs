@@ -24,7 +24,7 @@ namespace Asteroids.WeaponSystem
 
 #pragma warning disable CS0649
         [StyledHeader("Setup")]
-        [SerializeField, DrawTexture, Tooltip("Sprite of the projectile to fire")]
+        [SerializeField, DrawTexture, Tooltip("Sprite of the projectile to fire.")]
         private string sprite;
 
         [SerializeField, Min(0), Tooltip("Force at which the projectile is fired.")]
@@ -33,6 +33,7 @@ namespace Asteroids.WeaponSystem
         [SerializeField, Layer, Tooltip("Layer of the projectile.")]
         private int projectileLayer;
 #pragma warning restore CS0649
+
         private BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder;
 
         private SimpleSoundPlayer soundPlayer;
@@ -40,8 +41,6 @@ namespace Asteroids.WeaponSystem
         public override void Initialize(WeaponsManager weaponsManager)
         {
             base.Initialize(weaponsManager);
-            cooldown = .5f;
-            CanBeHoldDown = true;
 
             builder = new BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)>
             {
@@ -86,8 +85,6 @@ namespace Asteroids.WeaponSystem
 
             ReturnToPoolOnCollision returnToPoolOnCollision = projectile.AddComponent<ReturnToPoolOnCollision>();
             returnToPoolOnCollision.pool = flyweight.builder;
-
-            BuilderFactoryPool<Rigidbody2D, ManualWeapon, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder = flyweight.builder;
 
             Memento.TrackForRewind(flyweight, rigidbody);
 
