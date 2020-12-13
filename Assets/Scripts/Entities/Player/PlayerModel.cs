@@ -31,8 +31,6 @@ namespace Asteroids.Entities.Player
 
         public void PlayNewLifeSound() => newLifeSound.Play();
 
-
-
         [SerializeField, Tooltip("Acceleration per second.")]
         public float accelerationSpeed;
 
