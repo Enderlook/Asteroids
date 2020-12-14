@@ -1,6 +1,4 @@
-﻿using AvalonStudios.Additions.Extensions;
-
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
@@ -35,6 +33,13 @@ namespace Asteroids.WeaponSystem
                 SwitchWeapon();
 
             weapons[selectedWeapon]?.Execute(weapons[selectedWeapon].CanBeHoldDown);
+
+            for (int i = 0; i < weapons.Length; i++)
+            {
+                if (i == selectedWeapon)
+                    continue;
+                weapons[i].UpdateNonSelected();
+            }
         }
 
         private void SwitchWeapon()

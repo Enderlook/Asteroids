@@ -66,6 +66,16 @@ namespace Asteroids.WeaponSystem
             }
         }
 
+        public override void UpdateNonSelected()
+        {
+            if (currentDuration != 0)
+            {
+                currentDuration = 0;
+                StopAction = false;
+                lineRenderer.enabled = false;
+            }
+        }
+
         private void UpdateLaser()
         {
             int amount = Physics2D.RaycastNonAlloc(castPoint.position, castPoint.up, results, 100, hitTargets);
