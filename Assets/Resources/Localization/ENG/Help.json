@@ -1,5 +1,8 @@
 {
     "Title" : "Asteroids",
-    "Help" : "Press W to advance.\n\nPress A and D to rotate.\n\nPress spacebar to shoot and E to change weapons.\n\nPress escape to pause.\n\nEach 1.000 points you earn a life.\n\nAvoid asteroids at all cost!",
+    "Help" : "Press W to advance.\n\nPress A and D to rotate.\n\nPress spacebar to shoot and E to change weapons.\n\n Press Q to explode all the bombs \n\n Press escape to pause.\n\nEach 1.000 points you earn a life.\n\nAvoid asteroids at all cost!",
     "Back" : "Back"
 }
+/** "Title" : "Asteroids",
+    "Help" : "Press W to advance.\n\nPress A and D to rotate.\n\nPress spacebar to shoot and E to change weapons.\n\n Press Q to explode the bombs\n\nPress escape to pause.\n\nEach 1.000 points you earn a life.\n\nAvoid asteroids at all cost!",
+    "Back" : "Back"*/

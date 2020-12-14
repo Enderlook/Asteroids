@@ -1,5 +1,8 @@
 {
     "Title" : "Asteroides",
-    "Help" : "W para avanzar.\n\nA y D para rotar.\n\nESPACIO para disparar y E para cambiar de arma.\n\nEsc para pausar el juego.\n\nGanas 1 vida cada 1.000 puntos.\n\n¡Defiendete de los asteroides a toda costa!",
+    "Help" : "W para avanzar.\n\nA y D para rotar.\n\nESPACIO para disparar y E para cambiar de arma.\n\n Q para explotar todas las bombas \n\nEsc para pausar el juego.\n\nGanas 1 vida cada 1.000 puntos.\n\n¡Defiendete de los asteroides a toda costa!",
     "Back" : "Volver"
 }
+/* "Title" : "Asteroides",
+    "Help" : "W para avanzar.\n\nA y D para rotar.\n\nESPACIO para disparar y E para cambiar de arma.\n\n Q para explotar las bombas \n\nEsc para pausar el juego.\n\nGanas 1 vida cada 1.000 puntos.\n\n¡Defiendete de los asteroides a toda costa!",
+    "Back" : "Volver"*/
