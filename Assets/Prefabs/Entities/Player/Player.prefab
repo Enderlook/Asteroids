@@ -355,9 +355,7 @@ MonoBehaviour:
   <CastPoint>k__BackingField: {fileID: 822242071}
   weaponPack: {fileID: 11400000, guid: 926450ad03c0ae14e8cd660e9b8393ae, type: 2}
   <FireInput>k__BackingField: 32
-  <ChangeWeaponInput>k__BackingField:
-    keys: 65000000
-    canBeHoldDown: 0
+  <ChangeWeaponInput>k__BackingField: 101
 --- !u!1 &5065919064842005875
 GameObject:
   m_ObjectHideFlags: 0
