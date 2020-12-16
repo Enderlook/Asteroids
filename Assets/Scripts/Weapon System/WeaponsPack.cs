@@ -44,6 +44,7 @@ namespace Asteroids.WeaponSystem
 
         private void SwitchWeapon()
         {
+            //MYA1-P2
             if (TryChangeWeaponCommand() is ChangeWeaponCommand changeWeaponCommand)
                 changeWeaponCommand.Execute();
         }
