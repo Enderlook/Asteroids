@@ -3,7 +3,7 @@
 namespace Asteroids.WeaponSystem
 {
     [CreateAssetMenu(menuName = "Asteroids/Weapon System/Weapons/Weapons Pack", fileName = "Weapon Packages")]
-    public class WeaponsPack : ScriptableObject
+    public partial class WeaponsPack : ScriptableObject
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Weapons")]
@@ -44,8 +44,8 @@ namespace Asteroids.WeaponSystem
 
         private void SwitchWeapon()
         {
-            if (Input.GetKeyDown(manager.ChangeWeaponInput))
-                selectedWeapon = selectedWeapon >= weapons.Length - 1 ? 0 : selectedWeapon + 1;
+            if (TryChangeWeaponCommand() is ChangeWeaponCommand changeWeaponCommand)
+                changeWeaponCommand.Execute();
         }
 
         public void OnDrawGizmos() => weapons[selectedWeapon].OnDrawGizmos();
