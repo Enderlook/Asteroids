@@ -44,7 +44,7 @@ namespace Asteroids.WeaponSystem
 
         private void SwitchWeapon()
         {
-            if (manager.ChangeWeaponInput.Execute())
+            if (Input.GetKeyDown(manager.ChangeWeaponInput))
                 selectedWeapon = selectedWeapon >= weapons.Length - 1 ? 0 : selectedWeapon + 1;
         }
 

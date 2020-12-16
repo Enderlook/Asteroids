@@ -1,5 +1,4 @@
 ﻿using AvalonStudios.Additions.Attributes;
-using AvalonStudios.Additions.Utils.InputsManager;
 
 using UnityEngine;
 
@@ -21,7 +20,7 @@ namespace Asteroids.WeaponSystem
         public KeyCode FireInput { get; private set; } = KeyCode.Space;
 
         [field: SerializeField, Tooltip("Input to change weapon."), IsProperty]
-        public KeyInputManager ChangeWeaponInput { get; private set; }
+        public KeyCode ChangeWeaponInput { get; private set; }
 #pragma warning restore CS0649
 
         public Rigidbody2D Rigidbody2D { get; private set; }
