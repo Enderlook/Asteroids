@@ -1,10 +1,12 @@
-﻿using UnityEngine;
+﻿using Asteroids.Utils;
+
+using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
     public partial class WeaponsPack
     {
-        private ChangeWeaponCommand? TryChangeWeaponCommand()
+        private ChangeWeaponCommand TryChangeWeaponCommand()
         {
             bool input = Input.GetKeyDown(manager.ChangeWeaponInput);
             if (input)
@@ -12,7 +14,7 @@ namespace Asteroids.WeaponSystem
             return null;
         }
 
-        private struct ChangeWeaponCommand
+        private class ChangeWeaponCommand : ICommand
         {
             private WeaponsPack pack;
 
