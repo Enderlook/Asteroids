@@ -47,9 +47,9 @@ namespace Asteroids.WeaponSystem
             if (GlobalMementoManager.IsRewinding)
                 return;
 
-            bool isPressed = canBeHoldDown ? Input.GetKey(manager.FireInput) : Input.GetKeyDown(manager.FireInput);
-            if (Time.time > nextCast && isPressed)
-                Fire();
+            //MYA1-P2
+            if (TryFireCommand(canBeHoldDown) is FireCommand fireCommand)
+                fireCommand.Execute();
         }
 
         protected abstract void Fire();
