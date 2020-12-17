@@ -1,6 +1,8 @@
 ﻿using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 
+using @IsProperty = AvalonStudios.Additions.Attributes.IsProperty;
+
 using UnityEngine;
 
 namespace Asteroids.Entities.Player
@@ -8,16 +10,16 @@ namespace Asteroids.Entities.Player
     public class PlayerModel : MonoBehaviour
     {
 #pragma warning disable CS0649
-        [field: SerializeField, IsProperty, Tooltip("Amount of lifes the player start with.")]
+        [field: SerializeField, @IsProperty, Tooltip("Amount of lifes the player start with.")]
         public int startingLifes { get; private set; }
 
-        [field: SerializeField, IsProperty, Tooltip("Maximum amount of lifes the player can have.")]
+        [field: SerializeField, @IsProperty, Tooltip("Maximum amount of lifes the player can have.")]
         public int maxLifes { get; private set; }
 
-        [field: SerializeField, IsProperty, Tooltip("Duration of invulnerability after lose a life.")]
+        [field: SerializeField, @IsProperty, Tooltip("Duration of invulnerability after lose a life.")]
         public float invulnerabilityDuration { get; private set; }
 
-        [field: SerializeField, IsProperty, Min(1), Tooltip("Amount of points required to earn a new life. Up to a maximum of one life can be get per score increase.")]
+        [field: SerializeField, @IsProperty, Min(1), Tooltip("Amount of points required to earn a new life. Up to a maximum of one life can be get per score increase.")]
         public int scorePerLife { get; private set; }
 
         [SerializeField, Tooltip("Sound played on death.")]
