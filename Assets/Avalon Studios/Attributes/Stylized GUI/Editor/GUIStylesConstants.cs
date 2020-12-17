@@ -9,6 +9,8 @@ namespace AvalonStudios.Additions.Attributes.StylizedGUIs
     {
         private const string PATH_FOLDER_PACKAGE = "Assets/Avalon Studios/Art/Textures";
 
+        public const string CIRCLE_01 = "Circle_01";
+
         public const string BANNER_BEGIN = "Banner_Begin";
         public const string BANNER_BEGIN_02 = "Banner_Begin_02";
         public const string BANNER_BEGIN_03 = "Banner_Begin_03";
@@ -26,8 +28,23 @@ namespace AvalonStudios.Additions.Attributes.StylizedGUIs
         public const string VERTICAL_LINE_01 = "Vertical_Line_01";
         public const string ICON_EDIT = "Icon_Edit_02";
 
+        public const string MOVE_TOOL_01 = "Move_Tool_01";
+        public const string MOVE_TOOL_02 = "Move_Tool_02";
+        public const string ROTATE_TOOL_01 = "Rotate_Tool_01";
+        public const string ROTATE_TOOL_02 = "Rotate_Tool_02";
+        public const string SCALE_TOOL_01 = "Scale_Tool_01";
+        public const string SCALE_TOOL_02 = "Scale_Tool_02";
+
         public static Texture2D StyleBackground(string nameTexture)
             => AssetDatabaseHandle.FindAssetByName<Texture2D>(nameTexture, PATH_FOLDER_PACKAGE);
+
+        public static Texture2D StyleBackground(string nameTexture, string nameProSkinTexture)
+        {
+            Texture2D texture2D = EditorGUIUtility.isProSkin ? AssetDatabaseHandle.FindAssetByName<Texture2D>(nameProSkinTexture, PATH_FOLDER_PACKAGE) :
+                AssetDatabaseHandle.FindAssetByName<Texture2D>(nameTexture, PATH_FOLDER_PACKAGE);
+
+            return texture2D;
+        }
 
         // Colors
 

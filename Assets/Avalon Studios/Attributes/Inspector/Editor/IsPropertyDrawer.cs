@@ -6,7 +6,7 @@ using UnityEditor;
 namespace AvalonStudios.Additions.Attributes
 {
     [CustomPropertyDrawer(typeof(IsProperty))]
-    public class IsPropertyDrawer : PropertyDrawer
+    public sealed class IsPropertyDrawer : PropertyDrawer
     {
         private string name;
 
@@ -16,5 +16,7 @@ namespace AvalonStudios.Additions.Attributes
             if (name != "")
                 EditorGUI.PropertyField(position, property, new GUIContent(name), true);
         }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => EditorGUI.GetPropertyHeight(property);
     }
 }

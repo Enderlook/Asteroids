@@ -195,11 +195,6 @@ namespace AvalonStudios.Additions.Extensions
 			return mag;
 		}
 
-		//public static Vector3 Normalize(this Vector3 source)
-		//{
-
-		//}
-
 		/// <summary>
 		/// Returns the distance between a and b on the X axis.
 		/// </summary>
@@ -245,5 +240,19 @@ namespace AvalonStudios.Additions.Extensions
 		/// </summary>
 		/// <returns>Absolute value of <seealso cref="Vector3"/></returns>
 		public static Vector3 Abs(this Vector3 source) => new Vector3(Mathf.Abs(source.x), Mathf.Abs(source.y), Mathf.Abs(source.z));
+
+		/// <summary>
+		/// Convert <seealso cref="Vector4"/> to <seealso cref="Quaternion"/>.
+		/// </summary>
+		/// <param name="v"><seealso cref="Vector4"/></param>
+		/// <returns>Returns a <seealso cref="Quaternion"/></returns>
+		public static Quaternion ToQuaternion(this Vector4 v) => new Quaternion(v.x, v.y, v.z, v.w);
+
+		/// <summary>
+		/// Convert <seealso cref="Quaternion"/> to <seealso cref="Vector4"/>.
+		/// </summary>
+		/// <param name="quaternion"><seealso cref="Quaternion"/></param>
+		/// <returns>Returns a <seealso cref="Vector4"/></returns>
+		public static Vector4 ToVector4(this Quaternion quaternion) => new Vector4(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 	}
 }

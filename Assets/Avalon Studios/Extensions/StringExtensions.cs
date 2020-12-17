@@ -1,4 +1,6 @@
-﻿namespace AvalonStudios.Additions.Extensions
+﻿using UnityEngine;
+
+namespace AvalonStudios.Additions.Extensions
 {
     public static class StringExtensions
     {
@@ -14,7 +16,8 @@
             if (tempName.Length == name.Length)
                 tempName = name.Replace("k__Backing Field", "");
             string newName = tempName.Trim('<', '>');
-            return newName;
+            char firstLetter = newName[0];
+            return char.ToUpper(firstLetter) + newName.Substring(1, newName.Length - 1);
         }
 
         /// <summary>
@@ -42,6 +45,16 @@
                 return true;
             else
                 return false;
+        }
+
+        public static Vector3 ToVector3(this string s)
+        {
+            Vector3 result = Vector3.zero;
+            string trimResult = s.Trim('(', ')');
+            string[] splitResult = trimResult.Split(',');
+            result.Set(float.Parse(splitResult[0], System.Globalization.CultureInfo.InvariantCulture), 
+                float.Parse(splitResult[1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(splitResult[2], System.Globalization.CultureInfo.InvariantCulture));
+            return result;
         }
     }
 }

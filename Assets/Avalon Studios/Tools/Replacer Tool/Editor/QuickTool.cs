@@ -6,24 +6,27 @@ using UnityEditor;
 
 namespace AvalonStudios.Additions.Tools.ReplacerTool
 {
-    public class ReplacerTool : EditorWindow
+    public class QuickTool : EditorWindow
     {
-        private ReplacerObjectData data;
+        private QuickToolData data;
         private SerializedObject serializedData;
         private SerializedProperty replace;
+        private SerializedProperty replaceName;
+        private SerializedProperty nameObject;
+        private SerializedProperty amountOfObjectsToCreate;
 
         private Vector2 selectedObjectScrollPosition;
         private bool showError = false;
         private bool replaceInProgress = false;
 
-        [MenuItem("Avalon Studios/Tools/Replacer Tool")]
-        public static void ShowWindow() => GetWindow<ReplacerTool>("Replacer Tool");
+        [MenuItem("Avalon Studios/Tools/Quick Tool")]
+        public static void ShowWindow() => GetWindow<QuickTool>("Quick Tool");
 
         private void Initialize()
         {
             if (data == null)
             {
-                data = CreateInstance<ReplacerObjectData>();
+                data = CreateInstance<QuickToolData>();
                 serializedData = null;
             }
 
@@ -31,10 +34,18 @@ namespace AvalonStudios.Additions.Tools.ReplacerTool
             {
                 serializedData = new SerializedObject(data);
                 replace = null;
+                replaceName = null;
+                nameObject = null;
+                amountOfObjectsToCreate = null;
             }
 
-            if (replace == null)
+            if (replace == null && replaceName == null)
+            {
                 replace = serializedData.FindProperty("replace");
+                replaceName = serializedData.FindProperty(nameof(replaceName));
+                nameObject = serializedData.FindProperty(nameof(nameObject));
+                amountOfObjectsToCreate = serializedData.FindProperty(nameof(amountOfObjectsToCreate));
+            }
         }
 
         private void OnGUI()
@@ -43,9 +54,11 @@ namespace AvalonStudios.Additions.Tools.ReplacerTool
             serializedData.Update();
             GUILayout.Space(15);
             GUIStyle styles = GUIStylesConstants.TitleStyle(16);
-            EditorGUILayout.LabelField("Replacer Tool", styles);
+            EditorGUILayout.LabelField("Quicks Tool", styles);
             GUILayout.Space(15);
+            EditorGUILayout.PropertyField(nameObject, new GUIContent("Name Object", "Object name to create."));
             EditorGUILayout.PropertyField(replace, new GUIContent("Replace Object For"));
+            EditorGUILayout.PropertyField(replaceName, new GUIContent("Replace Object Name For", "Replace the name of the object."));
 
             EditorGUILayout.Separator();
 
@@ -56,6 +69,7 @@ namespace AvalonStudios.Additions.Tools.ReplacerTool
             {
                 EditorGUILayout.Separator();
                 EditorGUILayout.HelpBox("Select a object or objects in hierarchy to replace them.", MessageType.Warning);
+                EditorGUILayout.HelpBox("Select a object or objects in hierarchy to replace his names.", MessageType.Warning);
             }
 
             selectedObjectScrollPosition = EditorGUILayout.BeginScrollView(selectedObjectScrollPosition);
@@ -87,6 +101,21 @@ namespace AvalonStudios.Additions.Tools.ReplacerTool
                 }
                 showError = false;
                 ReplaceSelectedObjects(data.ObjectsToReplace, data.Object);
+            }
+
+            if (GUILayout.Button("Replace Object Names"))
+            {
+                ReplaceSelectedObjectNames(data.ObjectsToReplace, replaceName.stringValue);
+            }
+
+            if (GUILayout.Button("Create Object"))
+            {
+                CreateObjects(nameObject.stringValue, amountOfObjectsToCreate.intValue);
+            }
+
+            if (GUILayout.Button("Delete Objects"))
+            {
+                DeleteObjects(data.ObjectsToReplace);
             }
             EditorGUILayout.Separator();
             serializedData.ApplyModifiedProperties();
@@ -128,6 +157,28 @@ namespace AvalonStudios.Additions.Tools.ReplacerTool
                 Undo.DestroyObjectImmediate(go);
             }
             replaceInProgress = true;
+        }
+
+        private void ReplaceSelectedObjectNames(GameObject[] objectsToReplace, string name)
+        {
+            foreach (GameObject obj in objectsToReplace)
+                obj.name = name;
+            replaceInProgress = true;
+        }
+
+        private void CreateObjects(string name, int amount)
+        {
+            for (int x = 0; x < amount; x++)
+            {
+                GameObject newObj = new GameObject();
+                newObj.name = name;
+            }
+        }
+
+        private void DeleteObjects(GameObject[] objectsToDelete)
+        {
+            foreach (GameObject obj in objectsToDelete)
+                DestroyImmediate(obj);
         }
     }
 }
