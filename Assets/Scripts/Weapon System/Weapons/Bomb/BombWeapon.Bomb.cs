@@ -195,6 +195,20 @@ namespace Asteroids.WeaponSystem
                 if (state == StateMachine.Normal)
                     GotoStateExploding();
             }
+
+            public void Reset()
+            {
+                gameObject.SetActive(false);
+                child.gameObject.SetActive(false);
+                previous = null;
+
+                // Additional fixes due to rewind, just to be sure
+                state = StateMachine.Normal;
+                timer = 0;
+                audioSource.Stop();
+                childSpriteRenderer.sprite = null;
+                last = null;
+            }
         }
     }
 }

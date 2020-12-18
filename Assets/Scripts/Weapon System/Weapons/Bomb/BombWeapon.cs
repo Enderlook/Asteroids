@@ -236,12 +236,7 @@ namespace Asteroids.WeaponSystem
             flyweight.last = obj;
         }
 
-        private static void BombDeinitializer(Bomb obj)
-        {
-            obj.gameObject.SetActive(false);
-            obj.previous = null;
-            obj.previous = null;
-        }
+        private static void BombDeinitializer(Bomb obj) => obj.Reset();
 
         protected override void Fire()
         {
