@@ -119,6 +119,7 @@ namespace Asteroids.WeaponSystem
         private void StoreUnchained()
         {
             // Fix corruption by rewind
+            // In theory this is no longer needed, but to be sure...
             visited.Clear();
             Bomb current = last;
             if (current is null)
@@ -162,7 +163,7 @@ namespace Asteroids.WeaponSystem
             foreach (Bomb bomb in bombs)
                 lookup.Add(bomb.id, bomb);
 
-            bool corrupted = false;
+            bool corrupted = false; // In theory we no longer need this, but to be sure...
             foreach (Bomb bomb in bombs)
                 bomb.ConfigurePrevious(lookup, ref corrupted);
 
@@ -186,6 +187,7 @@ namespace Asteroids.WeaponSystem
         private void FixPool()
         {
             // Sometimes the rewind corrupt the state of bombs
+            // In theory this no longer happens, but to be sure...
             foreach (Bomb bomb in bombs)
             {
                 if (bomb.gameObject.activeSelf)
@@ -250,7 +252,8 @@ namespace Asteroids.WeaponSystem
         private static void BombCommonInitializer(in BombWeapon flyweight, Bomb obj, in (Vector3 position, Quaternion rotation, Bomb previous) parameters)
         {
             // Sometimes objects may get corrupted due to rewind
-            // We put this in BombCommonInitializer instead of BombInitializer because the latter one is run after this one
+            // We put this in BombCommonInitializer instead of BombInitializer because the latter one is run after this on
+            // In theory this is no longer needed, but to be sure....
             obj.Reset();
 
             Transform transform = obj.transform;

@@ -219,6 +219,7 @@ namespace Asteroids.WeaponSystem
                 previous = null;
 
                 // Additional fixes due to rewind, just to be sure
+                // In theory we no longer need this
                 state = StateMachine.Normal;
                 timer = 0;
                 audioSource.Stop();
