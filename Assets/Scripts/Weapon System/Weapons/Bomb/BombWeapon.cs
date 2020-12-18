@@ -132,6 +132,15 @@ namespace Asteroids.WeaponSystem
                             {
                                 Debug.LogWarning("Endless recursion detected due rewind corruption... fixed.");
                                 previous.previous = current;
+
+                                foreach (Bomb bomb in bombs)
+                                {
+                                    if (visited.Contains(bomb))
+                                        continue;
+                                    builder.Store(bomb);
+                                }
+
+                                yield break;
                             }
                             else
                                 visited.Add(current);
@@ -231,6 +240,7 @@ namespace Asteroids.WeaponSystem
         {
             obj.gameObject.SetActive(false);
             obj.previous = null;
+            obj.previous = null;
         }
 
         protected override void Fire()
@@ -262,6 +272,12 @@ namespace Asteroids.WeaponSystem
 
             Gizmos.color = Color.blue;
             Gizmos.DrawLine(manager.transform.position, last.transform.position);
+        }
+
+        public void FallbackExplosion()
+        {
+            foreach (Bomb bomb in bombs)
+                bomb.FallbackExplosion();
         }
     }
 }

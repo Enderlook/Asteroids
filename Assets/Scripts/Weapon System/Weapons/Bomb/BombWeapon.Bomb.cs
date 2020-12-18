@@ -143,7 +143,14 @@ namespace Asteroids.WeaponSystem
             {
                 if (state != StateMachine.Normal)
                 {
-                    Debug.LogWarning("Possible endless recursion due screwed rewind... chain explosion was terminated.");
+                    Debug.LogWarning("Possible endless recursion due screwed rewind... chain explosion was terminated and replaced by a fallback.");
+                    // Chain of responsability requires each bomb to have a reference to the previous bomb.
+                    // However also bombs must use the Pool pattern.
+                    // And finally the rewind powerup must go back in time using Memento.
+                    // This make quite difficult to track the proper state of a bomb across time and recycles of the same instance
+                    // so sometimes the chain gets corrupted and we need to execute this fallback.
+                    // The fallback has a different behaviour, but at least it tries to reduce the visibility of the error for the user.
+                    flyweight.FallbackExplosion();
                     return;
                 }
 
@@ -151,7 +158,10 @@ namespace Asteroids.WeaponSystem
                 timer = timeToExplode;
 
                 if (previous != null)
+                {
                     previous.Explode(timeToExplode + flyweight.chainDelay);
+                    previous = null;
+                }
 
                 if (timer <= 0)
                     GotoStateExploding();
@@ -178,6 +188,12 @@ namespace Asteroids.WeaponSystem
                     this.previous = previous[previousId];
 
                 previousId = 0;
+            }
+
+            public void FallbackExplosion()
+            {
+                if (state == StateMachine.Normal)
+                    GotoStateExploding();
             }
         }
     }
