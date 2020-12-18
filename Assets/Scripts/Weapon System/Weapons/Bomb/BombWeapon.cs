@@ -39,7 +39,7 @@ namespace Asteroids.WeaponSystem
 
         [StyledHeader("Setup Explosion")]
         [SerializeField, Tooltip("Key pressed to explode.")]
-        private KeyInputManager explodeKey;
+        private KeyCode explodeKey;
 
         [SerializeField, Min(0), Tooltip("Delay between explosions.")]
         private float chainDelay;
@@ -170,11 +170,10 @@ namespace Asteroids.WeaponSystem
             while (true)
             {
                 yield return null;
-                if (explodeKey.Execute() && last != null)
-                {
-                    last.Explode(0);
-                    last = null;
-                }
+                //MyA1-P2
+                // ^- Don't touch that comment, used by the teacher
+                if (TryExplodeCommand() is ExplodeCommand command)
+                    command.Execute();
             }
         }
 

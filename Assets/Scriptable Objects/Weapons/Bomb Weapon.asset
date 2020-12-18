@@ -20,9 +20,7 @@ MonoBehaviour:
   spriteBomb: Weapons/Bomb_03
   bombLayer: 14
   bombScale: 0.25
-  explodeKey:
-    keys: 71000000
-    canBeHoldDown: 0
+  explodeKey: 113
   chainDelay: 0.1
   explodeAnimation: {fileID: 9100000, guid: 842f17c70ffd6c6418038dc585d74e25, type: 2}
   explodeScale: 0.5
