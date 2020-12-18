@@ -51,6 +51,7 @@ namespace Asteroids.Entities.Player
                 return;
 
             //MYA1-P2
+            // ^- Don't touch that comment, used by the teacher
             if (TryGetMoveCommand() is MoveCommand moveCommand)
                 moveCommand.Execute();
 

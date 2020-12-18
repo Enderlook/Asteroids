@@ -48,6 +48,7 @@ namespace Asteroids.WeaponSystem
                 return;
 
             //MYA1-P2
+            // ^- Don't touch that comment, used by the teacher
             if (TryFireCommand(canBeHoldDown) is FireCommand fireCommand)
                 fireCommand.Execute();
         }
