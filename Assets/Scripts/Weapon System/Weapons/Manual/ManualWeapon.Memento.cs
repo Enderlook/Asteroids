@@ -59,7 +59,7 @@ namespace Asteroids.WeaponSystem
             {
                 if (memento is Memento memento_)
                     memento_.Load(manualWeapon, rigidbody);
-                else
+                else if (rigidbody.gameObject.activeSelf) // Don't pool something already pooled
                     manualWeapon.builder.Store(rigidbody);
             }
 
@@ -75,7 +75,7 @@ namespace Asteroids.WeaponSystem
                     rigidbody.velocity = velocity;
                     rigidbody.angularVelocity = angularVelocity;
                 }
-                else
+                else if (rigidbody.gameObject.activeSelf) // Don't pool something already pooled
                     manualWeapon.builder.Store(rigidbody);
             }
 

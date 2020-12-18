@@ -39,5 +39,7 @@
         public void Store(TObject obj) => pool.Store(obj);
 
         public void ExtractIfHas(TObject obj) => pool.ExtractIfHas(obj);
+
+        public bool IsInPool(TObject obj) => pool.IsInPool(obj);
     }
 }

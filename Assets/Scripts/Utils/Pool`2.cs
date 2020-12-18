@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using UnityEngine;
+
 namespace Asteroids.Utils
 {
     /// <inheritdoc cref="IPool{TObject, TParameter}"/>
@@ -62,6 +64,11 @@ namespace Asteroids.Utils
         /// <inheritdoc cref="IPool{TObject, TParameter}.Store(TObject)"/>
         public void Store(TObject obj)
         {
+#if UNITY_EDITOR
+            if (pool.Contains(obj))
+                Debug.LogError("Storing twice same object in pool.");
+#endif
+
             if (!(disable is null))
                 disable(obj);
             pool.Push(obj);
@@ -82,5 +89,7 @@ namespace Asteroids.Utils
                 _version.SetValue(pool, (int)_version.GetValue(pool) + 1);
             }
         }
+
+        public bool IsInPool(TObject obj) => pool.Contains(obj);
     }
 }

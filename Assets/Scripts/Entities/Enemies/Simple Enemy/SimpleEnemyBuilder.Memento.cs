@@ -65,7 +65,7 @@ namespace Asteroids.Entities.Enemies
                 {
                     memento_.Load(pool, rigidbody, spriteRenderer, collider);
                 }
-                else
+                else if (rigidbody.gameObject.activeSelf) // Don't pool something already pooled
                     pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
             }
 
@@ -89,7 +89,7 @@ namespace Asteroids.Entities.Enemies
                         collider.SetPath(i, physicsShape);
                     }
                 }
-                else
+                else if (rigidbody.gameObject.activeSelf) // Don't pool something already pooled
                     pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
             }
 

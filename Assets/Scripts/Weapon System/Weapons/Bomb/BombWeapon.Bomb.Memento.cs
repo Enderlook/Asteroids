@@ -85,7 +85,7 @@ namespace Asteroids.WeaponSystem
                 {
                     if (memento is Memento memento_)
                         memento_.Load(bombWeapon, bomb);
-                    else
+                    else if (bomb.gameObject.activeSelf) // Don't pool something already pooled
                         bombWeapon.builder.Store(bomb);
                 }
 
@@ -119,7 +119,7 @@ namespace Asteroids.WeaponSystem
                                 break;
                         }
                     }
-                    else
+                    else if (bomb.gameObject.activeSelf) // Don't pool something already pooled
                         bombWeapon.builder.Store(bomb);
                 }
 
