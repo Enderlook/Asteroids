@@ -113,6 +113,29 @@ namespace Asteroids.WeaponSystem
 
                         yield return null;
                         OnStopRewind();
+
+                        // Fix corruption by rewind
+                        HashSet<Bomb> visited = new HashSet<Bomb>();
+                        Bomb previous = last;
+                        Bomb current = last;
+                        if (current is null)
+                            yield break;
+                        visited.Add(current);
+
+                        while (true)
+                        {
+                            previous = current;
+                            current = last.previous;
+                            if (current is null)
+                                yield break;
+                            if (visited.Contains(current))
+                            {
+                                Debug.LogWarning("Endless recursion detected due rewind corruption... fixed.");
+                                previous.previous = current;
+                            }
+                            else
+                                visited.Add(current);
+                        }
                     }
                 }
             );

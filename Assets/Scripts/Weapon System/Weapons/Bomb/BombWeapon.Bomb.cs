@@ -141,6 +141,12 @@ namespace Asteroids.WeaponSystem
 
             public void Explode(float timeToExplode)
             {
+                if (state != StateMachine.Normal)
+                {
+                    Debug.LogWarning("Possible endless recursion due screwed rewind... chain explosion was terminated.");
+                    return;
+                }
+
                 state = StateMachine.Waiting;
                 timer = timeToExplode;
 
