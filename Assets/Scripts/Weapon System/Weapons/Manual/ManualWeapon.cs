@@ -54,18 +54,16 @@ namespace Asteroids.WeaponSystem
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(weaponSound, false, false);
             GameSaver.SubscribeProjectileTrigger(
                 () => new State(this),
-                (parameter) => {
-                    // Fixes null reference exception bug with SimpleSoundPlayer
-                    weaponsManager.StartCoroutine(Work());
-                    IEnumerator Work()
-                    {
-                        yield return null;
-                        parameter.Item1.Load(this);
-                        foreach (ProjectileState state in parameter.Item2)
-                            state.Load(this, CreateBullet());
-                    }
-                }
+                (parameter) => weaponsManager.StartCoroutine(OnLoadGame(parameter)) // Fixes null reference exception bug with SimpleSoundPlayer
             );
+        }
+
+        private IEnumerator OnLoadGame((State, System.Collections.Generic.List<ProjectileState>) parameter)
+        {
+            yield return null;
+            parameter.Item1.Load(this);
+            foreach (ProjectileState state in parameter.Item2)
+                state.Load(this, CreateBullet());
         }
 
         private static Rigidbody2D ProjectileConstructor(in ManualWeapon flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)

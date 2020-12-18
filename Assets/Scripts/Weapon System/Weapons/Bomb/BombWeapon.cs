@@ -92,64 +92,59 @@ namespace Asteroids.WeaponSystem
 
             Memento.TrackForRewind(this);
             EventManager.Subscribe<StopRewindEvent>(OnStopRewind);
-            GameSaver.SubscribeBombTrigger(
-                () => new State(this),
-                (parameter) => {
-                    weaponsManager.StartCoroutine(Work());
-                    IEnumerator Work()
-                    {
-                        yield return null;
-
-                        parameter.Item1.Load(this);
-                        int highest = 0;
-                        foreach (Bomb.State state in parameter.Item2)
-                        {
-                            Bomb bomb = CreateBomb();
-                            bomb.Initialize();
-                            state.Load(this, bomb);
-                            highest = Mathf.Max(highest, bomb.id);
-                        }
-                        Bomb.totalID = highest;
-
-                        yield return null;
-                        OnStopRewind();
-
-                        // Fix corruption by rewind
-                        HashSet<Bomb> visited = new HashSet<Bomb>();
-                        Bomb previous = last;
-                        Bomb current = last;
-                        if (current is null)
-                            yield break;
-                        visited.Add(current);
-
-                        while (true)
-                        {
-                            previous = current;
-                            current = last.previous;
-                            if (current is null)
-                                yield break;
-                            if (visited.Contains(current))
-                            {
-                                Debug.LogWarning("Endless recursion detected due rewind corruption... fixed.");
-                                previous.previous = current;
-
-                                foreach (Bomb bomb in bombs)
-                                {
-                                    if (visited.Contains(bomb))
-                                        continue;
-                                    builder.Store(bomb);
-                                }
-
-                                yield break;
-                            }
-                            else
-                                visited.Add(current);
-                        }
-                    }
-                }
-            );
+            GameSaver.SubscribeBombTrigger(() => new State(this), (parameter) => weaponsManager.StartCoroutine(OnLoadGame(parameter)));
 
             weaponsManager.StartCoroutine(ExplodeChecker());
+        }
+
+        private IEnumerator OnLoadGame((State, List<Bomb.State>) parameter)
+        {
+            yield return null;
+
+            parameter.Item1.Load(this);
+            int highest = 0;
+            foreach (Bomb.State state in parameter.Item2)
+            {
+                Bomb bomb = CreateBomb();
+                bomb.Initialize();
+                state.Load(this, bomb);
+                highest = Mathf.Max(highest, bomb.id);
+            }
+            Bomb.totalID = highest;
+
+            yield return null;
+            OnStopRewind();
+
+            // Fix corruption by rewind
+            HashSet<Bomb> visited = new HashSet<Bomb>();
+            Bomb current = last;
+            if (current is null)
+                yield break;
+            visited.Add(current);
+
+            while (true)
+            {
+                Bomb previous = current;
+                current = last.previous;
+                if (current is null)
+                    yield break;
+                if (visited.Contains(current))
+                {
+                    Debug.LogWarning("Endless recursion detected due rewind corruption... fixed.");
+                    previous.previous = current;
+
+                    foreach (Bomb bomb in bombs)
+                    {
+                        if (visited.Contains(bomb))
+                            continue;
+                        builder.Store(bomb);
+                    }
+
+                    yield break;
+                }
+                else
+                    visited.Add(current);
+            }
         }
 
         private void OnStopRewind()
