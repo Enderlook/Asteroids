@@ -177,15 +177,21 @@ namespace Asteroids.WeaponSystem
                 Gizmos.DrawLine(transform.position, previous.transform.position);
             }
 
-            public void ConfigurePrevious(Dictionary<int, Bomb> previous)
+            public void ConfigurePrevious(Dictionary<int, Bomb> previous, ref bool corrupted)
             {
                 // Due to bombs being pooled and work like a linked list, references get invalidated after rewind
                 // So we need to store ids and regenerate them after rewind each frame
 
                 if (previousId == 0)
                     this.previous = null;
+                else if (previous.TryGetValue(previousId, out Bomb prev))
+                    this.previous = prev;
                 else
-                    this.previous = previous[previousId];
+                {
+                    Debug.LogWarning("Key not found, state corrupted due to rewind.");
+                    this.previous = null;
+                    corrupted = true;
+                }
 
                 previousId = 0;
             }

@@ -64,6 +64,7 @@ namespace Asteroids.WeaponSystem
         private HashSet<Bomb> bombs = new HashSet<Bomb>();
         private Dictionary<int, Bomb> lookup = new Dictionary<int, Bomb>();
         private int lastId;
+        private HashSet<Bomb> visited = new HashSet<Bomb>();
 #pragma warning restore CS0649
 
         public override void Initialize(WeaponsManager weaponsManager)
@@ -112,11 +113,16 @@ namespace Asteroids.WeaponSystem
             yield return null;
             OnStopRewind();
 
+            StoreUnchained();
+        }
+
+        private void StoreUnchained()
+        {
             // Fix corruption by rewind
-            HashSet<Bomb> visited = new HashSet<Bomb>();
+            visited.Clear();
             Bomb current = last;
             if (current is null)
-                yield break;
+                return;
             visited.Add(current);
 
             while (true)
@@ -124,7 +130,7 @@ namespace Asteroids.WeaponSystem
                 Bomb previous = current;
                 current = last.previous;
                 if (current is null)
-                    yield break;
+                    return;
                 if (visited.Contains(current))
                 {
                     Debug.LogWarning("Endless recursion detected due rewind corruption... fixed.");
@@ -136,8 +142,7 @@ namespace Asteroids.WeaponSystem
                             continue;
                         builder.Store(bomb);
                     }
-
-                    yield break;
+                    return;
                 }
                 else
                     visited.Add(current);
@@ -151,15 +156,25 @@ namespace Asteroids.WeaponSystem
             foreach (Bomb bomb in bombs)
                 lookup.Add(bomb.id, bomb);
 
+            bool corrupted = false;
             foreach (Bomb bomb in bombs)
-                bomb.ConfigurePrevious(lookup);
+                bomb.ConfigurePrevious(lookup, ref corrupted);
 
             if (lastId == 0)
                 last = null;
+            else if (lookup.TryGetValue(lastId, out Bomb prev))
+                last = prev;
             else
-                last = lookup[lastId];
+            {
+                Debug.LogWarning("Key not found, state corrupted due to rewind.");
+                last = null;
+                corrupted = true;
+            }
 
             lastId = 0;
+
+            if (corrupted)
+                StoreUnchained();
         }
 
         private IEnumerator ExplodeChecker()
@@ -215,7 +230,11 @@ namespace Asteroids.WeaponSystem
         }
 
         private static void BombInitializer(in BombWeapon flyweight, Bomb obj, in (Vector3 position, Quaternion rotation, Bomb previous) parameters)
-            => obj.gameObject.SetActive(true);
+        {
+            // Sometimes objects may get corrupted due to rewind
+            obj.Reset();
+            obj.gameObject.SetActive(true);
+        }
 
         private static void BombCommonInitializer(in BombWeapon flyweight, Bomb obj, in (Vector3 position, Quaternion rotation, Bomb previous) parameters)
         {
