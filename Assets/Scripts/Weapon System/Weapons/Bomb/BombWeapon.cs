@@ -2,15 +2,12 @@
 using Asteroids.Utils;
 
 using AvalonStudios.Additions.Attributes;
-using AvalonStudios.Additions.Utils.InputsManager;
 
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 
 using System.Collections;
 using System.Collections.Generic;
-
-using UnityEditor.Animations;
 
 using UnityEngine;
 
@@ -45,7 +42,7 @@ namespace Asteroids.WeaponSystem
         private float chainDelay;
 
         [SerializeField, Tooltip("Animation used to explote the bomb.")]
-        private AnimatorController explodeAnimation;
+        private RuntimeAnimatorController explodeAnimation;
 
         [SerializeField, Tooltip("Explode sprite scale.")]
         private float explodeScale;

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#if UNITY_EDITOR
+using UnityEngine;
 using UnityEditor;
 
 namespace AvalonStudios.Additions.Utils.IconContentHandle
@@ -30,3 +31,4 @@ namespace AvalonStudios.Additions.Utils.IconContentHandle
         public static GUIContent SpriteIcon => EditorGUIUtility.IconContent("Sprite Icon");
     }
 }
+#endif
