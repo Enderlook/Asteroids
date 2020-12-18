@@ -89,7 +89,7 @@ namespace Asteroids.WeaponSystem
             Bomb.totalID = 0;
 
             Memento.TrackForRewind(this);
-            EventManager.Subscribe<StopRewindEvent>(OnStopRewind);
+            EventManager.Subscribe<StopRewindEvent>(OnStackRewind);
             GameSaver.SubscribeBombTrigger(() => new State(this), (parameter) => weaponsManager.StartCoroutine(OnLoadGame(parameter)));
 
             weaponsManager.StartCoroutine(ExplodeChecker());
@@ -111,7 +111,7 @@ namespace Asteroids.WeaponSystem
             Bomb.totalID = highest;
 
             yield return null;
-            OnStopRewind();
+            RegenerateChain();
 
             StoreUnchained();
         }
@@ -149,7 +149,13 @@ namespace Asteroids.WeaponSystem
             }
         }
 
-        private void OnStopRewind()
+        private void OnStackRewind()
+        {
+            RegenerateChain();
+            FixPool();
+        }
+
+        private void RegenerateChain()
         {
             lookup.Clear();
 
@@ -175,6 +181,16 @@ namespace Asteroids.WeaponSystem
 
             if (corrupted)
                 StoreUnchained();
+        }
+
+        private void FixPool()
+        {
+            // Sometimes the rewind corrupt the state of bombs
+            foreach (Bomb bomb in bombs)
+            {
+                if (bomb.gameObject.activeSelf)
+                    builder.ExtractIfHas(bomb);
+            }
         }
 
         private IEnumerator ExplodeChecker()
