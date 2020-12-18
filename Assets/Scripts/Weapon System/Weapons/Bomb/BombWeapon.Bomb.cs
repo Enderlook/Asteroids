@@ -204,6 +204,10 @@ namespace Asteroids.WeaponSystem
 
             public void Reset()
             {
+                // If we just created the bomb don't reset it
+                if (child == null)
+                    return;
+
                 gameObject.SetActive(false);
                 child.gameObject.SetActive(false);
                 previous = null;

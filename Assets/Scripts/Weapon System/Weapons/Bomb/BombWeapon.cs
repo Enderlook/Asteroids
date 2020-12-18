@@ -229,15 +229,14 @@ namespace Asteroids.WeaponSystem
             return bombScript;
         }
 
-        private static void BombInitializer(in BombWeapon flyweight, Bomb obj, in (Vector3 position, Quaternion rotation, Bomb previous) parameters)
-        {
-            // Sometimes objects may get corrupted due to rewind
-            obj.Reset();
-            obj.gameObject.SetActive(true);
-        }
+        private static void BombInitializer(in BombWeapon flyweight, Bomb obj, in (Vector3 position, Quaternion rotation, Bomb previous) parameters) => obj.gameObject.SetActive(true);
 
         private static void BombCommonInitializer(in BombWeapon flyweight, Bomb obj, in (Vector3 position, Quaternion rotation, Bomb previous) parameters)
         {
+            // Sometimes objects may get corrupted due to rewind
+            // We put this in BombCommonInitializer instead of BombInitializer because the latter one is run after this one
+            obj.Reset();
+
             Transform transform = obj.transform;
             transform.position = parameters.position;
             transform.rotation = parameters.rotation;
