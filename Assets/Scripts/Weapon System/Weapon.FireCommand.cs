@@ -6,7 +6,7 @@ namespace Asteroids.WeaponSystem
 {
     public partial class Weapon
     {
-        private FireCommand TryFireCommand(bool canBeHoldDown)
+        private FireCommand? TryFireCommand(bool canBeHoldDown)
         {
             bool input = canBeHoldDown ? Input.GetKey(manager.FireInput) : Input.GetKeyDown(manager.FireInput);
             if (Time.time > nextCast && input)
@@ -14,14 +14,11 @@ namespace Asteroids.WeaponSystem
             return null;
         }
 
-        private class FireCommand : ICommand
+        private struct FireCommand : ICommand
         {
             private Weapon weapon;
 
-            public FireCommand(Weapon weapon)
-            {
-                this.weapon = weapon;
-            }
+            public FireCommand(Weapon weapon) => this.weapon = weapon;
 
             public void Execute() => weapon.Fire();
         }
