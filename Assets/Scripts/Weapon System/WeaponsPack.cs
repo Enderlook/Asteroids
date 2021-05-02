@@ -19,12 +19,10 @@ namespace Asteroids.WeaponSystem
             if (weapons == null)
                 return;
 
+            selectedWeapon = 0;
+
             for (int i = 0; i < weapons.Length; i++)
-            {
-                if (i == 0)
-                    selectedWeapon = i;
                 weapons[i]?.Initialize(manager);
-            }
         }
 
         public void Update()
@@ -45,6 +43,7 @@ namespace Asteroids.WeaponSystem
         private void SwitchWeapon()
         {
             //MYA1-P2
+            // ^- Don't touch that comment, used by the teacher
             if (TryChangeWeaponCommand() is ChangeWeaponCommand changeWeaponCommand)
                 changeWeaponCommand.Execute();
         }

@@ -35,7 +35,6 @@ namespace Asteroids.Entities.Enemies
 
             public void Load(IPool<GameObject, (Vector3 position, Vector3 speed)> pool, GameObject enemy)
             {
-
                 Rigidbody2D rigidbody = enemy.GetComponent<Rigidbody2D>();
                 SpriteRenderer spriteRenderer = enemy.GetComponent<SpriteRenderer>();
                 PolygonCollider2D collider = enemy.GetComponent<PolygonCollider2D>();

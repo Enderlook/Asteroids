@@ -1,12 +1,12 @@
-﻿using AvalonStudios.Additions.Extensions;
+﻿using AvalonStudios.Additions.Attributes;
+using AvalonStudios.Additions.Extensions;
 using AvalonStudios.Additions.Utils.Interfaces;
-using AvalonStudios.Additions.Attributes;
+
+using MiniJSON;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-
-using MiniJSON;
 
 using UnityEngine;
 
@@ -30,8 +30,10 @@ namespace Asteroids.Localization
             {
                 if (instance.IsNull())
                 {
-                    GameObject obj = new GameObject();
-                    obj.name = "Localization Manager";
+                    GameObject obj = new GameObject
+                    {
+                        name = "Localization Manager"
+                    };
                     instance = obj.AddComponent<LocalizationManager>();
                 }
                 return instance;
@@ -96,7 +98,8 @@ namespace Asteroids.Localization
 
             foreach (KeyValuePair<string, object> item in fileContent)
             {
-                if (!texts.ContainsKey(lang)) texts.Add(lang, new Dictionary<string, string>());
+                if (!texts.ContainsKey(lang))
+                    texts.Add(lang, new Dictionary<string, string>());
 
                 texts[lang].Add($"{fileName}/{item.Key}", item.Value.ToString());
             }

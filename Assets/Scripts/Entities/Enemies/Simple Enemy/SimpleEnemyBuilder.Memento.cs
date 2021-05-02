@@ -62,9 +62,7 @@ namespace Asteroids.Entities.Enemies
             private static void ConsumeMemento(Memento? memento, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, Rigidbody2D rigidbody, SpriteRenderer spriteRenderer, PolygonCollider2D collider)
             {
                 if (memento is Memento memento_)
-                {
                     memento_.Load(pool, rigidbody, spriteRenderer, collider);
-                }
                 else if (rigidbody.gameObject.activeSelf) // Don't pool something already pooled
                     pool.Store(rigidbody.gameObject); // Read from rigidbody to reduce closure size
             }

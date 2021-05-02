@@ -1,8 +1,8 @@
-﻿using AvalonStudios.Additions.Attributes;
+﻿using Asteroids.Scene;
+
+using AvalonStudios.Additions.Attributes;
 
 using Enderlook.Unity.Components.ScriptableSound;
-
-using Asteroids.Scene;
 
 using UnityEngine;
 
