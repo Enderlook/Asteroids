@@ -72,23 +72,13 @@ namespace Asteroids.Scene
             Weapon.State projectile = instance.saveProjectileTrigger();
             BombWeapon.State bomb = instance.saveBombTrigger();
 
-            List<ManualWeapon.ProjectileState> projectiles = new List<ManualWeapon.ProjectileState>(instance.saveProjectileTriggerBullets.Count);
-            foreach (Func<ManualWeapon.ProjectileState> save in instance.saveProjectileTriggerBullets)
-                projectiles.Add(save());
-
-            Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies = new Dictionary<string, List<SimpleEnemyBuilder.EnemyState>>(instance.saveEnemies.Count);
-            foreach (KeyValuePair<string, List<Func<SimpleEnemyBuilder.EnemyState>>> save in instance.saveEnemies)
-            {
-                List<SimpleEnemyBuilder.EnemyState> enemies_ = new List<SimpleEnemyBuilder.EnemyState>(save.Value.Count);
-                enemies.Add(save.Key, enemies_);
-
-                foreach (Func<SimpleEnemyBuilder.EnemyState> enemy in save.Value)
-                    enemies_.Add(enemy());
-            }
-
-            List<BombWeapon.Bomb.State> bombs = new List<BombWeapon.Bomb.State>(instance.saveBombsTrigger.Count);
-            foreach (Func<BombWeapon.Bomb.State> save in instance.saveBombsTrigger)
-                bombs.Add(save());
+            //IA2-P1
+            // ^- Don't touch that comment, used by the teacher
+#pragma warning disable RCS1077 // Optimize LINQ method call
+            List<ManualWeapon.ProjectileState> projectiles = instance.saveProjectileTriggerBullets.Select(e => e()).ToList();
+            Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies = instance.saveEnemies.ToDictionary(e => e.Key, e => e.Value.Select(e2 => e2()).ToList());
+            List<BombWeapon.Bomb.State> bombs = instance.saveBombsTrigger.Select(e => e()).ToList();
+#pragma warning restore RCS1077
 
             GameState gameState = new GameState(player, game, laser, projectile, projectiles, bomb, bombs, enemies);
             gameState.SaveToFile();

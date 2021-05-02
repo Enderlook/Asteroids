@@ -7,6 +7,7 @@ using MiniJSON;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using UnityEngine;
 
@@ -70,16 +71,10 @@ namespace Asteroids.Localization
         {
             texts = new Dictionary<SystemLanguage, Dictionary<string, string>>();
 
-            List<string> allFiles = new List<string>();
-            string[] getFiles = Directory.GetFiles(Application.dataPath + $"{rootDirectory}/", "*.json", SearchOption.AllDirectories);
-            foreach (string file in getFiles)
-            {
-                string fileName = file.Substring(file.IndexOf("Localization", StringComparison.Ordinal))
-                                   .Replace(@"\", @"/");
-                allFiles.Add(fileName);
-            }
-
-            foreach (string file in allFiles)
+            foreach (string file in Directory.GetFiles(Application.dataPath + $"{rootDirectory}/", "*.json", SearchOption.AllDirectories)
+                .Select(file => file.Substring(file.IndexOf("Localization", StringComparison.Ordinal)).Replace(@"\", "/")))
+                //IA2-P1
+                // ^- Don't touch that comment, used by the teacher
             {
                 TextAsset asset = Resources.Load<TextAsset>(file.Replace(".json", ""));
 
