@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7121c9629b60688449470faa18d46a0d, type: 3}
+  m_Name: Shooter
+  m_EditorClassIdentifier: 
+  <ScoreWhenDestroyed>k__BackingField: 15
+  <Mass>k__BackingField: 1
+  <Sprites>k__BackingField:
+  - Spaceships/Enemy
+  <Layer>k__BackingField: 9
+  <DeathSound>k__BackingField: {fileID: -4213840797054624402, guid: 6437f7c5af2005b40aaea9f00187d905,
+    type: 2}
+  <AudioMixerGroup>k__BackingField: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
+    type: 2}
+  <ShootSound>k__BackingField: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6,
+    type: 2}
+  <sprite>k__BackingField: Spaceships/Enemy_Bullet
+  <force>k__BackingField: 2
+  <cooldown>k__BackingField: 1
+  <projectileLayer>k__BackingField: 15

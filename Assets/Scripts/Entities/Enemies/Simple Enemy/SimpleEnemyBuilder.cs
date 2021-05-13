@@ -14,8 +14,8 @@ namespace Asteroids.Entities.Enemies
 {
     public partial class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
-        private static Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
-        private static List<Vector2> physicsShape = new List<Vector2>();
+        private static readonly Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
+        private static readonly List<Vector2> physicsShape = new List<Vector2>();
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Deinitializer deinitialize = Deinitialize;
@@ -52,16 +52,24 @@ namespace Asteroids.Entities.Enemies
 
         public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, string id)
         {
+            GameObject enemy = ConstructButNotSave(flyweight, pool, out Rigidbody2D rigidbody, out SpriteRenderer spriteRenderer);
+
+            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
+
+            return enemy;
+        }
+
+        public static GameObject ConstructButNotSave(SimpleEnemyFlyweight flyweight, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, out Rigidbody2D rigidbody, out SpriteRenderer spriteRenderer)
+        {
             GameObject enemy = new GameObject(flyweight.name)
             {
                 layer = flyweight.Layer,
             };
-
-            Rigidbody2D rigidbody = enemy.AddComponent<Rigidbody2D>();
+            rigidbody = enemy.AddComponent<Rigidbody2D>();
             rigidbody.gravityScale = 0;
             rigidbody.mass = flyweight.Mass;
 
-            SpriteRenderer spriteRenderer = enemy.AddComponent<SpriteRenderer>();
+            spriteRenderer = enemy.AddComponent<SpriteRenderer>();
             PolygonCollider2D collider = enemy.AddComponent<PolygonCollider2D>();
             enemy.AddComponent<ScreenWrapper>();
 
@@ -74,8 +82,6 @@ namespace Asteroids.Entities.Enemies
             executeOnDeath.player = player;
 
             Memento.TrackForRewind(pool, rigidbody, spriteRenderer, collider);
-
-            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
 
             return enemy;
         }

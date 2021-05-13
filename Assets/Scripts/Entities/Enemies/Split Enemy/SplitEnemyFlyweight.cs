@@ -1,6 +1,4 @@
-﻿using Asteroids.Utils;
-
-using Enderlook.Unity.Attributes;
+﻿using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Serializables.Ranges;
 
 using UnityEngine;
@@ -21,11 +19,6 @@ namespace Asteroids.Entities.Enemies
         public RangeFloat initialSpeed { get; private set; }
 #pragma warning restore CS0649
 
-        public override IFactory<GameObject, (Vector3 position, Vector3 speed)> GetFactory()
-        {
-            if (factory is null)
-                factory = new SplitEnemyBuilder(name) { Flyweight = this};
-            return factory;
-        }
+        public override void Initialize() => factory = new SplitEnemyBuilder(name) { Flyweight = this };
     }
 }

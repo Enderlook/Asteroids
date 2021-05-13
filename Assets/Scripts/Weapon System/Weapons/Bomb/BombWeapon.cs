@@ -90,22 +90,25 @@ namespace Asteroids.WeaponSystem
 
             Memento.TrackForRewind(this);
             EventManager.Subscribe<StopRewindEvent>(OnStackRewind);
-            GameSaver.SubscribeBombTrigger(() => new State(this), (parameter) => weaponsManager.StartCoroutine(OnLoadGame(parameter)));
+            GameSaver.SubscribeBombTrigger(
+                () => new State(this),
+                (state, states) => weaponsManager.StartCoroutine(OnLoadGame(state, states))
+            );
 
             weaponsManager.StartCoroutine(ExplodeChecker());
         }
 
-        private IEnumerator OnLoadGame((State, List<Bomb.State>) parameter)
+        private IEnumerator OnLoadGame(State state, List<Bomb.State> states)
         {
             yield return null;
 
-            parameter.Item1.Load(this);
+            state.Load(this);
             int highest = 0;
-            foreach (Bomb.State state in parameter.Item2)
+            foreach (Bomb.State state_ in states)
             {
                 Bomb bomb = CreateBomb();
                 bomb.Initialize();
-                state.Load(this, bomb);
+                state_.Load(this, bomb);
                 highest = Mathf.Max(highest, bomb.id);
             }
             Bomb.totalID = highest;

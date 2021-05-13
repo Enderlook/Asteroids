@@ -27,8 +27,11 @@ namespace Asteroids.Scene
             public readonly BombWeapon.State bomb;
             public readonly List<BombWeapon.Bomb.State> bombs;
             public readonly Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies;
+            //IA2-P1
+            // ^- Don't touch that comment, used by the teacher
+            public readonly List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies;
 
-            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies)
+            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies, List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies)
             {
                 this.player = player;
                 this.game = game;
@@ -38,6 +41,7 @@ namespace Asteroids.Scene
                 this.enemies = enemies;
                 this.bomb = bomb;
                 this.bombs = bombs;
+                this.shooterEnemies = shooterEnemies;
             }
 
             public void SaveToFile()

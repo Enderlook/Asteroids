@@ -57,7 +57,8 @@ namespace Asteroids.Entities.Enemies
         private static void CommonInitialize(in SplitEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
             => SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter);
 
-        private static void Deinitialize(GameObject enemy) => SimpleEnemyBuilder.Deinitialize(enemy);
+        private static void Deinitialize(GameObject enemy)
+            => SimpleEnemyBuilder.Deinitialize(enemy);
 
         public GameObject Create((Vector3 position, Vector3 speed) parameter) => builder.Create(parameter);
 

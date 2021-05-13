@@ -7,6 +7,7 @@ using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
 
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -54,16 +55,16 @@ namespace Asteroids.WeaponSystem
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(weaponSound, false, false);
             GameSaver.SubscribeProjectileTrigger(
                 () => new State(this),
-                (parameter) => weaponsManager.StartCoroutine(OnLoadGame(parameter)) // Fixes null reference exception bug with SimpleSoundPlayer
+                (state, states) => weaponsManager.StartCoroutine(OnLoadGame(state, states)) // Fixes null reference exception bug with SimpleSoundPlayer
             );
         }
 
-        private IEnumerator OnLoadGame((State, System.Collections.Generic.List<ProjectileState>) parameter)
+        private IEnumerator OnLoadGame(State state, List<ProjectileState> states)
         {
             yield return null;
-            parameter.Item1.Load(this);
-            foreach (ProjectileState state in parameter.Item2)
-                state.Load(this, CreateBullet());
+            state.Load(this);
+            foreach (ProjectileState state_ in states)
+                state_.Load(this, CreateBullet());
         }
 
         private static Rigidbody2D ProjectileConstructor(in ManualWeapon flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
