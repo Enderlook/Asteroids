@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O1_GameSaver)]
-    public partial class GameSaver : MonoBehaviour
+    public sealed partial class GameSaver : MonoBehaviour
     {
         public static bool requestLoad;
 

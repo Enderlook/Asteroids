@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Asteroids.Utils
 {
     /// <inheritdoc cref="IPool{TObject,}"/>
-    public class Pool<TObject> : IPool<TObject>
+    public sealed class Pool<TObject> : IPool<TObject>
     {
         private const BindingFlags BindingAttr = BindingFlags.NonPublic | BindingFlags.Instance;
         private static readonly FieldInfo _array = typeof(Stack<TObject>).GetField("_array", BindingAttr);

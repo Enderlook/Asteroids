@@ -3,7 +3,7 @@
 namespace Asteroids.WeaponSystem
 {
     [CreateAssetMenu(menuName = "Asteroids/Weapon System/Weapons/Weapons Pack", fileName = "Weapon Packages")]
-    public partial class WeaponsPack : ScriptableObject
+    public sealed partial class WeaponsPack : ScriptableObject
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Weapons")]

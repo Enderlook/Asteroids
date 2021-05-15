@@ -1,6 +1,6 @@
 ﻿namespace Asteroids.Scene
 {
-    public partial class GlobalMementoManager
+    public sealed partial class GlobalMementoManager
     {
         private interface IMementoManager
         {

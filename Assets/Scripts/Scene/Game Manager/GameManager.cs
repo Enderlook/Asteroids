@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O4_GameManager)]
-    public partial class GameManager : MonoBehaviour
+    public sealed partial class GameManager : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Panel shown on loose.")]

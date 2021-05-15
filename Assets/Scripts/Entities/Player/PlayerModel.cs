@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
-    public class PlayerModel : MonoBehaviour
+    public sealed class PlayerModel : MonoBehaviour
     {
 #pragma warning disable CS0649
         [field: SerializeField, @IsProperty, Tooltip("Amount of lifes the player start with.")]

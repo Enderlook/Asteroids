@@ -7,7 +7,7 @@ namespace Asteroids.Utils
     /// Represent a type safe event manager where types are used as events types.
     /// </summary>
     /// <typeparam name="TEventBase">Base type of all events. Useful to determine a common ground.</typeparam>
-    public class EventManager<TEventBase>
+    public sealed class EventManager<TEventBase>
     {
         private Dictionary<Type, (Action, Delegate)> callbacks = new Dictionary<Type, (Action, Delegate)>();
 

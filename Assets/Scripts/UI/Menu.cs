@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Asteroids.UI
 {
-    public class Menu : MonoBehaviour
+    public sealed class Menu : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField]

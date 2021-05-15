@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
-    public class ShooterEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
+    public sealed class ShooterEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
         private static readonly Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
         private static readonly BuilderFactoryPool<GameObject, ShooterEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Asteroids.Utils
 {
     /// <inheritdoc cref="IPool{TObject, TParameter}"/>
-    public class Pool<TObject, TParameter> : IPool<TObject, TParameter>
+    public sealed class Pool<TObject, TParameter> : IPool<TObject, TParameter>
     {
         private const BindingFlags BindingAttr = BindingFlags.NonPublic | BindingFlags.Instance;
         private static readonly FieldInfo _array = typeof(Stack<TObject>).GetField("_array", BindingAttr);

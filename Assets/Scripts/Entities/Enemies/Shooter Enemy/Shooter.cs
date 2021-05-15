@@ -16,7 +16,7 @@ using Resources = Asteroids.Utils.Resources;
 namespace Asteroids.WeaponSystem
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public partial class Shooter : MonoBehaviour
+    public sealed partial class Shooter : MonoBehaviour
     {
         private static readonly BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Constructor construct = ProjectileConstructor;
         private static readonly BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer initialize = ProjectileInitializer;
@@ -154,7 +154,7 @@ namespace Asteroids.WeaponSystem
             return bullet;
         }
 
-        private class ReturnToPoolOnCollision : MonoBehaviour
+        private sealed class ReturnToPoolOnCollision : MonoBehaviour
         {
             public IPool<Rigidbody2D, (Vector3 position, Quaternion rotation, Vector3 velocity)> pool;
 

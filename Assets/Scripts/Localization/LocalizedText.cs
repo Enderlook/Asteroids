@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace Asteroids.Localization
 {
     [RequireComponent(typeof(Text))]
-    public class LocalizedText : MonoBehaviour
+    public sealed class LocalizedText : MonoBehaviour
     {
         [SerializeField, Tooltip("Key to find the JSON")]
         private string key = "Insert Key...";

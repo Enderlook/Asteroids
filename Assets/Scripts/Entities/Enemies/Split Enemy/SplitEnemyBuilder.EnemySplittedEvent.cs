@@ -1,6 +1,6 @@
 ﻿namespace Asteroids.Entities.Enemies
 {
-    public partial class SplitEnemyBuilder
+    public sealed partial class SplitEnemyBuilder
     {
         public readonly struct EnemySplittedEvent
         {

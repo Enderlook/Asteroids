@@ -1,6 +1,6 @@
 ﻿namespace Asteroids.UI
 {
-    public partial class PauseManager
+    public sealed partial class PauseManager
     {
         public readonly struct PauseEvent
         {

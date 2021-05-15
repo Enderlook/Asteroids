@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Asteroids.Entities.Enemies
 {
     [CreateAssetMenu(menuName = "Asteroids/Enemies/Shooter Enemy Flyweight")]
-    public class ShooterEnemyFlyweight : SimpleEnemyFlyweight
+    public sealed class ShooterEnemyFlyweight : SimpleEnemyFlyweight
     {
 #pragma warning disable CS0649
         [field: SerializeField, IsProperty, Tooltip("Sound played on shoot.")]

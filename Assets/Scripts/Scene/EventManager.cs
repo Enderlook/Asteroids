@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O1_EventManager)]
-    public class EventManager : MonoBehaviour
+    public sealed class EventManager : MonoBehaviour
     {
         private static EventManager instance;
 

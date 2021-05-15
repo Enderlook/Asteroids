@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class ManualWeapon
+    public sealed partial class ManualWeapon
     {
         [Serializable]
         public readonly struct ProjectileState

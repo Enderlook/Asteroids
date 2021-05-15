@@ -1,6 +1,7 @@
 ﻿using Asteroids.Utils;
 
 using UnityEngine;
+
 namespace Asteroids.Entities.Enemies
 {
     public abstract class EnemyFlyweight : ScriptableObject

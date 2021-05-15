@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Asteroids.Entities.Player
 {
     [RequireComponent(typeof(PlayerModel)), RequireComponent(typeof(SpriteRenderer))]
-    public class PlayerView : MonoBehaviour
+    public sealed class PlayerView : MonoBehaviour
     {
         private PlayerModel model;
 

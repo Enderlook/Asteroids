@@ -1,6 +1,6 @@
 ﻿namespace Asteroids.Scene
 {
-    public partial class GameManager
+    public sealed partial class GameManager
     {
         public readonly struct ScoreHasChangedEvent
         {

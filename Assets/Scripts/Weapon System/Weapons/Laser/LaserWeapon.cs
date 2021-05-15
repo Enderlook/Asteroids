@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Asteroids.WeaponSystem
 {
     [CreateAssetMenu(menuName = "Asteroids/Weapon System/Weapons/Components/Laser Weapon", fileName = "Laser Weapon")]
-    public partial class LaserWeapon : Weapon
+    public sealed partial class LaserWeapon : Weapon
     {
 #pragma warning disable CS0649
         [StyledHeader("Setup")]

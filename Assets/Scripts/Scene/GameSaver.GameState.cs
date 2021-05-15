@@ -11,10 +11,10 @@ using UnityEngine;
 
 namespace Asteroids.Scene
 {
-    public partial class GameSaver
+    public sealed partial class GameSaver
     {
         [Serializable]
-        private class GameState
+        private sealed class GameState
         {
             private static readonly string path = Application.persistentDataPath;
             private static readonly string pathAndName = path + "/save.sav";

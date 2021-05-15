@@ -7,7 +7,7 @@ using UnityEngine.Rendering.PostProcessing;
 namespace Asteroids.Scene
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O1_GlobalMementoManager)]
-    public partial class GlobalMementoManager : MonoBehaviour
+    public sealed partial class GlobalMementoManager : MonoBehaviour
     {
         private static GlobalMementoManager instance;
 

@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 namespace Asteroids.Entities.Enemies
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O5_EnemySpawner)]
-    public partial class EnemySpawner : MonoBehaviour
+    public sealed partial class EnemySpawner : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Initial amount of enemies.")]

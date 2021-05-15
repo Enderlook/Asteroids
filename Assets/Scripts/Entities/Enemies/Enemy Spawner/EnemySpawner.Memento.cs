@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
-    public partial class EnemySpawner
+    public sealed partial class EnemySpawner
     {
         private readonly struct Memento
         {

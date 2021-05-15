@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Asteroids.UI
 {
     [RequireComponent(typeof(SoundPlayer))]
-    public class AudioManager : MonoBehaviour
+    public sealed class AudioManager : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Index of play music.")]

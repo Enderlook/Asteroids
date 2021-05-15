@@ -2,7 +2,7 @@
 
 namespace Asteroids.Scene
 {
-    public partial class GameManager
+    public sealed partial class GameManager
     {
         [Serializable]
         public readonly struct State

@@ -16,7 +16,7 @@ using Resources = Asteroids.Utils.Resources;
 namespace Asteroids.WeaponSystem
 {
     [CreateAssetMenu(menuName = "Asteroids/Weapon System/Weapons/Components/Bomb Weapon", fileName = "Bomb Weapon")]
-    public partial class BombWeapon : Weapon
+    public sealed partial class BombWeapon : Weapon
     {
         private static readonly BuilderFactoryPool<Bomb, BombWeapon, (Vector3 position, Quaternion rotation, Bomb previous)>.Constructor construct = BombConstructor;
         private static readonly BuilderFactoryPool<Bomb, BombWeapon, (Vector3 position, Quaternion rotation, Bomb previous)>.Initializer initialize = BombInitializer;

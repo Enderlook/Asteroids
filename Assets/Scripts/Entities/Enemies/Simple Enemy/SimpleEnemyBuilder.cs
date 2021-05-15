@@ -12,7 +12,7 @@ using Resources = Asteroids.Utils.Resources;
 
 namespace Asteroids.Entities.Enemies
 {
-    public partial class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
+    public sealed partial class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
         private static readonly Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
         private static readonly List<Vector2> physicsShape = new List<Vector2>();

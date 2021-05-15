@@ -6,7 +6,7 @@ using IsProperty = Enderlook.Unity.Attributes.IsPropertyAttribute;
 
 namespace Asteroids.WeaponSystem
 {
-    public class WeaponsManager : MonoBehaviour
+    public sealed class WeaponsManager : MonoBehaviour
     {
 #pragma warning disable CS0649
         [field: StyledHeader("Setup")]

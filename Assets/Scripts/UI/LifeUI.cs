@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace Asteroids.UI
 {
     [DefaultExecutionOrder((int)ExecutionOrder.O3_LifeUI)]
-    public class LifeUI : MonoBehaviour
+    public sealed class LifeUI : MonoBehaviour
     {
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Sprite used for life icons.")]

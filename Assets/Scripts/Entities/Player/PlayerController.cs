@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
-    public partial class PlayerController : MonoBehaviour
+    public sealed partial class PlayerController : MonoBehaviour
     {
         private PlayerModel model;
 

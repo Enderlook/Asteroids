@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class BombWeapon
+    public sealed partial class BombWeapon
     {
-        public partial class Bomb : MonoBehaviour
+        public sealed partial class Bomb : MonoBehaviour
         {
             private static readonly List<Vector2> physicsShape = new List<Vector2>();
             public static int totalID;

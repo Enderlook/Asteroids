@@ -4,7 +4,7 @@ using System;
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class BombWeapon
+    public sealed partial class BombWeapon
     {
         [Serializable]
         private readonly struct Memento

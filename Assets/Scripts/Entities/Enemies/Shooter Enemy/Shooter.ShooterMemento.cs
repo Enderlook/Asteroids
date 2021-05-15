@@ -53,7 +53,5 @@ namespace Asteroids.WeaponSystem
             private static ShooterMemento InterpolateMementos(ShooterMemento a, ShooterMemento b, float delta)
                 => new ShooterMemento(Mathf.Lerp(a.cooldown, b.cooldown, delta));
         }
-
-        public virtual void UpdateNonSelected() { }
     }
 }

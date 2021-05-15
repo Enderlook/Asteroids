@@ -17,7 +17,7 @@ namespace Asteroids.Localization
 {
     public delegate void ChangeLanguageEventHandler(LocalizationManager localizationManager);
 
-    public class LocalizationManager : MonoBehaviour, IEvents<ChangeLanguageEventHandler>
+    public sealed class LocalizationManager : MonoBehaviour, IEvents<ChangeLanguageEventHandler>
     {
         [SerializeField, Tooltip("Root folder."), ReadOnly]
         private string rootDirectory = "/Resources/Localization";
@@ -44,7 +44,6 @@ namespace Asteroids.Localization
         public static event ChangeLanguageEventHandler OnChangeLanguage;
 
         public static SystemLanguage Language { get; private set; } = SystemLanguage.English;
-
 
         private void Awake()
         {

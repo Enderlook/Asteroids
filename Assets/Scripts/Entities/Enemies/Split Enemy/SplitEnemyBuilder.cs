@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
-    public partial class SplitEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
+    public sealed partial class SplitEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
         private static readonly BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
         private static readonly BuilderFactoryPool<GameObject, SplitEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;

@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class LaserWeapon
+    public sealed partial class LaserWeapon
     {
         [Serializable]
         private readonly struct Memento

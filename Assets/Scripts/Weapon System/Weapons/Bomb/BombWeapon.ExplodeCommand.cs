@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class BombWeapon : Weapon
+    public sealed partial class BombWeapon : Weapon
     {
         private ExplodeCommand? TryExplodeCommand()
         {

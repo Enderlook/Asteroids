@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Asteroids.UI
 {
     [RequireComponent(typeof(Text)), DefaultExecutionOrder((int)ExecutionOrder.O6_Score)]
-    public class Score : MonoBehaviour
+    public sealed class Score : MonoBehaviour
     {
         [SerializeField]
         private bool unscaledTime;

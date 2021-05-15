@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class WeaponsPack
+    public sealed partial class WeaponsPack
     {
         private ChangeWeaponCommand? TryChangeWeaponCommand()
         {

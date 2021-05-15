@@ -2,7 +2,7 @@
 
 namespace Asteroids.WeaponSystem
 {
-    public partial class BombWeapon
+    public sealed partial class BombWeapon
     {
         [Serializable]
         public new readonly struct State

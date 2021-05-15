@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Asteroids.Scene
 {
-    public partial class GlobalMementoManager
+    public sealed partial class GlobalMementoManager
     {
-        public class MementoManager<T> : IMementoManager where T : struct
+        public sealed class MementoManager<T> : IMementoManager where T : struct
         {
             // We store Memento objects in an stongly typed fashion to avoid boxing and so reduce GC pressure
 

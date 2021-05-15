@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Asteroids.Entities.Enemies
 {
     [CreateAssetMenu(menuName = "Asteroids/Enemies/Split Enemy Flyweight")]
-    public class SplitEnemyFlyweight : SimpleEnemyFlyweight
+    public sealed class SplitEnemyFlyweight : SimpleEnemyFlyweight
     {
 #pragma warning disable CS0649
         [field: SerializeField, IsProperty, Tooltip("Enemy spawned on death.")]

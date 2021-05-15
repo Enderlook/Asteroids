@@ -2,7 +2,7 @@
 
 namespace Asteroids.Localization
 {
-    public class LocalizationButtonEvent : MonoBehaviour
+    public sealed class LocalizationButtonEvent : MonoBehaviour
     {
         private LocalizationManager localizationManager;
 
