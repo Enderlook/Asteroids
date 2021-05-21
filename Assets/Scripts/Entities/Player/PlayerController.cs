@@ -100,6 +100,7 @@ namespace Asteroids.Entities.Player
 
             BecomeInvulnerable();
         }
+
         private void BecomeInvulnerable()
         {
             collider.enabled = false;
