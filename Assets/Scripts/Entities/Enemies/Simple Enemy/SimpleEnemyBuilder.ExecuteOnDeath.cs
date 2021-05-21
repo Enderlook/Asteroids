@@ -18,7 +18,9 @@ namespace Asteroids.Entities.Enemies
             public override void Execute()
             {
                 player.Play();
-                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(flyweight.ScoreWhenDestroyed));
+                //IA2-P3
+                // ^- Don't touch that comment, used by the teacher
+                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(flyweight.name, flyweight.ScoreWhenDestroyed));
                 pool.Store(gameObject);
             }
         }
