@@ -11,13 +11,18 @@ public class Scoreboard : MonoBehaviour
     private void Awake()
     {
         #region Test
-        killedEnemies.Add("Feral Dog", (5, 50));
-        killedEnemies.Add("Spirit", (2, 50));
-        killedEnemies.Add("Bandit", (5, 100));
-        killedEnemies.Add("Bandit Boss", (1, 250));
+        AddKilledEnemies("Base Ship", 10, 5);
+        AddKilledEnemies("Split Ship", 5, 10);
+        AddKilledEnemies("Shooter Ship", 2, 15);
+        AddKilledEnemies("Boss Ship", 1, 500);
 
         OrderScores(killedEnemies);
         #endregion
+    }
+
+    public void AddKilledEnemies(string enemyName, int killedAmount, int baseScore)
+    {
+        killedEnemies.Add(enemyName, (killedAmount, (baseScore * killedAmount))); //(baseScore * killedAmount) could be changed to totalScore if needed.
     }
 
     public void GetIndividualEnemy(IEnumerable<string> enemyName)
