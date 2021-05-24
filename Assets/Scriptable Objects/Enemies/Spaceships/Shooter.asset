@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7121c9629b60688449470faa18d46a0d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ce0a5c6f085c69468d23ee7e2f6ae74, type: 3}
   m_Name: Shooter
   m_EditorClassIdentifier: 
   <ScoreWhenDestroyed>k__BackingField: 15
