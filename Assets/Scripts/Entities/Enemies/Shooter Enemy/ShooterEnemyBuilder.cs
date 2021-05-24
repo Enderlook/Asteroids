@@ -67,7 +67,15 @@ namespace Asteroids.Entities.Enemies
             => Construct(flyweight, parameter, this, id);
 
         public static void CommonInitialize(in ShooterEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
-            => SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter);
+        {
+            SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter);
+
+            Rigidbody2D rigidbody = enemy.GetComponent<Rigidbody2D>();
+            Vector2 direction = rigidbody.velocity.normalized;
+            float z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            enemy.transform.rotation = Quaternion.Euler(0, 0, z + 90);
+            rigidbody.rotation = z;
+        }
 
         public static void Initialize(in ShooterEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
              => SimpleEnemyBuilder.Initialize(flyweight, enemy, parameter);
