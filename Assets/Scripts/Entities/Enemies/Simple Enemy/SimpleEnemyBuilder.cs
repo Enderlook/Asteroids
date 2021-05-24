@@ -95,6 +95,7 @@ namespace Asteroids.Entities.Enemies
             enemy.transform.position = parameter.position;
 
             Rigidbody2D rigidbody = enemy.GetComponent<Rigidbody2D>();
+            rigidbody.position = parameter.position;
             rigidbody.velocity = parameter.speed;
             rigidbody.rotation = 0;
 
