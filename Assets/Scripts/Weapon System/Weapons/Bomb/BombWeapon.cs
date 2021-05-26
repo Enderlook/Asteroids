@@ -217,10 +217,10 @@ namespace Asteroids.WeaponSystem
                 layer = flyweight.bombLayer
             };
 
+            bomb.transform.localScale *= flyweight.bombScale;
+
             SpriteRenderer spriteRenderer = bomb.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = Resources.Load<Sprite>(flyweight.spriteBomb);
-
-            bomb.transform.localScale *= flyweight.bombScale;
 
             Bomb bombScript = bomb.AddComponent<Bomb>();
             bombScript.flyweight = flyweight;

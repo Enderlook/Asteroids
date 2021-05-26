@@ -54,8 +54,7 @@ namespace Asteroids.WeaponSystem
                             timer = bomb.timer;
                             break;
                         case StateMachine.Exploding:
-                            Transform child = bomb.transform.GetChild(0);
-                            timer = child.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).normalizedTime;
+                            timer = bomb.animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
                             break;
                         default:
                             timer = 0;
@@ -112,7 +111,7 @@ namespace Asteroids.WeaponSystem
                                 break;
                             case StateMachine.Exploding:
                                 bomb.Explode(0);
-                                Animator animator = bomb.transform.GetChild(0).GetComponent<Animator>();
+                                Animator animator = bomb.animator;
                                 animator.enabled = false;
                                 animator.enabled = true;
                                 animator.Play(0, 0, timer);

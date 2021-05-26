@@ -24,6 +24,7 @@ namespace Asteroids.WeaponSystem
             private SpriteRenderer childSpriteRenderer;
             private new PolygonCollider2D collider;
             private AudioSource audioSource;
+            private Animator animator;
 
             private Sprite last;
 
@@ -39,6 +40,7 @@ namespace Asteroids.WeaponSystem
 
                 childSpriteRenderer = child.GetComponent<SpriteRenderer>();
                 collider = child.GetComponent<PolygonCollider2D>();
+                animator = child.GetComponent<Animator>();
 
                 last = childSpriteRenderer.sprite;
                 if (last == null)
