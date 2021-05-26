@@ -12,10 +12,10 @@ namespace Asteroids.Entities.Enemies
 
             public override void Execute()
             {
-                for (int i = 0; i < flyweight.amountToSpawn; i++)
-                    _ = flyweight.enemyToSpawn.GetFactory().Create((transform.position, Random.insideUnitCircle * flyweight.initialSpeed.Value));
+                for (int i = 0; i < flyweight.AmountToSpawn; i++)
+                    _ = flyweight.EnemyToSpawn.GetFactory().Create((transform.position, Random.insideUnitCircle * flyweight.InitialSpeed.Value));
 
-                EventManager.Raise(new EnemySplittedEvent(flyweight.amountToSpawn));
+                EventManager.Raise(new EnemySplittedEvent(flyweight.AmountToSpawn));
             }
         }
     }

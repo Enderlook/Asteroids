@@ -16,16 +16,16 @@ namespace Asteroids.Entities.Enemies
         public Sound ShootSound { get; private set; }
 
         [field: SerializeField, DrawTexture(true), IsProperty, Tooltip("Sprite of the projectile to fire.")]
-        public string sprite { get; private set; }
+        public string Sprite { get; private set; }
 
         [field: SerializeField, IsProperty, Min(0), Tooltip("Force at which the projectile is fired.")]
-        public float force { get; private set; }
+        public float Force { get; private set; }
 
         [field: SerializeField, IsProperty, Tooltip("Time between attacks.")]
-        public float cooldown { get; private set; }
+        public float Cooldown { get; private set; }
 
         [field: SerializeField, Layer, IsProperty, Tooltip("Layer of the projectile.")]
-        public int projectileLayer { get; private set; }
+        public int ProjectileLayer { get; private set; }
 #pragma warning restore CS0649
 
         public override void Initialize() => factory = new ShooterEnemyBuilder(name) { Flyweight = this };

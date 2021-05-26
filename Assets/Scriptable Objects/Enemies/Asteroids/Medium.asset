@@ -24,9 +24,9 @@ MonoBehaviour:
     type: 2}
   <AudioMixerGroup>k__BackingField: {fileID: 8714745318463204602, guid: 11b555ffa9ab5b34b80410aa34c134f8,
     type: 2}
-  <enemyToSpawn>k__BackingField: {fileID: 11400000, guid: 0461f02efa1e2664aba2dc72efa4a309,
+  <EnemyToSpawn>k__BackingField: {fileID: 11400000, guid: 0461f02efa1e2664aba2dc72efa4a309,
     type: 2}
-  <amountToSpawn>k__BackingField: 2
-  <initialSpeed>k__BackingField:
+  <AmountToSpawn>k__BackingField: 2
+  <InitialSpeed>k__BackingField:
     min: 2
     max: 5

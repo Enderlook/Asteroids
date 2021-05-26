@@ -23,7 +23,7 @@ MonoBehaviour:
     type: 2}
   <ShootSound>k__BackingField: {fileID: 11400000, guid: 8a2b8e185dd29a040b96cb9346c111d6,
     type: 2}
-  <sprite>k__BackingField: Spaceships/Enemy_Bullet
-  <force>k__BackingField: 2
-  <cooldown>k__BackingField: 1
-  <projectileLayer>k__BackingField: 15
+  <Sprite>k__BackingField: Spaceships/Enemy_Bullet
+  <Force>k__BackingField: 2
+  <Cooldown>k__BackingField: 1
+  <ProjectileLayer>k__BackingField: 15

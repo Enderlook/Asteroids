@@ -56,7 +56,7 @@ namespace Asteroids.Entities.Enemies
             GameObject enemy = SimpleEnemyBuilder.ConstructButNotSave(flyweight, pool, out Rigidbody2D rigidbody, out SpriteRenderer spriteRenderer);
 
             Shooter shooter = enemy.AddComponent<Shooter>();
-            shooter.Construct(flyweight.sprite, flyweight.force, flyweight.ShootSound, flyweight.cooldown, flyweight.projectileLayer, enemy.transform);
+            shooter.Construct(flyweight, enemy.transform);
 
             GameSaver.SubscribeShooterEnemy(shooter, () => new SimpleEnemyBuilder.EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
 

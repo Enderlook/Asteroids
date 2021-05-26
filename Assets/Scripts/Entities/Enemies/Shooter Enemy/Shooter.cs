@@ -1,6 +1,7 @@
 ﻿//IA2-P1
 // The whole file.
 // ^- Don't touch that comment, used by the teacher
+using Asteroids.Entities.Enemies;
 using Asteroids.Scene;
 using Asteroids.Utils;
 
@@ -23,10 +24,7 @@ namespace Asteroids.WeaponSystem
         private static readonly BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Initializer commonInitialize = ProjectileCommonInitializer;
         private static readonly BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Deinitializer deinitialize = ProjectileDeinitializer;
 
-        private string sprite;
-        private float force;
-        private float cooldown;
-        private int projectileLayer;
+        private ShooterEnemyFlyweight flyweight;
         private Transform shootPoint;
 
         private BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)> builder;
@@ -66,14 +64,11 @@ namespace Asteroids.WeaponSystem
                 Fire();
         }
 
-        public void Construct(string sprite, float force, Sound shootSound, float cooldown, int projectileLayer, Transform shootPoint)
+        public void Construct(ShooterEnemyFlyweight flyweight, Transform shootPoint)
         {
-            this.sprite = sprite;
-            this.force = force;
-            this.cooldown = cooldown;
-            this.projectileLayer = projectileLayer;
+            this.flyweight = flyweight;
             this.shootPoint = shootPoint;
-            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(shootSound, false, false);
+            soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(flyweight.ShootSound, false, false);
         }
 
         public void Load(ShooterState state, List<ProjectileState> projectileStates) => StartCoroutine(OnLoadGame(state, projectileStates));
@@ -90,14 +85,14 @@ namespace Asteroids.WeaponSystem
         {
             GameObject projectile = new GameObject("Projectile")
             {
-                layer = flyweight.projectileLayer
+                layer = flyweight.flyweight.ProjectileLayer
             };
 
             Rigidbody2D rigidbody = projectile.AddComponent<Rigidbody2D>();
             rigidbody.gravityScale = 0;
 
             SpriteRenderer spriteRenderer = projectile.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = Resources.Load<Sprite>(flyweight.sprite);
+            spriteRenderer.sprite = Resources.Load<Sprite>(flyweight.flyweight.Sprite);
 
             projectile.AddComponent<PolygonCollider2D>();
 
@@ -137,7 +132,7 @@ namespace Asteroids.WeaponSystem
             if (!renderer.isVisible)
                 return;
 
-            nextCast = Time.time + cooldown;
+            nextCast = Time.time + flyweight.Cooldown;
             CreateBullet(); 
         }
 
@@ -146,7 +141,7 @@ namespace Asteroids.WeaponSystem
             Rigidbody2D bullet = builder.Create((
                 shootPoint.position,
                 Quaternion.Euler(new Vector3(0, 0, rigidbody2D.rotation)),
-                (Vector2)(-shootPoint.up * force) + rigidbody2D.velocity
+                (Vector2)(-shootPoint.up * flyweight.Force) + rigidbody2D.velocity
             ));
 
             soundPlayer.Play();
