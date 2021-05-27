@@ -23,13 +23,13 @@ MonoBehaviour:
     type: 2}
   <ShootSound>k__BackingField: {fileID: 11400000, guid: 0ca732cf523035d4ea04fb1b32ef1dfd,
     type: 2}
-  <Sprite>k__BackingField: Weapons/Bomb_03
+  <Sprite>k__BackingField: SpaceShips/Bomb
   <SpriteScale>k__BackingField: 0.2
   <Force>k__BackingField: 0
   <Cooldown>k__BackingField: 2
   <BombLayer>k__BackingField: 15
   <ExplosionDistance>k__BackingField: 2
-  <ExplodeAnimation>k__BackingField: {fileID: 9100000, guid: 842f17c70ffd6c6418038dc585d74e25,
+  <ExplodeAnimation>k__BackingField: {fileID: 9100000, guid: 33211d14c4e38ea43a48e4d1df235da4,
     type: 2}
   <ExplodeScale>k__BackingField: 0.5
   <ExplodeSound>k__BackingField: {fileID: 8300000, guid: cbec6eb6175772b4bb0461030cdf264e,
