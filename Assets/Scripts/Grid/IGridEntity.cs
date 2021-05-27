@@ -7,6 +7,6 @@ namespace Spatial
     {
         event Action<IGridEntity> OnMove;
 
-        Vector3 Position { get; set; }
+        Vector2 Position { get; set; }
     }
 }

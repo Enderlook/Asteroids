@@ -13,7 +13,7 @@ namespace Spatial
         public float x;
 
         //punto de inicio de la grilla en Z
-        public float z;
+        public float y;
 
         //ancho de las celdas
         public float cellWidth;
@@ -97,10 +97,10 @@ namespace Spatial
                 lastPositions.Remove(entity);
         }
 
-        public IEnumerable<IGridEntity> Query(Vector3 aabbFrom, Vector3 aabbTo, Func<Vector3, bool> filterByPosition)
+        public IEnumerable<IGridEntity> Query(Vector2 aabbFrom, Vector2 aabbTo, Func<Vector2, bool> filterByPosition)
         {
-            var from = new Vector3(Mathf.Min(aabbFrom.x, aabbTo.x), 0, Mathf.Min(aabbFrom.z, aabbTo.z));
-            var to = new Vector3(Mathf.Max(aabbFrom.x, aabbTo.x), 0, Mathf.Max(aabbFrom.z, aabbTo.z));
+            var from = new Vector2(Mathf.Min(aabbFrom.x, aabbTo.x), Mathf.Min(aabbFrom.y, aabbTo.y));
+            var to = new Vector2(Mathf.Max(aabbFrom.x, aabbTo.x), Mathf.Max(aabbFrom.y, aabbTo.y));
 
             var fromCoord = GetPositionInGrid(from);
             var toCoord = GetPositionInGrid(to);
@@ -129,16 +129,16 @@ namespace Spatial
                   .SelectMany(cell => buckets[cell.Item1, cell.Item2])
                   .Where(e =>
                              from.x <= e.Position.x && e.Position.x <= to.x &&
-                             from.z <= e.Position.z && e.Position.z <= to.z
+                             from.y <= e.Position.y && e.Position.y <= to.y
                         )
                   .Where(n => filterByPosition(n.Position));
         }
 
-        public Tuple<int, int> GetPositionInGrid(Vector3 pos)
+        public Tuple<int, int> GetPositionInGrid(Vector2 pos)
         {
             //quita la diferencia, divide segun las celdas y floorea
             return Tuple.Create(Mathf.FloorToInt((pos.x - x) / cellWidth),
-                                Mathf.FloorToInt((pos.z - z) / cellHeight));
+                                Mathf.FloorToInt((pos.y - y) / cellHeight));
         }
 
         public bool IsInsideGrid(Tuple<int, int> position)
@@ -180,9 +180,9 @@ namespace Spatial
 
         private void OnDrawGizmos()
         {
-            var rows = Util.Generate(z, curr => curr + cellHeight)
-                           .Select(row => Tuple.Create(new Vector3(x, 0, row),
-                                                       new Vector3(x + cellWidth * width, 0, row)));
+            var rows = Util.Generate(y, curr => curr + cellHeight)
+                           .Select(row => Tuple.Create(new Vector2(x, row),
+                                                       new Vector2(x + cellWidth * width, row)));
 
             //equivalente de rows
             /*for (int i = 0; i <= height; i++)
@@ -191,8 +191,8 @@ namespace Spatial
             }*/
 
             var cols = Util.Generate(x, curr => curr + cellWidth)
-                           .Select(col => Tuple.Create(new Vector3(col, 0, z),
-                                                       new Vector3(col, 0, z + cellHeight * height)));
+                           .Select(col => Tuple.Create(new Vector2(col, y),
+                                                       new Vector2(col, y + cellHeight * height)));
 
             var allLines = rows.Take(width + 1).Concat(cols.Take(height + 1));
 

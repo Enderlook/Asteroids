@@ -18,8 +18,8 @@ namespace Spatial
             //posición final --> esquina inferior derecha de la "caja"
             //como funcion para filtrar le damos una que siempre devuelve true, para que no filtre nada.
             return targetGrid.Query(
-                                    transform.position + new Vector3(-w, 0, -h),
-                                    transform.position + new Vector3(w, 0, h),
+                                    (Vector2)transform.position + new Vector2(-w,-h),
+                                    (Vector2)transform.position + new Vector2(w, h),
                                     x => true);
         }
 
@@ -29,7 +29,7 @@ namespace Spatial
 
             //Flatten the sphere we're going to draw
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireCube(transform.position, new Vector3(width, 0, height));
+            Gizmos.DrawWireCube(transform.position, new Vector2(width, height));
         }
     }
 }
