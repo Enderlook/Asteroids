@@ -79,7 +79,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: 36b947cf5d4d32fc43f4f65dd3eb31b0_0
+  m_Name: Enemy_Bomb
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
