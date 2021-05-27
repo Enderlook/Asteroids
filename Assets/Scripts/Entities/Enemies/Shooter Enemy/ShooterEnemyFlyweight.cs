@@ -18,6 +18,9 @@ namespace Asteroids.Entities.Enemies
         [field: SerializeField, DrawTexture(true), IsProperty, Tooltip("Sprite of the projectile to fire.")]
         public string Sprite { get; private set; }
 
+        [field: SerializeField, IsProperty, Tooltip("Sprite scale of the projectile to fire.")]
+        public float SpriteScale { get; private set; }
+
         [field: SerializeField, IsProperty, Min(0), Tooltip("Force at which the projectile is fired.")]
         public float Force { get; private set; }
 

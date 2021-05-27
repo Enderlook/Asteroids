@@ -82,16 +82,20 @@ namespace Asteroids.Entities.Enemies
 
         private static Rigidbody2D ProjectileConstructor(in Shooter flyweight, in (Vector3 position, Quaternion rotation, Vector3 velocity) parameters)
         {
+            ShooterEnemyFlyweight flyweight2 = flyweight.flyweight;
+
             GameObject projectile = new GameObject("Projectile")
             {
-                layer = flyweight.flyweight.ProjectileLayer
+                layer = flyweight2.ProjectileLayer
             };
+
+            projectile.transform.localScale *= flyweight2.SpriteScale;
 
             Rigidbody2D rigidbody = projectile.AddComponent<Rigidbody2D>();
             rigidbody.gravityScale = 0;
 
             SpriteRenderer spriteRenderer = projectile.AddComponent<SpriteRenderer>();
-            spriteRenderer.sprite = Resources.Load<Sprite>(flyweight.flyweight.Sprite);
+            spriteRenderer.sprite = Resources.Load<Sprite>(flyweight2.Sprite);
 
             projectile.AddComponent<PolygonCollider2D>();
 
