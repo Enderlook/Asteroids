@@ -7,7 +7,7 @@ using System;
 
 using UnityEngine;
 
-namespace Asteroids.WeaponSystem
+namespace Asteroids.Entities.Enemies
 {
     public partial class Shooter
     {

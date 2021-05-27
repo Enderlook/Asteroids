@@ -1,7 +1,6 @@
 ﻿//IA2-P1
 // The whole file.
 // ^- Don't touch that comment, used by the teacher
-using Asteroids.Entities.Enemies;
 using Asteroids.Scene;
 using Asteroids.Utils;
 
@@ -14,7 +13,7 @@ using UnityEngine;
 
 using Resources = Asteroids.Utils.Resources;
 
-namespace Asteroids.WeaponSystem
+namespace Asteroids.Entities.Enemies
 {
     [RequireComponent(typeof(Rigidbody2D))]
     public sealed partial class Shooter : MonoBehaviour

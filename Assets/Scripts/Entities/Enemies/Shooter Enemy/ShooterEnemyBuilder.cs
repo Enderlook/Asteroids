@@ -3,7 +3,6 @@
 // ^- Don't touch that comment, used by the teacher
 using Asteroids.Scene;
 using Asteroids.Utils;
-using Asteroids.WeaponSystem;
 
 using System.Collections.Generic;
 

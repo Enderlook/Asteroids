@@ -3,7 +3,7 @@
 // ^- Don't touch that comment, used by the teacher
 using System;
 
-namespace Asteroids.WeaponSystem
+namespace Asteroids.Entities.Enemies
 {
     public partial class Shooter
     {
