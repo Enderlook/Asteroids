@@ -4,15 +4,32 @@
 using Asteroids.Entities.Enemies;
 using Asteroids.Scene;
 
+using Enderlook.Unity.Attributes;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
 
+using Resources = Asteroids.Utils.Resources;
+
 namespace Asteroids.UI
 {
     public sealed class Scoreboard : MonoBehaviour
     {
+        [SerializeField, Tooltip("Prefab of score tile to show.")]
+        private ScoreField scorePrefab;
+
+        [SerializeField, Tooltip("Total of score and kills.")]
+        private ScoreField total;
+
+        [SerializeField, Tooltip("Layout to show scores.")]
+        private RectTransform layout;
+
+        [SerializeField, Tooltip("Types of enemies")]
+        private SimpleEnemyFlyweight[] enemies;
+
         private Dictionary<string, (int kills, int totalScore)> killedEnemies = new Dictionary<string, (int kills, int totalScore)>();
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
@@ -24,16 +41,23 @@ namespace Asteroids.UI
             });
         }
 
-        public void OrderScores(Dictionary<string, (int kills, int score)> enemyScores)
+        public void OrderScores()
         {
-            int totalKills = 0; int totalScore = 0;
-            foreach (KeyValuePair<string, (int kills, int score)> enemyDic in enemyScores.OrderByDescending(e => e.Value.score).ThenByDescending(e => e.Value.kills).ThenBy(e => e.Key))
+            //IA2-P2
+            // ^- Don't touch that comment, used by the teacher
+
+            foreach ((Sprite sprite, int kills, int score) in killedEnemies
+                .OrderByDescending(e => e.Value.totalScore)
+                .ThenByDescending(e => e.Value.kills)
+                .ThenBy(e => e.Key)
+                .Join(enemies, e => e.Key, e => e.name, (a, b) => (Resources.Load<Sprite>(b.Sprites[0]), a.Value.kills, a.Value.totalScore)))
             {
-                Debug.Log($"Enemy: {enemyDic.Key}. Killed: {enemyDic.Value.kills}. Score: {enemyDic.Value.score}");
+                ScoreField scoreField = Instantiate(scorePrefab, layout);
+                scoreField.SetTarget(score, kills);
+                scoreField.SetSprite(sprite);
             }
-            totalKills = enemyScores.Values.Sum(e => e.kills);
-            totalScore = enemyScores.Values.Sum(e => e.score);
-            Debug.Log($"Total kills: {totalKills}. Total score: {totalScore}.");
+
+            total.SetTarget(killedEnemies.Values.Sum(e => e.totalScore), killedEnemies.Values.Sum(e => e.kills));
         }
     }
 }

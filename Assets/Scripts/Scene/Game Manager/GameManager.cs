@@ -71,6 +71,7 @@ namespace Asteroids.Scene
             {
                 FindObjectOfType<PauseManager>().Pause();
                 gameOver.SetActive(true);
+                FindObjectOfType<Scoreboard>().OrderScores();
             }
         }
 
