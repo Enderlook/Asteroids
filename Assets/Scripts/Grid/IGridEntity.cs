@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public interface IGridEntity {
+namespace Spatial
+{
+    public interface IGridEntity
+    {
+        event Action<IGridEntity> OnMove;
 
-    event Action<IGridEntity> OnMove;
-
-    Vector3 Position { get; set; }
-        
+        Vector3 Position { get; set; }
+    }
 }

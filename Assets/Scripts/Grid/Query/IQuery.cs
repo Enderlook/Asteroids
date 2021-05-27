@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 
-public interface IQuery {
-
-    IEnumerable<IGridEntity> Query();
-
+namespace Spatial
+{
+    public interface IQuery
+    {
+        IEnumerable<IGridEntity> Query();
+    }
 }
