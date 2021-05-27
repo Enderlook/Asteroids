@@ -16,9 +16,17 @@ namespace Asteroids.Entities.Player
 
         public int Lifes { get; private set; }
 
+        private static Transform instance;
+        public static Vector3 Position => instance.position;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
+            if (instance != null)
+                Debug.LogError("Only a single instance can be found at the same time.");
+
+            instance = transform;
+
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
 

@@ -44,6 +44,13 @@ namespace Asteroids.Scene
         private List<(Shooter, Func<Shooter.ShooterState>)> saveEnemyShooterShooter = new List<(Shooter, Func<Shooter.ShooterState>)>();
         private Dictionary<Shooter, List<Func<Shooter.ProjectileState>>> saveShootersProjectiles = new Dictionary<Shooter, List<Func<Shooter.ProjectileState>>>();
 
+        //IA2-P1
+        // ^- Don't touch that comment, used by the teacher
+        private Action<List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)>> loadEnemyBomber;
+        private List<(Bomber, Func<SimpleEnemyBuilder.EnemyState>)> saveEnemyBomber = new List<(Bomber, Func<SimpleEnemyBuilder.EnemyState>)>();
+        private List<(Bomber, Func<Bomber.BomberState>)> saveEnemyBomberBomber = new List<(Bomber, Func<Bomber.BomberState>)>();
+        private Dictionary<Bomber, List<Func<Bomber.ProjectileState>>> saveBombersProjectiles = new Dictionary<Bomber, List<Func<Bomber.ProjectileState>>>();
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
@@ -100,9 +107,24 @@ namespace Asteroids.Scene
                     .ToList())
                 )
                 .ToList();
+
+            //IA2-P1
+            // ^- Don't touch that comment, used by the teacher
+            //IA2-P3
+            // ^- Don't touch that comment, used by the teacher
+            List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)> bombers = instance.saveEnemyBomber
+                .Select(e => (
+                    e.Item2(),
+                    instance.saveEnemyBomberBomber.First(e2 => e2.Item1 == e.Item1).Item2(),
+                    // Note: This has a time complexity of O(n) instead of O(1) (.TryGetValue(TKey out TValue)) (apart from inherent allocations of LINQ). But TryGetValue is not a LINQ operator and the exercise requested LINQ.
+                    (instance.saveBombersProjectiles.FirstOrDefault(e2 => e2.Key == e.Item1).Value ?? Enumerable.Empty<Func<Bomber.ProjectileState>>())
+                    .Select(e2 => e2())
+                    .ToList())
+                )
+                .ToList();
 #pragma warning restore RCS1077
 
-            GameState gameState = new GameState(player, game, laser, projectile, projectiles, bomb, bombs, enemies, shooters);
+            GameState gameState = new GameState(player, game, laser, projectile, projectiles, bomb, bombs, enemies, shooters, bombers);
             gameState.SaveToFile();
         }
 
@@ -121,6 +143,7 @@ namespace Asteroids.Scene
             //IA2-P1
             // ^- Don't touch that comment, used by the teacher
             instance.loadEnemyShooter(gameState.shooterEnemies);
+            instance.loadEnemyBomber(gameState.bomberEnemies);
             EventManager.Raise(new LoadEvent());
         }
 
@@ -196,6 +219,33 @@ namespace Asteroids.Scene
             {
                 list = new List<Func<Shooter.ProjectileState>>();
                 instance.saveShootersProjectiles.Add(shooter, list);
+            }
+            list.Add(save);
+        }
+
+        //IA2-P1
+        // ^- Don't touch that comment, used by the teacher
+        public static void SubscribeBomberEnemy(Action<List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)>> load)
+            => instance.loadEnemyBomber = load;
+
+        //IA2-P1
+        // ^- Don't touch that comment, used by the teacher
+        public static void SubscribeBomberEnemy(Bomber shooter, Func<SimpleEnemyBuilder.EnemyState> save)
+            => instance.saveEnemyBomber.Add((shooter, save));
+
+        //IA2-P1
+        // ^- Don't touch that comment, used by the teacher
+        public static void SubscribeBomberEnemy(Bomber shooter, Func<Bomber.BomberState> save)
+            => instance.saveEnemyBomberBomber.Add((shooter, save));
+
+        //IA2-P1
+        // ^- Don't touch that comment, used by the teacher
+        public static void SubscribeBomberBullet(Bomber shooter, Func<Bomber.ProjectileState> save)
+        {
+            if (!instance.saveBombersProjectiles.TryGetValue(shooter, out List<Func<Bomber.ProjectileState>> list))
+            {
+                list = new List<Func<Bomber.ProjectileState>>();
+                instance.saveBombersProjectiles.Add(shooter, list);
             }
             list.Add(save);
         }

@@ -30,8 +30,9 @@ namespace Asteroids.Scene
             //IA2-P1
             // ^- Don't touch that comment, used by the teacher
             public readonly List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies;
+            public readonly List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)> bomberEnemies;
 
-            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies, List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies)
+            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies, List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies, List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)> bomberEnemies)
             {
                 this.player = player;
                 this.game = game;
@@ -42,6 +43,7 @@ namespace Asteroids.Scene
                 this.bomb = bomb;
                 this.bombs = bombs;
                 this.shooterEnemies = shooterEnemies;
+                this.bomberEnemies = bomberEnemies;
             }
 
             public void SaveToFile()

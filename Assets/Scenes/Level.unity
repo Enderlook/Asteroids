@@ -1905,6 +1905,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6b3162a8337fcd94a86946848a788c09, type: 2}
   - {fileID: 11400000, guid: 0461f02efa1e2664aba2dc72efa4a309, type: 2}
   - {fileID: 11400000, guid: 67b7b3110fc609043b515b0ab7ff0a23, type: 2}
+  - {fileID: 11400000, guid: e9e190bb236f39d4fba6015a0d5e0863, type: 2}
   initialSpeed:
     min: 1
     max: 5
