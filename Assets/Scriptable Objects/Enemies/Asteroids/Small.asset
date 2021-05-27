@@ -19,6 +19,7 @@ MonoBehaviour:
   - Asteroids/meteorBrown_small2
   - Asteroids/meteorGrey_small1
   - Asteroids/meteorGrey_small2
+  <Scale>k__BackingField: 1.5
   <Layer>k__BackingField: 9
   <DeathSound>k__BackingField: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477,
     type: 2}

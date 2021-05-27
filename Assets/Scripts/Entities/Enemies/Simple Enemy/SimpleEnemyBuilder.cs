@@ -94,6 +94,8 @@ namespace Asteroids.Entities.Enemies
             // Don't use Rigidbody to set position because it has one frame delay
             enemy.transform.position = parameter.position;
 
+            enemy.transform.localScale *= flyweight.Scale;
+
             Rigidbody2D rigidbody = enemy.GetComponent<Rigidbody2D>();
             rigidbody.position = parameter.position;
             rigidbody.velocity = parameter.speed;

@@ -23,6 +23,7 @@ MonoBehaviour:
   - Asteroids/meteorGrey_big2
   - Asteroids/meteorGrey_big3
   - Asteroids/meteorGrey_big4
+  <Scale>k__BackingField: 1
   <Layer>k__BackingField: 9
   <DeathSound>k__BackingField: {fileID: 11400000, guid: 8ef7827fccca80c4083b06e6bb7a5477,
     type: 2}

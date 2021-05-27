@@ -16,6 +16,7 @@ MonoBehaviour:
   <Mass>k__BackingField: 1
   <Sprites>k__BackingField:
   - Spaceships/Enemy
+  <Scale>k__BackingField: 1
   <Layer>k__BackingField: 9
   <DeathSound>k__BackingField: {fileID: -4213840797054624402, guid: 6437f7c5af2005b40aaea9f00187d905,
     type: 2}

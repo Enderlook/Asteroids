@@ -21,6 +21,9 @@ namespace Asteroids.Entities.Enemies
         [field: SerializeField, Tooltip("A random sprite will be picked by the enemy."), DrawTexture(false), IsProperty]
         public string[] Sprites { get; private set; }
 
+        [field: SerializeField, IsProperty, Tooltip("Scale of the sprite.")]
+        public float Scale { get; private set; }
+
         [field: SerializeField, Layer, IsProperty, Tooltip("Layer of the enemy.")]
         public int Layer { get; private set; }
 
