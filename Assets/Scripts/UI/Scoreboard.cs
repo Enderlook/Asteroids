@@ -40,12 +40,17 @@ namespace Asteroids.UI
 
         public void OrderScores()
         {
-
+            IEnumerable<(string name, Sprite sprite)> sprites = enemies.Select(e => (e.name, Resources.Load<Sprite>(e.Sprites[0])));
             foreach ((Sprite sprite, int kills, int score) in killedEnemies
+                .Concat(enemies
+                    .Select(e => e.name)
+                    .Except(killedEnemies.Keys)
+                    .Select(e => new KeyValuePair<string, (int kills, int totalScore)>(e, (0, 0))))
                 .OrderByDescending(e => e.Value.totalScore)
                 .ThenByDescending(e => e.Value.kills)
                 .ThenBy(e => e.Key)
-                .Join(enemies, e => e.Key, e => e.name, (a, b) => (Resources.Load<Sprite>(b.Sprites[0]), a.Value.kills, a.Value.totalScore)))
+                .Join(sprites, e => e.Key, e => e.name, (a, b) => (b.sprite, a.Value.kills, a.Value.totalScore))
+                )
             {
                 ScoreField scoreField = Instantiate(scorePrefab, layout);
                 scoreField.SetTarget(score, kills);
