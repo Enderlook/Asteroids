@@ -28,7 +28,7 @@ MonoBehaviour:
   <Force>k__BackingField: 0
   <Cooldown>k__BackingField: 2
   <BombLayer>k__BackingField: 15
-  <ExplosionDistance>k__BackingField: 2
+  <ExplosionDistance>k__BackingField: 2.25
   <ExplodeAnimation>k__BackingField: {fileID: 9100000, guid: 33211d14c4e38ea43a48e4d1df235da4,
     type: 2}
   <ExplodeScale>k__BackingField: 0.5
