@@ -4,9 +4,6 @@
 using Asteroids.Entities.Enemies;
 using Asteroids.Scene;
 
-using Enderlook.Unity.Attributes;
-
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,8 +40,6 @@ namespace Asteroids.UI
 
         public void OrderScores()
         {
-            //IA2-P2
-            // ^- Don't touch that comment, used by the teacher
 
             foreach ((Sprite sprite, int kills, int score) in killedEnemies
                 .OrderByDescending(e => e.Value.totalScore)
