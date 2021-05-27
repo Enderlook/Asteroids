@@ -4,7 +4,19 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Player
 {
-    public sealed partial class PlayerController : MonoBehaviour
+    //IA2-P2
+    // ^- Don't touch that comment, used by the teacher
+#if SPATIAL_GRID
+    [DefaultExecutionOrder((int)ExecutionOrder.O5_Player)]
+#endif
+    public sealed partial class PlayerController :
+//IA2-P2
+// ^- Don't touch that comment, used by the teacher
+#if SPATIAL_GRID
+        Spatial.GridEntity
+#else
+        MonoBehaviour
+#endif
     {
         private PlayerModel model;
 
@@ -20,8 +32,17 @@ namespace Asteroids.Entities.Player
         public static Vector3 Position => instance.position;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        //IA2-P2
+        // ^- Don't touch that comment, used by the teacher
+#if SPATIAL_GRID
+        protected override void Awake()
+        {
+            base.Awake();
+#else
         private void Awake()
         {
+#endif
+
             if (instance != null)
                 Debug.LogError("Only a single instance can be found at the same time.");
 

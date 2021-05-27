@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+#if SPATIAL_GRID
 namespace Spatial
 {
     public interface IQuery
@@ -7,3 +8,4 @@ namespace Spatial
         IEnumerable<IGridEntity> Query();
     }
 }
+#endif

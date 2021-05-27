@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+#if SPATIAL_GRID
 namespace Spatial
 {
     public interface IGridEntity
@@ -10,3 +11,4 @@ namespace Spatial
         Vector2 Position { get; set; }
     }
 }
+#endif

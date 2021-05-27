@@ -1,6 +1,8 @@
 ﻿using Asteroids.Entities.Enemies;
 using Asteroids.UI;
 
+using Spatial;
+
 using UnityEngine;
 
 namespace Asteroids.Scene
@@ -14,6 +16,13 @@ namespace Asteroids.Scene
 #pragma warning restore CS0649
 
         private static GameManager instance;
+
+        //IA2-P2
+        // ^- Don't touch that comment, used by the teacher
+#if SPATIAL_GRID
+        private static SpatialGrid spatialGrid;
+        public static SpatialGrid SpatialGrid => spatialGrid;
+#endif
 
         public static int Level => instance.level;
 
@@ -39,6 +48,19 @@ namespace Asteroids.Scene
             EventManager.Subscribe<EnemySpawner.EnemyDestroyedEvent>(OnEnemyDestroyed);
 
             GameSaver.SubscribeGameManager(() => new State(this), (state) => state.Load(this));
+
+            //IA2-P2
+            // ^- Don't touch that comment, used by the teacher
+#if SPATIAL_GRID
+            spatialGrid = gameObject.AddComponent<SpatialGrid>();
+            spatialGrid.x = -15;
+            spatialGrid.y = -12;
+            spatialGrid.cellWidth = 1.2f;
+            spatialGrid.cellHeight = 1;
+            spatialGrid.width = 25;
+            spatialGrid.height = 25;
+            spatialGrid.Generate();
+#endif
         }
 
         private void OnLevelComplete(LevelTerminationEvent @event)

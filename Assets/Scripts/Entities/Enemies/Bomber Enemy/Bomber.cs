@@ -9,6 +9,7 @@ using Enderlook.Unity.Components.ScriptableSound;
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 
@@ -224,13 +225,24 @@ namespace Asteroids.Entities.Enemies
                 else
                 {
                     float explosionDistance = flyweight.flyweight.ExplosionDistance;
+                    //IA2-P2
+                    // ^- Don't touch that comment, used by the teacher
+#if SPATIAL_GRID
+                    Vector2 position = transform.position;
+                    float squaredExplosionDistance = explosionDistance * explosionDistance;
+                    Vector2 squaredExplosionDistanceVector = Vector2.one * squaredExplosionDistance;
+                    if (GameManager.SpatialGrid.Query(
+                        position - squaredExplosionDistanceVector,
+                        position + squaredExplosionDistanceVector,
+                        e => (position - e).sqrMagnitude <= squaredExplosionDistance)
+                        .OfType<PlayerController>().Any())
+                        GotoStateExploding();
+#else
                     if ((transform.position - PlayerController.Position).sqrMagnitude <= explosionDistance * explosionDistance)
                         GotoStateExploding();
+#endif
                 }
             }
-
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
-            private void OnCollisionEnter2D(Collision2D collision) => GotoStateExploding();
 
             private void GotoStateExploding()
             {

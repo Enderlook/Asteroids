@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+#if SPATIAL_GRID
 namespace Spatial
 {
     public class SquareQuery : MonoBehaviour, IQuery
@@ -33,3 +34,4 @@ namespace Spatial
         }
     }
 }
+#endif

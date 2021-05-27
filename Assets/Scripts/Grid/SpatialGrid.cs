@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+#if SPATIAL_GRID
 namespace Spatial
 {
     public sealed class SpatialGrid : MonoBehaviour
@@ -48,7 +49,7 @@ namespace Spatial
 
         #region Funciones
 
-        private void Awake()
+        public void Generate()
         {
             buckets = new HashSet<IGridEntity>[width, height];
 
@@ -252,3 +253,4 @@ namespace Spatial
         #endregion
     }
 }
+#endif

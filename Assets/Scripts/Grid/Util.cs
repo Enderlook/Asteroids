@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+#if SPATIAL_GRID
 namespace Spatial
 {
     public static class Util
@@ -21,3 +22,4 @@ namespace Spatial
         }
     }
 }
+#endif
