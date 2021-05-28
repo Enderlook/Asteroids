@@ -184,9 +184,8 @@ namespace Asteroids.Entities.Enemies
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
             private void Start()
             {
-                spriteRenderer = GetComponent<SpriteRenderer>();
-                child = transform.GetChild(0);
-                audioSource = child.GetComponent<AudioSource>();
+                Initialize();
+
                 childSpriteRenderer = child.GetComponent<SpriteRenderer>();
                 collider = child.GetComponent<PolygonCollider2D>();
                 animator = child.GetComponent<Animator>();
@@ -211,6 +210,17 @@ namespace Asteroids.Entities.Enemies
                     if (e.HasWon)
                         Return();
                 });
+            }
+
+            public void Initialize()
+            {
+                // This logic is not inside Start because it's required to be executed before during game loading.
+                // However, we can't use Awake instead of start, because the gameobject must be populated first with the components.
+                if (spriteRenderer != null)
+                    return;
+                spriteRenderer = GetComponent<SpriteRenderer>();
+                child = transform.GetChild(0);
+                audioSource = child.GetComponent<AudioSource>();
             }
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]

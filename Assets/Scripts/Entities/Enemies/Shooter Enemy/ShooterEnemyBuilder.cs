@@ -12,11 +12,10 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed class ShooterEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
-        private static readonly Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
         private static readonly BuilderFactoryPool<GameObject, ShooterEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
-        private static readonly BuilderFactoryPool<GameObject, ShooterEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;
         private static readonly BuilderFactoryPool<GameObject, ShooterEnemyFlyweight, (Vector3 position, Vector3 speed)>.Deinitializer deinitialize = Deinitialize;
 
+        private readonly Dictionary<Sprite, string> reverseSprites = new Dictionary<Sprite, string>();
         private readonly BuilderFactoryPool<GameObject, ShooterEnemyFlyweight, (Vector3 position, Vector3 speed)> builder;
         public ShooterEnemyFlyweight Flyweight {
             get => builder.flyweight;
@@ -30,7 +29,7 @@ namespace Asteroids.Entities.Enemies
             builder = new BuilderFactoryPool<GameObject, ShooterEnemyFlyweight, (Vector3 position, Vector3 speed)>
                 {
                     constructor = InnerConstruct,
-                    commonInitializer = commonInitialize,
+                    commonInitializer = CommonInitialize,
                     initializer = initialize,
                     deinitializer = deinitialize
                 };
@@ -50,14 +49,14 @@ namespace Asteroids.Entities.Enemies
             );
         }
 
-        public GameObject Construct(in ShooterEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, string id)
+        private GameObject Construct(in ShooterEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, string id)
         {
             GameObject enemy = SimpleEnemyBuilder.ConstructButNotSave(flyweight, pool, out Rigidbody2D rigidbody, out SpriteRenderer spriteRenderer);
 
             Shooter shooter = enemy.AddComponent<Shooter>();
             shooter.Construct(flyweight, enemy.transform);
 
-            GameSaver.SubscribeShooterEnemy(shooter, () => new SimpleEnemyBuilder.EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
+            GameSaver.SubscribeShooterEnemy(shooter, () => new SimpleEnemyBuilder.EnemyState(rigidbody, reverseSprites[spriteRenderer.sprite]));
 
             return enemy;
         }
@@ -65,9 +64,9 @@ namespace Asteroids.Entities.Enemies
         private GameObject InnerConstruct(in ShooterEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
             => Construct(flyweight, parameter, this, id);
 
-        public static void CommonInitialize(in ShooterEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
+        private void CommonInitialize(in ShooterEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
         {
-            SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter);
+            SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter, reverseSprites);
 
             Rigidbody2D rigidbody = enemy.GetComponent<Rigidbody2D>();
             Vector2 direction = rigidbody.velocity.normalized;
@@ -76,10 +75,10 @@ namespace Asteroids.Entities.Enemies
             rigidbody.rotation = z;
         }
 
-        public static void Initialize(in ShooterEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
+        private static void Initialize(in ShooterEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
              => SimpleEnemyBuilder.Initialize(flyweight, enemy, parameter);
 
-        public static void Deinitialize(GameObject enemy)
+        private static void Deinitialize(GameObject enemy)
             => SimpleEnemyBuilder.Deinitialize(enemy);
 
         public GameObject Create((Vector3 position, Vector3 speed) parameter) => builder.Create(parameter);

@@ -12,11 +12,10 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed class BomberEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
-        private static readonly Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
         private static readonly BuilderFactoryPool<GameObject, BomberEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
-        private static readonly BuilderFactoryPool<GameObject, BomberEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;
         private static readonly BuilderFactoryPool<GameObject, BomberEnemyFlyweight, (Vector3 position, Vector3 speed)>.Deinitializer deinitialize = Deinitialize;
 
+        private readonly Dictionary<Sprite, string> reverseSprites = new Dictionary<Sprite, string>();
         private readonly BuilderFactoryPool<GameObject, BomberEnemyFlyweight, (Vector3 position, Vector3 speed)> builder;
         public BomberEnemyFlyweight Flyweight {
             get => builder.flyweight;
@@ -30,7 +29,7 @@ namespace Asteroids.Entities.Enemies
             builder = new BuilderFactoryPool<GameObject, BomberEnemyFlyweight, (Vector3 position, Vector3 speed)>
                 {
                     constructor = InnerConstruct,
-                    commonInitializer = commonInitialize,
+                    commonInitializer = CommonInitialize,
                     initializer = initialize,
                     deinitializer = deinitialize
                 };
@@ -57,7 +56,7 @@ namespace Asteroids.Entities.Enemies
             Bomber shooter = enemy.AddComponent<Bomber>();
             shooter.Construct(flyweight, enemy.transform);
 
-            GameSaver.SubscribeBomberEnemy(shooter, () => new SimpleEnemyBuilder.EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
+            GameSaver.SubscribeBomberEnemy(shooter, () => new SimpleEnemyBuilder.EnemyState(rigidbody, reverseSprites[spriteRenderer.sprite]));
 
             return enemy;
         }
@@ -65,9 +64,9 @@ namespace Asteroids.Entities.Enemies
         private GameObject InnerConstruct(in BomberEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
             => Construct(flyweight, parameter, this, id);
 
-        public static void CommonInitialize(in BomberEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
+        public void CommonInitialize(in BomberEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
         {
-            SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter);
+            SimpleEnemyBuilder.CommonInitialize(flyweight, enemy, parameter, reverseSprites);
 
             Rigidbody2D rigidbody = enemy.GetComponent<Rigidbody2D>();
             Vector2 direction = rigidbody.velocity.normalized;

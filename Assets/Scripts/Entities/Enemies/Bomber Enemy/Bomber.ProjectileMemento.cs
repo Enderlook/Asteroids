@@ -76,6 +76,7 @@ namespace Asteroids.Entities.Enemies
                         bomb.transform.position = (Vector2)position;
                         bomb.transform.rotation = Quaternion.Euler(0, 0, rotation);
 
+                        bomb.Initialize();
                         bomb.GotoStateNormal();
                         if (timer != -1)
                         {

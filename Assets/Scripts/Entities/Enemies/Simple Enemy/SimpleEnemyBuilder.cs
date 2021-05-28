@@ -14,12 +14,11 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class SimpleEnemyBuilder : IPool<GameObject, (Vector3 position, Vector3 speed)>
     {
-        private static readonly Dictionary<Sprite, string> sprites = new Dictionary<Sprite, string>();
         private static readonly List<Vector2> physicsShape = new List<Vector2>();
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer initialize = Initialize;
-        private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Initializer commonInitialize = CommonInitialize;
         private static readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>.Deinitializer deinitialize = Deinitialize;
 
+        private readonly Dictionary<Sprite, string> reverseSprites = new Dictionary<Sprite, string>();
         private readonly BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)> builder;
         public SimpleEnemyFlyweight Flyweight {
             get => builder.flyweight;
@@ -33,7 +32,8 @@ namespace Asteroids.Entities.Enemies
             builder = new BuilderFactoryPool<GameObject, SimpleEnemyFlyweight, (Vector3 position, Vector3 speed)>
                 {
                     constructor = InnerConstruct,
-                    commonInitializer = commonInitialize,
+                    commonInitializer = (in SimpleEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
+                        => CommonInitialize(flyweight, enemy, parameter, reverseSprites),
                     initializer = initialize,
                     deinitializer = deinitialize
                 };
@@ -50,11 +50,11 @@ namespace Asteroids.Entities.Enemies
             );
         }
 
-        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, string id)
+        public static GameObject Construct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter, IPool<GameObject, (Vector3 position, Vector3 speed)> pool, string id, Dictionary<Sprite, string> reverseSprites)
         {
             GameObject enemy = ConstructButNotSave(flyweight, pool, out Rigidbody2D rigidbody, out SpriteRenderer spriteRenderer);
 
-            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, sprites[spriteRenderer.sprite]));
+            GameSaver.SubscribeEnemy(id, () => new EnemyState(rigidbody, reverseSprites[spriteRenderer.sprite]));
 
             return enemy;
         }
@@ -87,9 +87,9 @@ namespace Asteroids.Entities.Enemies
         }
 
         private GameObject InnerConstruct(in SimpleEnemyFlyweight flyweight, in (Vector3 position, Vector3 speed) parameter)
-            => Construct(flyweight, parameter, this, id);
+            => Construct(flyweight, parameter, this, id, reverseSprites);
 
-        public static void CommonInitialize(in SimpleEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter)
+        public static void CommonInitialize(in SimpleEnemyFlyweight flyweight, GameObject enemy, in (Vector3 position, Vector3 speed) parameter, Dictionary<Sprite, string> reverseSprites)
         {
             // Don't use Rigidbody to set position because it has one frame delay
             enemy.transform.position = parameter.position;
@@ -103,7 +103,7 @@ namespace Asteroids.Entities.Enemies
 
             string path = flyweight.Sprites.RandomPick();
             Sprite sprite = Resources.Load<Sprite>(path);
-            sprites[sprite] = path;
+            reverseSprites[sprite] = path;
 
             enemy.GetComponent<SpriteRenderer>().sprite = sprite;
 
