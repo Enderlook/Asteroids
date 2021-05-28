@@ -11,11 +11,11 @@ namespace Asteroids.Scene
         {
             // We store Memento objects in an stongly typed fashion to avoid boxing and so reduce GC pressure
 
-            private readonly Queue<(T memento, float expiration)> queue = new Queue<(T memento, float expiration)>(aproximateStoredmementos);
+            private readonly Queue<(T memento, float expiration)> queue = new Queue<(T memento, float expiration)>(aproximateStoredMementos);
 
             // Profiling shows that this optimization reduces allocation by a factor of x4 when stack is smaller than queue
             // and execution time by x2 when calling StartRewind()
-            private readonly Stack<(T memento, float delta)> stack = new Stack<(T memento, float delta)>(aproximateStoredmementos);
+            private readonly Stack<(T memento, float delta)> stack = new Stack<(T memento, float delta)>(aproximateStoredMementos);
             private Func<T> onStore;
             private Func<T, T, float, T> interpolate;
             private Action<T?> onRewind;

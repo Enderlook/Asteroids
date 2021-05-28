@@ -14,7 +14,7 @@ namespace Asteroids.Scene
         private const float expirationTime = 10; // Two rewind power up can appear very close
         private const float rewindTime = 5;
         private const int storePerSecond = 5;
-        private static readonly int aproximateStoredmementos = Mathf.CeilToInt(storePerSecond * expirationTime);
+        private static readonly int aproximateStoredMementos = Mathf.CeilToInt(storePerSecond * expirationTime);
 
         private static WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
 
