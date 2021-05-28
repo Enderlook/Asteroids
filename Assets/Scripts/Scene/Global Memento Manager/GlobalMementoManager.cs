@@ -48,9 +48,6 @@ namespace Asteroids.Scene
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void FixedUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.R))
-                Rewind(3);
-
             if (IsRewinding)
             {
                 // Rewind updates must be the same as fixed updates or the effect looks odd
