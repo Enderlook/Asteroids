@@ -70,11 +70,8 @@ namespace Asteroids.Entities.Enemies
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(flyweight.ShootSound, false, false);
         }
 
-        public void Load(ShooterState state, List<ProjectileState> projectileStates) => StartCoroutine(OnLoadGame(state, projectileStates));
-
-        private IEnumerator OnLoadGame(ShooterState state, List<ProjectileState> projectileStates)
+        public void Load(ShooterState state, List<ProjectileState> projectileStates)
         {
-            yield return null;
             state.Load(this);
             foreach (ProjectileState state_ in projectileStates)
                 state_.Load(this, CreateBullet());
@@ -157,7 +154,12 @@ namespace Asteroids.Entities.Enemies
             public IPool<Rigidbody2D, (Vector3 position, Quaternion rotation, Vector3 velocity)> pool;
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
-            private void OnCollisionEnter2D(Collision2D collision) => pool.Store(GetComponent<Rigidbody2D>());
+            private void OnCollisionEnter2D(Collision2D collision)
+            {
+                Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
+                pool.ExtractIfHas(rigidbody); // Silent odd bug of double store. TODO: Is this a problem?
+                pool.Store(rigidbody);
+            }
         }
     }
 }

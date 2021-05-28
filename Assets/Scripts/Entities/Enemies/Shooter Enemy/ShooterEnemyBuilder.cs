@@ -4,6 +4,7 @@
 using Asteroids.Scene;
 using Asteroids.Utils;
 
+using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -42,8 +43,15 @@ namespace Asteroids.Entities.Enemies
                     foreach ((SimpleEnemyBuilder.EnemyState enemyState, Shooter.ShooterState shooterState, List<Shooter.ProjectileState> projectileStates) in states)
                     {
                         GameObject enemy = Create(default);
-                        enemyState.Load(this, enemy);
-                        enemy.GetComponent<Shooter>().Load(shooterState, projectileStates);
+
+                        GameManager.StartCoroutine(Work());
+
+                        IEnumerator Work()
+                        {
+                            yield return null;
+                            enemyState.Load(this, enemy);
+                            enemy.GetComponent<Shooter>().Load(shooterState, projectileStates);
+                        }
                     }
                 }
             );

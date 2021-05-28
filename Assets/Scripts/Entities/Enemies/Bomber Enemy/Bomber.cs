@@ -72,11 +72,8 @@ namespace Asteroids.Entities.Enemies
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(flyweight.ShootSound, false, false);
         }
 
-        public void Load(BomberState state, List<ProjectileState> projectileStates) => StartCoroutine(OnLoadGame(state, projectileStates));
-
-        private IEnumerator OnLoadGame(BomberState state, List<ProjectileState> projectileStates)
+        public void Load(BomberState state, List<ProjectileState> projectileStates)
         {
-            yield return null;
             state.Load(this);
             foreach (ProjectileState state_ in projectileStates)
                 state_.Load(this, CreateBomb());

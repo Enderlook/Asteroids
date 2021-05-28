@@ -3,6 +3,8 @@ using Asteroids.UI;
 
 using Spatial;
 
+using System.Collections;
+
 using UnityEngine;
 
 namespace Asteroids.Scene
@@ -62,6 +64,8 @@ namespace Asteroids.Scene
             spatialGrid.Generate();
 #endif
         }
+
+        public new static void StartCoroutine(IEnumerator enumerator) => ((MonoBehaviour)instance).StartCoroutine(enumerator);
 
         private void OnLevelComplete(LevelTerminationEvent @event)
         {

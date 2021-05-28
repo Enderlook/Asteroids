@@ -17,7 +17,8 @@ namespace Asteroids.Entities.Enemies
 
             public override void Execute()
             {
-                player.Play();
+                if (player != null) // The check prevent an odd bug when loading a level. TODO: improve this.
+                    player.Play();
                 //IA2-P3
                 // ^- Don't touch that comment, used by the teacher
                 EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(flyweight.name, flyweight.ScoreWhenDestroyed));
