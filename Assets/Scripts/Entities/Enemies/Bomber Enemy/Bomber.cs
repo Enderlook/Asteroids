@@ -228,6 +228,9 @@ namespace Asteroids.Entities.Enemies
                     //IA2-P2
                     // ^- Don't touch that comment, used by the teacher
 #if SPATIAL_GRID
+                    /* The only place in the game when we do a range check that doesn't use colliders
+                     * and so it can be made with an spatial grid without losing precision.
+                     * Thought the query only check for the existence of a single object. */
                     Vector2 position = transform.position;
                     float squaredExplosionDistance = explosionDistance * explosionDistance;
                     Vector2 squaredExplosionDistanceVector = Vector2.one * squaredExplosionDistance;
