@@ -32,6 +32,9 @@ namespace Asteroids.UI
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
+            /* We could add all the types of enemies here in killedEnemies with 0 values to avoid the .Concat() LINQ,
+             * However, the exercise requested to use that LINQ method so we don't do that. */
+
             EventManager.Subscribe<EnemySpawner.EnemyDestroyedEvent>(e => {
                 killedEnemies.TryGetValue(e.Name, out (int kills, int totalScore) tuple);
                 killedEnemies[e.Name] = (tuple.kills + 1, tuple.totalScore + e.Score);
