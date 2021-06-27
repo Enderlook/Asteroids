@@ -1,5 +1,6 @@
 ﻿using Enderlook.GOAP;
 
+using System;
 using System.Text;
 
 using UnityEngine;
@@ -75,9 +76,9 @@ namespace Asteroids.Entities.Enemies
             {
                 if (currentStep != -1)
                 {
-                    switch (currentPlan.GetActionIndex(currentStep))
+                    switch (currentPlan.GetAction(currentStep))
                     {
-                        case 0:
+                        case AttackCloseAction _:
                         {
 
 
@@ -99,7 +100,7 @@ namespace Asteroids.Entities.Enemies
                     planification = inProgressPlan
                         .Plan(new BossState(this), actions
 #if UNITY_EDITOR
-                        , log ? e => builder.AppendLine(e) : null
+                        , log ? (Action<string>)(e => builder.AppendLine(e)) : null
 #endif
                         ).CompleteGoal(goal)
                         .WithTimeSlice(1000 / 60)
