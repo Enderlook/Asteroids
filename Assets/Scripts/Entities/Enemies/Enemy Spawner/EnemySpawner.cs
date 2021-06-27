@@ -37,6 +37,9 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Layer, Tooltip("Layer of enemies, used to count them.")]
         private int layer;
+
+        [SerializeField, Tooltip("Determines each how many levels the boss is spawned.")]
+        private int levelsPerBoss;
 #pragma warning restore CS0649
 
         private new Camera camera;
@@ -81,6 +84,11 @@ namespace Asteroids.Entities.Enemies
             if (@event.HasWon)
             {
                 remainingEnemies = SpawnEnemies();
+                if (GameManager.Level % levelsPerBoss == 0)
+                {
+                    SpawnBoss();
+                    remainingEnemies++;
+                }
                 spawnSound.Play();
             }
         }
@@ -95,6 +103,17 @@ namespace Asteroids.Entities.Enemies
             for (int i = 0; i < maxEnemies; i++)
                 SpawnEnemy();
             return maxEnemies;
+        }
+
+        private void SpawnBoss()
+        {
+            // Since there is only one kind of boss it doesn't make sense to implement a build pattern (all the configuration is already on the prefab).
+            // Since we only spawn the boss once each several levels it doesn't make sense to pool it (the cost of pooling would be larger than creating it again and let the GC collect it).
+            // Since we only spawn one boss at the time (hence they are rare) it doesn't make sense to create a factory of them (we only need to instantiate it and set it position and rotation, nothing more).
+
+
+
+            throw new System.NotImplementedException();
         }
 
         private void RecalculateEnemyCountManually()
@@ -137,5 +156,13 @@ namespace Asteroids.Entities.Enemies
 
             enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (levelsPerBoss <= 0)
+                Debug.LogError($"{nameof(levelsPerBoss)} can't be 0 nor negative.");
+        }
+#endif
     }
 }

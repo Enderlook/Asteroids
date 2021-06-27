@@ -1,4 +1,5 @@
-﻿using Enderlook.Enumerables;
+﻿using Asteroids.Scene;
+
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Serializables.Ranges;
 
@@ -12,8 +13,8 @@ namespace Asteroids.PowerUps
     public sealed class PowerUpManager : MonoBehaviour
     {
 #pragma warning disable CS0649
-        [SerializeField, Tooltip("Determines each how many seconds a new power up is spawned.")]
-        private float spawnTime = 20;
+        [field: SerializeField, IsProperty, Tooltip("Determines each how many seconds a new power up is spawned.")]
+        public float SpawnTime { get; private set; } = 20;
 
         [SerializeField, Tooltip("Types of power ups.")]
         private PowerUpTemplate[] templates;
@@ -31,12 +32,16 @@ namespace Asteroids.PowerUps
         private GameObject powerUp;
         private int lastTemplate = -1;
 
+        private int powerUps;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
             camera = Camera.main;
-            cooldown = spawnTime;
+            cooldown = SpawnTime;
             audioSource = GetComponent<AudioSource>();
+
+            EventManager.Subscribe<OnPowerUpPickedEvent>(e => powerUps--);
 
             // For gameplay reasons power ups are not tracked by the rewind feature
         }
@@ -47,7 +52,7 @@ namespace Asteroids.PowerUps
             cooldown -= Time.deltaTime;
             if (cooldown < 0 && powerUp == null)
             {
-                cooldown = spawnTime;
+                cooldown = SpawnTime;
                 SpawnPowerUp();
             }
         }
@@ -89,6 +94,8 @@ namespace Asteroids.PowerUps
             powerUp.layer = layer;
             powerUp.transform.position = position; // Don't update from rigidbody because that has one frame delay
             powerUp.GetComponent<Rigidbody2D>().velocity = -speed;
+
+            powerUps++;
         }
     }
 }
