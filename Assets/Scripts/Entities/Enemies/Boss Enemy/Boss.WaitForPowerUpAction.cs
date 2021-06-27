@@ -1,4 +1,6 @@
-﻿using Enderlook.GOAP;
+﻿using Asteroids.PowerUps;
+
+using Enderlook.GOAP;
 
 using UnityEngine;
 
@@ -6,21 +8,24 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        public sealed class PickHealthPackAction : IAction<BossState, IGoal<BossState>>, IGoal<BossState>
+        public sealed class WaitForPowerUpAction : IAction<BossState, IGoal<BossState>>, IGoal<BossState>
         {
             private readonly struct Handle : IActionHandle<BossState, IGoal<BossState>>
             {
                 private readonly float cost;
-                private readonly PickHealthPackAction goal;
+                private readonly WaitForPowerUpAction goal;
 
-                public Handle(float cost, PickHealthPackAction goal)
+                public Handle(float cost, WaitForPowerUpAction goal)
                 {
                     this.cost = cost;
                     this.goal = goal;
                 }
 
                 void IActionHandle<BossState, IGoal<BossState>>.ApplyEffect(ref BossState worldState)
-                    => worldState.BossHealth = Mathf.Max(worldState.BossHealth + HealthRestoredPerPack, worldState.BossMaxHealth);
+                {
+                    worldState.PowerUps++;
+                    worldState.TimeSinceLastPowerUpWasSpawned = 0;
+                }
 
                 bool IActionHandle<BossState, IGoal<BossState>>.CheckProceduralPreconditions() => true;
 
@@ -34,26 +39,15 @@ namespace Asteroids.Entities.Enemies
 
             SatisfactionResult IGoal<BossState>.CheckAndTrySatisfy(BossState before, ref BossState now)
             {
-                if (now.PowerUps > 0)
-                {
-                    now.PowerUps--;
+                if (now.PowerUps == 0)
                     return SatisfactionResult.Satisfied;
-                }
                 return SatisfactionResult.NotProgressed;
             }
 
-            bool IGoal<BossState>.CheckAndTrySatisfy(ref BossState worldState)
-            {
-                if (worldState.PowerUps > 0)
-                {
-                    worldState.PowerUps--;
-                    return true;
-                }
-                return false;
-            }
+            bool IGoal<BossState>.CheckAndTrySatisfy(ref BossState worldState) => worldState.PowerUps == 0;
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
-                => acceptor.Accept(new Handle(worldState.BossMaxHealth - worldState.BossHealth, this));
+                => acceptor.Accept(new Handle(Mathf.Max(PowerUpManager.SpawnTime - worldState.TimeSinceLastPowerUpWasSpawned, 1), this));
         }
     }
 }

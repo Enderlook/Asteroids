@@ -13,8 +13,8 @@ namespace Asteroids.PowerUps
     public sealed class PowerUpManager : MonoBehaviour
     {
 #pragma warning disable CS0649
-        [field: SerializeField, IsProperty, Tooltip("Determines each how many seconds a new power up is spawned.")]
-        public float SpawnTime { get; private set; } = 20;
+        [SerializeField, Tooltip("Determines each how many seconds a new power up is spawned.")]
+        private float spawnTime = 20;
 
         [SerializeField, Tooltip("Types of power ups.")]
         private PowerUpTemplate[] templates;
@@ -32,16 +32,31 @@ namespace Asteroids.PowerUps
         private GameObject powerUp;
         private int lastTemplate = -1;
 
-        private int powerUps;
+        private static PowerUpManager instance;
+
+        public static float SpawnTime => instance.spawnTime;
+
+        public static int PowerUpsInScene { get; private set; }
+
+        public static float TimeSinceLastSpawnedPowerUp => instance.spawnTime - instance.cooldown;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
+            if (instance != null)
+            {
+                Debug.LogError($"{nameof(PowerUpManager)} is a singlenton.");
+                Destroy(this);
+                return;
+            }
+
+            instance = this;
+
             camera = Camera.main;
-            cooldown = SpawnTime;
+            cooldown = spawnTime;
             audioSource = GetComponent<AudioSource>();
 
-            EventManager.Subscribe<OnPowerUpPickedEvent>(e => powerUps--);
+            EventManager.Subscribe<OnPowerUpPickedEvent>(() => PowerUpsInScene--);
 
             // For gameplay reasons power ups are not tracked by the rewind feature
         }
@@ -52,7 +67,7 @@ namespace Asteroids.PowerUps
             cooldown -= Time.deltaTime;
             if (cooldown < 0 && powerUp == null)
             {
-                cooldown = SpawnTime;
+                cooldown = spawnTime;
                 SpawnPowerUp();
             }
         }
@@ -95,7 +110,7 @@ namespace Asteroids.PowerUps
             powerUp.transform.position = position; // Don't update from rigidbody because that has one frame delay
             powerUp.GetComponent<Rigidbody2D>().velocity = -speed;
 
-            powerUps++;
+            PowerUpsInScene++;
         }
     }
 }

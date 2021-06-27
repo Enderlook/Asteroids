@@ -8,17 +8,26 @@ namespace Asteroids.Entities.Enemies
     {
         public sealed class GetCloserPlayerAction : IAction<BossState, IGoal<BossState>>
         {
+            private readonly Boss boss;
+
+            public GetCloserPlayerAction(Boss boss) => this.boss = boss;
+
             private readonly struct Handle : IActionHandle<BossState, IGoal<BossState>>
             {
                 private readonly float distance;
+                private readonly Boss boss;
 
-                public Handle(float distance) => this.distance = distance;
+                public Handle(Boss boss, float distance)
+                {
+                    this.boss = boss;
+                    this.distance = distance;
+                }
 
                 void IActionHandle<BossState, IGoal<BossState>>.ApplyEffect(ref BossState worldState)
                 {
                     Vector3 difference = worldState.PlayerPosition - worldState.BossPosition;
                     worldState.BossPosition -= Vector3.Normalize(difference) * distance;
-                    worldState.AdvanceTime(distance / worldState.BossMovementSpeed);
+                    worldState.AdvanceTime(distance / boss.movementSpeed);
                 }
 
                 bool IActionHandle<BossState, IGoal<BossState>>.CheckProceduralPreconditions() => true;
@@ -32,7 +41,7 @@ namespace Asteroids.Entities.Enemies
             }
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
-                => acceptor.Accept(new Handle(Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - ClosestDistanceToPlayer));
+                => acceptor.Accept(new Handle(boss, Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - ClosestDistanceToPlayer));
         }
     }
 }

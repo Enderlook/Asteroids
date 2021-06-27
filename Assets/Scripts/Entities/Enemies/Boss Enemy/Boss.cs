@@ -1,5 +1,7 @@
 ﻿using Asteroids.PowerUps;
 
+using Enderlook.GOAP;
+
 using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
@@ -18,9 +20,7 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Range(0, 1), Tooltip("Life factor considered too hurt.")]
         private float tooHurtFactor;
 
-        private float currentLifes;
-
-        private PowerUpManager powerUpManager;
+        private int currentLifes;
 
         private const float ClosestDistanceToPlayer = 1;
         private const float FurtherDistanceToPlayer = 15;
@@ -29,12 +29,28 @@ namespace Asteroids.Entities.Enemies
         private const float AverageTimeRequiredByCloseAttack = .8f;
         private const float AverageTimeRequiredByFarAttack = 1;
 
+        private bool IsTooHurt(BossState state) => (state.BossHealth / (float)lifes) <= tooHurtFactor;
+
+        private Plan<BossState, IAction<BossState, IGoal<BossState>>> plan = new Plan<BossState, IAction<BossState, IGoal<BossState>>>();
+
+        private IAction<BossState, IGoal<BossState>>[] actions;
+
         private void Awake()
         {
             currentLifes = lifes;
-            powerUpManager = FindObjectOfType<PowerUpManager>();
+
+            actions = new IAction<BossState, IGoal<BossState>>[]
+            {
+                new AttackCloseAction(this),
+                new AttackFarAction(this),
+                new GetCloserPlayerAction(this),
+                new GetFurtherPlayerAction(this),
+                new PickPowerUpAction(this),
+                new WaitForPowerUpAction(),
+            };
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
+            //plan.Plan(new BossState(this), actions).
         }
     }
 }

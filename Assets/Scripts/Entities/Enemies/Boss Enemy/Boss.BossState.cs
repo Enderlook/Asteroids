@@ -18,42 +18,36 @@ namespace Asteroids.Entities.Enemies
             public int PowerUps;
             public float TimeSinceLastPowerUpWasSpawned;
 
-            private Boss flyweight;
-
-            public bool IsBossTooHurt => (BossHealth / (float)flyweight.lifes) > flyweight.tooHurtFactor;
-
-            public float BossMovementSpeed => flyweight.movementSpeed;
-
-            public int BossMaxHealth => flyweight.lifes;
-
-            public float AverageTimeToSpawnPickup => flyweight.powerUpManager.SpawnTime;
-
             public void AdvanceTime(float time)
             {
                 TimeSinceLastPowerUpWasSpawned += time;
-                if (time > flyweight.powerUpManager.SpawnTime)
+                if (time > PowerUpManager.SpawnTime)
                 {
-                    TimeSinceLastPowerUpWasSpawned -= flyweight.powerUpManager.SpawnTime;
+                    TimeSinceLastPowerUpWasSpawned -= PowerUpManager.SpawnTime;
                     PowerUps++;
                 }
             }
 
-            //public BossState(Boss boss) : this(boss, PlayerController.Position, boss.transform.position, boss.lifes, PlayerController.Lifes, Object.FindObjectOfType<IPickup>(), ) { }
+            public BossState(Boss boss)
+                : this(
+                      boss.transform.position, boss.currentLifes,
+                      PlayerController.Position, PlayerController.Lifes,
+                      PowerUpManager.PowerUpsInScene, PowerUpManager.TimeSinceLastSpawnedPowerUp
+                ) { }
 
-            private BossState(Boss flyweight, Vector3 playerPosition, Vector3 bossPosition, int bossHealth, int playerHealth, int powerUps, float timeSinceLastHealthPackWasSpawned)
+            private BossState(Vector3 bossPosition, int bossHealth, Vector3 playerPosition, int playerHealth, int powerUps, float timeSinceLastPowerUpWasSpawned)
             {
-                this.flyweight = flyweight;
                 PlayerPosition = playerPosition;
                 BossPosition = bossPosition;
                 BossHealth = bossHealth;
                 PlayerHealth = playerHealth;
                 PowerUps = powerUps;
-                TimeSinceLastPowerUpWasSpawned = timeSinceLastHealthPackWasSpawned;
+                TimeSinceLastPowerUpWasSpawned = timeSinceLastPowerUpWasSpawned;
             }
 
-            public override string ToString() => $"{{P: ({PlayerHealth} {PlayerPosition}) B: ({BossHealth} {BossPosition}) P: ({PowerUps} {TimeSinceLastPowerUpWasSpawned})}}";
+            public override string ToString() => $"{{Pl: ({PlayerHealth} {PlayerPosition}) Bo: ({BossHealth} {BossPosition}) Pu: ({PowerUps} {TimeSinceLastPowerUpWasSpawned})}}";
 
-            BossState IWorldState<BossState>.Clone() => new BossState(flyweight, PlayerPosition, BossPosition, BossHealth, PlayerHealth, PowerUps, TimeSinceLastPowerUpWasSpawned);
+            BossState IWorldState<BossState>.Clone() => new BossState(BossPosition, BossHealth, PlayerPosition, PlayerHealth, PowerUps, TimeSinceLastPowerUpWasSpawned);
         }
     }
 }

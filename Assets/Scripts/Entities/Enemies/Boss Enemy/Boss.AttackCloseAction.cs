@@ -8,6 +8,10 @@ namespace Asteroids.Entities.Enemies
     {
         public sealed class AttackCloseAction : IAction<BossState, IGoal<BossState>>, IActionHandle<BossState, IGoal<BossState>>, IGoal<BossState>
         {
+            private readonly Boss boss;
+
+            public AttackCloseAction(Boss boss) => this.boss = boss;
+
             void IActionHandle<BossState, IGoal<BossState>>.ApplyEffect(ref BossState worldState)
             {
                 worldState.PlayerHealth--;
@@ -24,7 +28,7 @@ namespace Asteroids.Entities.Enemies
             SatisfactionResult IGoal<BossState>.CheckAndTrySatisfy(BossState before, ref BossState now)
             {
                 float distance = Vector3.Distance(now.PlayerPosition, now.BossPosition);
-                if (distance <= ClosestDistanceToPlayer && !now.IsBossTooHurt)
+                if (distance <= ClosestDistanceToPlayer && !boss.IsTooHurt(now))
                     return SatisfactionResult.Satisfied;
                 if (distance < Vector3.Distance(before.PlayerPosition, before.BossPosition) || now.BossHealth > before.BossHealth)
                     return SatisfactionResult.Progressed;
@@ -32,7 +36,7 @@ namespace Asteroids.Entities.Enemies
             }
 
             bool IGoal<BossState>.CheckAndTrySatisfy(ref BossState worldState)
-                => Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) <= ClosestDistanceToPlayer && !worldState.IsBossTooHurt;
+                => Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) <= ClosestDistanceToPlayer && !boss.IsTooHurt(worldState);
 
             bool IActionHandle<BossState, IGoal<BossState>>.CheckProceduralPreconditions() => true;
 
