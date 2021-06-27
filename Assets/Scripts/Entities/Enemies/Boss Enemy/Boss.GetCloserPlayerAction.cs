@@ -41,7 +41,7 @@ namespace Asteroids.Entities.Enemies
             }
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
-                => acceptor.Accept(new Handle(boss, Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - ClosestDistanceToPlayer));
+                => acceptor.Accept(new Handle(boss, Mathf.Max(Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - ClosestDistanceToPlayer, 0)));
         }
     }
 }

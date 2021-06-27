@@ -1,11 +1,20 @@
 ﻿using Asteroids.PowerUps;
 
 using Enderlook.GOAP;
+using Enderlook.StateMachine;
+
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using UnityEditor;
 
 using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
+    [DefaultExecutionOrder(10)]
     public sealed partial class Boss : MonoBehaviour
     {
         [SerializeField, Tooltip("Maximum life.")]
@@ -29,28 +38,103 @@ namespace Asteroids.Entities.Enemies
         private const float AverageTimeRequiredByCloseAttack = .8f;
         private const float AverageTimeRequiredByFarAttack = 1;
 
-        private bool IsTooHurt(BossState state) => (state.BossHealth / (float)lifes) <= tooHurtFactor;
+        private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> currentPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
+        private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> inProgressPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
+        private int currentStep;
 
-        private Plan<BossState, IAction<BossState, IGoal<BossState>>> plan = new Plan<BossState, IAction<BossState, IGoal<BossState>>>();
+        private readonly IAction<BossState, IGoal<BossState>>[] actions = new IAction<BossState, IGoal<BossState>>[6];
+        private readonly PlayerIsDeadGoal goal = new PlayerIsDeadGoal();
 
-        private IAction<BossState, IGoal<BossState>>[] actions;
+        private PlanningCoroutine<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> planification;
+        private float nextPlanificationAt;
+        private const float timeBetweenPlanifications = 2f;
 
+        private StringBuilder builder = new StringBuilder();
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
             currentLifes = lifes;
 
-            actions = new IAction<BossState, IGoal<BossState>>[]
-            {
-                new AttackCloseAction(this),
-                new AttackFarAction(this),
-                new GetCloserPlayerAction(this),
-                new GetFurtherPlayerAction(this),
-                new PickPowerUpAction(this),
-                new WaitForPowerUpAction(),
-            };
+            actions[0] = new AttackCloseAction(this);
+            actions[1] = new AttackFarAction(this);
+            actions[2] = new GetCloserPlayerAction(this);
+            actions[3] = new GetFurtherPlayerAction(this);
+            actions[4] = new PickPowerUpAction(this);
+            actions[5] = new WaitForPowerUpAction();
+
+            currentStep = -1;
+            CheckPlanification();
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
-            //plan.Plan(new BossState(this), actions).
         }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void Update()
+        {
+            CheckPlanification();
+
+            if (currentPlan.FoundPlan)
+            {
+                if (currentStep != -1)
+                {
+                    switch (currentPlan.GetActionIndex(currentStep))
+                    {
+                        case 0:
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void CheckPlanification()
+        {
+            if (planification is null)
+            {
+                if (nextPlanificationAt <= Time.time)
+                {
+                    nextPlanificationAt = Time.time + timeBetweenPlanifications;
+                    planification = inProgressPlan
+                        .Plan(new BossState(this), actions, e => builder.AppendLine(e))
+                        .CompleteGoal(goal)
+                        .WithTimeSlice(1000 / 60)
+                        .ExecuteCoroutine();
+                }
+                else
+                    return;
+            }
+
+            if (planification.MoveNext())
+                return;
+
+            planification = null;
+
+            Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> tmp = currentPlan;
+            currentPlan = inProgressPlan;
+            inProgressPlan = tmp;
+
+            if (currentPlan.FoundPlan)
+            {
+                currentStep = 0;
+                for (int i = 0; i < currentPlan.GetActionsCount(); i++)
+                    builder.Append('\n').Append(currentPlan.GetAction(i));
+                Debug.Log(builder.ToString());
+                builder.Clear();
+            }
+            else
+            {
+                currentStep = -1;
+                nextPlanificationAt = Time.time + timeBetweenPlanifications;
+                planification = inProgressPlan
+                    .Plan(new BossState(this), actions, e => builder.Append(e))
+                    .CompleteGoal(goal)
+                    .WithTimeSlice(1000 / 60)
+                    .ExecuteCoroutine();
+            }
+        }
+
+        private bool IsTooHurt(BossState state) => (state.BossHealth / (float)lifes) <= tooHurtFactor;
     }
 }

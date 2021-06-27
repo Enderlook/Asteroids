@@ -409,9 +409,22 @@
             <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
             <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumCost"/> is 0 or negative.</exception>
         </member>
-        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithTimeout(System.Single)">
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithTimeout(System.Int32)">
             <summary>
             Cancellates the planification if the computation time reaches <paramref name="maximumMilliseconds"/>.
+            </summary>
+            <param name="maximumMilliseconds">Maximum miliseconds spent computating.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumMilliseconds"/> is 0 or negative.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithTimeSlice(System.Int32)">
+            <summary>
+            Suspends the planification if the computation time reaches <paramref name="maximumMilliseconds"/>.<br/>
+            If executed synchronously, suspension is <see cref="M:System.Threading.Thread.Yield"/>.<br/>
+            If executed asynchronously, suspension is <see cref="M:System.Threading.Tasks.Task.Yield"/>.<br/>
+            If executed in coroutine, suspension is <see langword="yield return"/>.
             </summary>
             <param name="maximumMilliseconds">Maximum miliseconds spent computating.</param>
             <returns>Instance of the builder for the plan.<br/>

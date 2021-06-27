@@ -25,7 +25,7 @@ namespace Asteroids.Entities.Enemies
 
                 void IActionHandle<BossState, IGoal<BossState>>.ApplyEffect(ref BossState worldState)
                 {
-                    Vector3 difference = worldState.PlayerPosition - worldState.BossPosition;
+                    Vector3 difference = worldState.BossPosition + worldState.PlayerPosition;
                     worldState.BossPosition += Vector3.Normalize(difference) * distance;
                     worldState.AdvanceTime(distance / boss.movementSpeed);
                 }
@@ -41,7 +41,7 @@ namespace Asteroids.Entities.Enemies
             }
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
-                => acceptor.Accept(new Handle(boss, FurtherDistanceToPlayer - Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition)));
+                => acceptor.Accept(new Handle(boss, Mathf.Max(FurtherDistanceToPlayer - Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition), 0)));
         }
     }
 }
