@@ -1,14 +1,6 @@
-﻿using Asteroids.PowerUps;
+﻿using Enderlook.GOAP;
 
-using Enderlook.GOAP;
-using Enderlook.StateMachine;
-
-using System;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
-using UnityEditor;
 
 using UnityEngine;
 
@@ -17,6 +9,7 @@ namespace Asteroids.Entities.Enemies
     [DefaultExecutionOrder(10)]
     public sealed partial class Boss : MonoBehaviour
     {
+#pragma warning disable CS0649
         [SerializeField, Tooltip("Maximum life.")]
         private int lifes;
 
@@ -28,6 +21,7 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Range(0, 1), Tooltip("Life factor considered too hurt.")]
         private float tooHurtFactor;
+#pragma warning restore CS0649
 
         private int currentLifes;
 
@@ -49,7 +43,10 @@ namespace Asteroids.Entities.Enemies
         private float nextPlanificationAt;
         private const float timeBetweenPlanifications = 2f;
 
+#if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
+        private const bool log = true;
+#endif
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
@@ -82,6 +79,9 @@ namespace Asteroids.Entities.Enemies
                     {
                         case 0:
                         {
+
+
+
                             break;
                         }
                     }
@@ -97,8 +97,11 @@ namespace Asteroids.Entities.Enemies
                 {
                     nextPlanificationAt = Time.time + timeBetweenPlanifications;
                     planification = inProgressPlan
-                        .Plan(new BossState(this), actions, e => builder.AppendLine(e))
-                        .CompleteGoal(goal)
+                        .Plan(new BossState(this), actions
+#if UNITY_EDITOR
+                        , log ? e => builder.AppendLine(e) : null
+#endif
+                        ).CompleteGoal(goal)
                         .WithTimeSlice(1000 / 60)
                         .ExecuteCoroutine();
                 }
@@ -118,10 +121,13 @@ namespace Asteroids.Entities.Enemies
             if (currentPlan.FoundPlan)
             {
                 currentStep = 0;
-                for (int i = 0; i < currentPlan.GetActionsCount(); i++)
-                    builder.Append('\n').Append(currentPlan.GetAction(i));
-                Debug.Log(builder.ToString());
-                builder.Clear();
+#if UNITY_EDITOR
+                if (log)
+                {
+                    Debug.Log(builder.ToString());
+                    builder.Clear();
+                }
+#endif
             }
             else
             {
