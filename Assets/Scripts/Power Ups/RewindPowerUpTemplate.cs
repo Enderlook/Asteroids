@@ -20,7 +20,9 @@ namespace Asteroids.PowerUps
                 duration = audioSource.clip.length;
             }
 
-            public void PickUp()
+            void IPickup.BossPickup() => decorable.BossPickup();
+
+            void IPickup.PickUp()
             {
                 decorable.PickUp();
                 GlobalMementoManager.Rewind(duration);

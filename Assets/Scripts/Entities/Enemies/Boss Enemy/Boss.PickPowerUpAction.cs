@@ -1,4 +1,9 @@
-﻿using Enderlook.GOAP;
+﻿using Asteroids.PowerUps;
+
+using Enderlook.Enumerables;
+using Enderlook.GOAP;
+
+using System.Linq;
 
 using UnityEngine;
 
@@ -6,9 +11,11 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private sealed class PickPowerUpAction : IAction<BossState, IGoal<BossState>>, IGoal<BossState>
+        private sealed class PickPowerUpAction : IFSMState, IAction<BossState, IGoal<BossState>>, IGoal<BossState>
         {
             private readonly Boss boss;
+
+            private Transform powerUp;
 
             public PickPowerUpAction(Boss boss) => this.boss = boss;
 
@@ -58,6 +65,21 @@ namespace Asteroids.Entities.Enemies
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
                 => acceptor.Accept(new Handle(boss.lifes - worldState.BossHealth, this));
+
+            public void OnEntry()
+            {
+                IPickup pickup = FindObjectsOfType<MonoBehaviour>()
+                    .OfType<IPickup>()
+                    .MinBy(e => Vector3.Distance(((MonoBehaviour)e).transform.position, boss.transform.position));
+                if (pickup is MonoBehaviour mono)
+                    powerUp = mono.transform;
+                else
+                    boss.WorldIsNotAsExpected();
+            }
+
+            public void OnExit() => powerUp = null;
+
+            public void OnUpdate() => boss.MoveAndRotateTowards(powerUp.position);
         }
     }
 }

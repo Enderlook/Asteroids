@@ -1,4 +1,5 @@
-﻿using Asteroids.Entities.Player;
+﻿using Asteroids.Entities.Enemies;
+using Asteroids.Entities.Player;
 using Asteroids.Scene;
 
 using Enderlook.Unity.Attributes;
@@ -91,6 +92,11 @@ namespace Asteroids.PowerUps
                     pickup.PickUp();
                     Destroy(gameObject);
                 }
+                else if (collision.gameObject.GetComponent<Boss>() != null)
+                {
+                    pickup.BossPickup();
+                    Destroy(gameObject);
+                }
             }
 
             private bool IsVisible()
@@ -113,9 +119,15 @@ namespace Asteroids.PowerUps
 
             public PickupDecorable(AudioSource audioSource) => this.audioSource = audioSource;
 
-            public void PickUp()
+            void IPickup.PickUp()
             {
-                EventManager.Raise(new OnPowerUpPickedEvent());
+                EventManager.Raise(new OnPowerUpPickedEvent(true));
+                audioSource.Play();
+            }
+
+            void IPickup.BossPickup()
+            {
+                EventManager.Raise(new OnPowerUpPickedEvent(false));
                 audioSource.Play();
             }
         }

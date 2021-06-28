@@ -1,4 +1,7 @@
-﻿using Enderlook.GOAP;
+﻿using Asteroids.PowerUps;
+using Asteroids.Scene;
+
+using Enderlook.GOAP;
 using Enderlook.StateMachine;
 
 using System;
@@ -13,29 +16,42 @@ namespace Asteroids.Entities.Enemies
     public sealed partial class Boss : MonoBehaviour
     {
 #pragma warning disable CS0649
+        [Header("Health")]
         [SerializeField, Tooltip("Maximum life.")]
         private int lifes;
 
+        [SerializeField, Range(0, 1), Tooltip("Life factor considered too hurt.")]
+        private float tooHurtFactor;
+
+        [Header("Movement")]
         [SerializeField, Tooltip("Movement speed.")]
         private float movementSpeed;
 
         [SerializeField, Tooltip("Rotation speed.")]
         private float rotationSpeed;
 
-        [SerializeField, Range(0, 1), Tooltip("Life factor considered too hurt.")]
-        private float tooHurtFactor;
+        [Header("Invulnerability")]
+        [SerializeField, Tooltip("How many seconds does invulnerability last.")]
+        private float invulnerabilityDuration;
 
+        [SerializeField, Tooltip("Coor tone applied when invulnerable.")]
+        private Color invulnerabilityColor;
+
+        [Header("Death")]
+        [SerializeField, Tooltip("Points got when this enemy is destroyed.")]
+        private int scoreWhenDestroyed;
+
+        [Header("Setup")]
         [SerializeField, Tooltip("Close range gameobject.")]
         private GameObject closeRange;
 #pragma warning restore CS0649
 
-        private int currentLifes;
+        private new Rigidbody2D rigidbody;
+        private new Collider2D collider;
+        private new SpriteRenderer renderer;
 
-        private const float ClosestDistanceToPlayer = 1;
-        private const float FurtherDistanceToPlayer = 15;
-        private const int HealthRestoredPerPack = 4;
-        private const float CloseAttackDuration = .8f;
-        private const float AverageTimeRequiredByFarAttack = 1.4f;
+        private int currentLifes;
+        private float invulnerabilityTime;
 
         private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> currentPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
         private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> inProgressPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
@@ -44,24 +60,30 @@ namespace Asteroids.Entities.Enemies
         private readonly IAction<BossState, IGoal<BossState>>[] actions = new IAction<BossState, IGoal<BossState>>[6];
         private readonly PlayerIsDeadGoal goal = new PlayerIsDeadGoal();
 
+        private const float ClosestDistanceToPlayer = 1;
+        private const float FurtherDistanceToPlayer = 15;
+        private const int HealthRestoredPerPack = 4;
+        private const float CloseAttackDuration = .8f;
+        private const float AverageTimeRequiredByFarAttack = 2f;
+
         private PlanningCoroutine<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> planification;
         private float nextPlanificationAt;
         private const float timeBetweenPlanifications = 2f;
 
-        private new Rigidbody2D rigidbody;
-
         private StateMachine<object, object, object> machine;
-        private readonly object idle = new object();
+        private static readonly object auto = new object();
+        private static readonly object pickedPowerUp = new object();
 
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
         private const bool log = true;
 #endif
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
             rigidbody = GetComponent<Rigidbody2D>();
+            collider = GetComponent<Collider2D>();
+            renderer = GetComponent<SpriteRenderer>();
 
             currentLifes = lifes;
 
@@ -74,18 +96,21 @@ namespace Asteroids.Entities.Enemies
 
             // Each event has a 1 : 1 mapping to an state, for that reason, we use the action themselves as both event and states.
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
-            // Finally, we need an additional state (and event) used when plan is being calculated, for that reason we use a dummy object.
+            // Finally, we need a few additional states and/or event used when plan is being calculated or power up is picked, for that reason we use a dummy object.
             // That is whay whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
                  .Builder()
-                 .SetInitialState(waitForPowerUpAction);
+                 .SetInitialState(pickPowerUpAction);
 
-            SetNode(attackCloseAction);
+            SetNode(attackCloseAction)
+                .Ignore(pickedPowerUp);
             //SetNode(attackFarAction);
             //SetNode(getCloserPlayerAction);
             //SetNode(getFurtherPlayerAction);
-            //SetNode(pickPowerUpAction);
-            SetNode(waitForPowerUpAction);
+            SetNode(pickPowerUpAction)
+                .On(pickedPowerUp).If(Next).Goto(auto);
+            SetNode(waitForPowerUpAction)
+                .Ignore(pickedPowerUp); ;
 
             machine = builder.Build();
             machine.Start();
@@ -93,49 +118,78 @@ namespace Asteroids.Entities.Enemies
             currentStep = -1;
             //CheckPlanification();
 
-            void SetNode(IFSMState node)
+            StateBuilder<object, object, object> SetNode(IFSMState node)
             {
-                builder
+                return builder
                     .In(node)
                         .OnEntry(node.OnEntry)
                         .OnExit(node.OnExit)
                         .OnUpdate(node.OnUpdate)
-                        .On(attackCloseAction)
-                            .Goto(attackCloseAction)
-                        /*.On(attackFarAction)
-                            .Goto(attackFarAction)*/
-                        /*.On(getCloserPlayerAction)
-                            .Goto(getCloserPlayerAction)*/
-                        /*.On(getFurtherPlayerAction)
-                            .Goto(getFurtherPlayerAction)*/
-                        /*.On(pickPowerUpAction)
-                            .Goto(pickPowerUpAction)*/
-                        .On(waitForPowerUpAction)
-                            .Goto(waitForPowerUpAction);
+                        .On(attackCloseAction).Goto(attackCloseAction)
+                        /*.On(attackFarAction).Goto(attackFarAction)*/
+                        /*.On(getCloserPlayerAction).Goto(getCloserPlayerAction)*/
+                        /*.On(getFurtherPlayerAction).Goto(getFurtherPlayerAction)*/
+                        .On(pickPowerUpAction).Goto(pickPowerUpAction)
+                        .On(waitForPowerUpAction).Goto(waitForPowerUpAction);
             }
+
+            EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()
         {
+            if (invulnerabilityTime > 0)
+            {
+                if (invulnerabilityTime <= Time.time)
+                {
+                    collider.enabled = true;
+                    renderer.color = Color.white;
+                }
+            }
+
             //CheckPlanification();
             machine.Update();
         }
 
-        private void Next()
+        private void OnPowerUpPicked(OnPowerUpPickedEvent @event)
+        {
+            if (!@event.PickedByPlayer)
+            {
+                currentLifes = Mathf.Min(currentLifes + HealthRestoredPerPack, lifes);
+                machine.Fire(pickedPowerUp);
+            }
+        }
+
+        private void MoveAndRotateTowards(Vector3 target)
+        {
+            Vector3 direction = (target - transform.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+            rigidbody.position = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
+        }
+
+        private bool Next()
         {
             Debug.Log("NEXT");
-            return;
+            return true;
 
             if (currentPlan.FoundPlan && currentStep < currentPlan.GetActionsCount())
             {
                 currentStep++;
                 machine.Fire(currentPlan.GetAction(currentStep));
+                return false;
             }
-            else
-                currentStep = -1;
+            currentStep = -1;
+            return true;
+        }
+
+        private void WorldIsNotAsExpected()
+        {
+            if (planification is null)
+                Planify();
+            machine.Fire(auto);
         }
 
         private void CheckPlanification()
@@ -143,17 +197,7 @@ namespace Asteroids.Entities.Enemies
             if (planification is null)
             {
                 if (nextPlanificationAt <= Time.time)
-                {
-                    nextPlanificationAt = Time.time + timeBetweenPlanifications;
-                    planification = inProgressPlan
-                        .Plan(new BossState(this), actions
-#if UNITY_EDITOR
-                        , log ? (Action<string>)(e => builder.AppendLine(e)) : null
-#endif
-                        ).CompleteGoal(goal)
-                        .WithTimeSlice(1000 / 60)
-                        .ExecuteCoroutine();
-                }
+                    Planify();
                 else
                     return;
             }
@@ -185,21 +229,52 @@ namespace Asteroids.Entities.Enemies
             }
 
             currentStep = -1;
+            Planify();
+        }
+
+        private void Planify()
+        {
             nextPlanificationAt = Time.time + timeBetweenPlanifications;
             planification = inProgressPlan
-                .Plan(new BossState(this), actions, e => builder.Append(e))
-                .CompleteGoal(goal)
+                .Plan(new BossState(this), actions
+#if UNITY_EDITOR
+                        , log ? (Action<string>)(e => builder.AppendLine(e)) : null
+#endif
+                        ).CompleteGoal(goal)
                 .WithTimeSlice(1000 / 60)
                 .ExecuteCoroutine();
         }
 
         private bool IsTooHurt(BossState state) => (state.BossHealth / (float)lifes) <= tooHurtFactor;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (invulnerabilityTime >= 0)
+            {
+
+            }
+
+            if (lifes == 0)
+                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(name, scoreWhenDestroyed));
+            else
+            {
+                lifes--;
+            }
+
+            BecomeInvulnerable();
+        }
+
+        private void BecomeInvulnerable()
+        {
+            invulnerabilityTime = invulnerabilityDuration;
+            renderer.color = invulnerabilityColor;
+        }
+
         private void OnDestroy()
         {
+            EventManager.Unsubscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
             // Forcing an sate transition will call OnExit of current frame, removing possible memory leak from subscribed events.
-            machine.Fire(idle);
+            machine.Fire(auto);
         }
     }
 }
