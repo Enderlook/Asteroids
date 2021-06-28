@@ -67,6 +67,14 @@ namespace Asteroids.Entities.Enemies
 
             public void OnEntry()
             {
+                FindPowerUp();
+
+                if (powerUp == null)
+                    boss.WorldIsNotAsExpected();
+            }
+
+            private void FindPowerUp()
+            {
                 float distance = float.PositiveInfinity;
 
                 foreach (PowerUpTemplate.PickupBehaviour pickup in FindObjectsOfType<PowerUpTemplate.PickupBehaviour>())
@@ -78,16 +86,19 @@ namespace Asteroids.Entities.Enemies
                         powerUp = pickup.transform;
                     }
                 }
-
-                if (powerUp == null)
-                    boss.WorldIsNotAsExpected();
             }
 
             public void OnExit() => powerUp = null;
 
             public void OnUpdate()
             {
-                if (powerUp != null) // Fix a one-frame-delay error
+                if (powerUp == null)
+                    // Player picked the power up, look for a new one.
+                    FindPowerUp();
+
+                if (powerUp == null)
+                    boss.WorldIsNotAsExpected();
+                else
                     boss.MoveAndRotateTowards(powerUp.position);
             }
         }
