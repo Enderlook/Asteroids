@@ -6,7 +6,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        public sealed class GetCloserPlayerAction : IAction<BossState, IGoal<BossState>>
+        private sealed class GetCloserPlayerAction : IAction<BossState, IGoal<BossState>>
         {
             private readonly Boss boss;
 

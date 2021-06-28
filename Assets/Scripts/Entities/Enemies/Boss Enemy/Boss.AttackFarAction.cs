@@ -6,7 +6,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        public sealed class AttackFarAction : IAction<BossState, IGoal<BossState>>, IActionHandle<BossState, IGoal<BossState>>, IGoal<BossState>
+        private sealed class AttackFarAction : IAction<BossState, IGoal<BossState>>, IActionHandle<BossState, IGoal<BossState>>, IGoal<BossState>
         {
             private readonly Boss boss;
 

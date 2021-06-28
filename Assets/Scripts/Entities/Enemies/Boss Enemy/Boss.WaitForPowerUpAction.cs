@@ -8,7 +8,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        public sealed class WaitForPowerUpAction : IAction<BossState, IGoal<BossState>>, IGoal<BossState>
+        private sealed class WaitForPowerUpAction : IAction<BossState, IGoal<BossState>>, IGoal<BossState>
         {
             private readonly struct Handle : IActionHandle<BossState, IGoal<BossState>>
             {

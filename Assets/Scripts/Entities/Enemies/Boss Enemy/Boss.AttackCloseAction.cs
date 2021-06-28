@@ -6,16 +6,19 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        public sealed class AttackCloseAction : IAction<BossState, IGoal<BossState>>, IActionHandle<BossState, IGoal<BossState>>, IGoal<BossState>
+        private sealed class AttackCloseAction : IFSMState, IAction<BossState, IGoal<BossState>>, IActionHandle<BossState, IGoal<BossState>>, IGoal<BossState>
         {
             private readonly Boss boss;
+
+            private float initialTime;
+            private float initialRotation;
 
             public AttackCloseAction(Boss boss) => this.boss = boss;
 
             void IActionHandle<BossState, IGoal<BossState>>.ApplyEffect(ref BossState worldState)
             {
                 worldState.PlayerHealth--;
-                worldState.AdvanceTime(AverageTimeRequiredByCloseAttack);
+                worldState.AdvanceTime(CloseAttackDuration);
             }
 
             bool IActionHandle<BossState, IGoal<BossState>>.GetCostAndRequiredGoal(out float cost, out IGoal<BossState> goal)
@@ -42,6 +45,27 @@ namespace Asteroids.Entities.Enemies
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
                 => acceptor.Accept(this);
+
+            void IFSMState.OnEntry()
+            {
+                boss.closeRange.gameObject.SetActive(true);
+                initialRotation = boss.rigidbody.rotation;
+                initialTime = Time.time;
+            }
+
+            void IFSMState.OnExit() => boss.closeRange.gameObject.SetActive(false);
+
+            void IFSMState.OnUpdate()
+            {
+                float t = (Time.time - initialTime) / CloseAttackDuration;
+                if (t >= 1)
+                {
+                    boss.rigidbody.rotation = initialRotation;
+                    boss.Next();
+                }
+                else
+                    boss.rigidbody.rotation = Mathf.LerpAngle(initialRotation, boss.rigidbody.rotation + 360, t);
+            }
         }
     }
 }
