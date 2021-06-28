@@ -2111,7 +2111,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1314290389
 Transform:
   m_ObjectHideFlags: 0
@@ -2579,6 +2579,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1551985186}
   - component: {fileID: 1551985185}
+  - component: {fileID: 1551985189}
   - component: {fileID: 1551985188}
   - component: {fileID: 1551985187}
   m_Layer: 8
@@ -2668,6 +2669,7 @@ MonoBehaviour:
   movementSpeed: 3
   rotationSpeed: 90
   tooHurtFactor: 0.5
+  closeRange: {fileID: 1314290388}
 --- !u!60 &1551985188
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -2733,6 +2735,27 @@ PolygonCollider2D:
       - {x: -0.505, y: -0.265}
       - {x: -0.415, y: -0.095}
       - {x: -0.255, y: -0.235}
+--- !u!50 &1551985189
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1551985184}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &1645867532
 GameObject:
   m_ObjectHideFlags: 0

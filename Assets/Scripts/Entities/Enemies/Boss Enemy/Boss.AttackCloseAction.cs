@@ -57,14 +57,14 @@ namespace Asteroids.Entities.Enemies
 
             void IFSMState.OnUpdate()
             {
-                float t = (Time.time - initialTime) / CloseAttackDuration;
-                if (t >= 1)
+                float percent = (Time.time - initialTime) / CloseAttackDuration;
+                if (percent >= 1)
                 {
                     boss.rigidbody.rotation = initialRotation;
                     boss.Next();
                 }
                 else
-                    boss.rigidbody.rotation = Mathf.LerpAngle(initialRotation, boss.rigidbody.rotation + 360, t);
+                    boss.rigidbody.rotation = initialRotation + (360 * percent);
             }
         }
     }

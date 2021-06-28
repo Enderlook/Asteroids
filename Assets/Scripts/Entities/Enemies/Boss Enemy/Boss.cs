@@ -35,7 +35,7 @@ namespace Asteroids.Entities.Enemies
         private const float FurtherDistanceToPlayer = 15;
         private const int HealthRestoredPerPack = 4;
         private const float CloseAttackDuration = .8f;
-        private const float AverageTimeRequiredByFarAttack = 1;
+        private const float AverageTimeRequiredByFarAttack = 1.4f;
 
         private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> currentPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
         private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> inProgressPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
@@ -73,17 +73,27 @@ namespace Asteroids.Entities.Enemies
 
             object idle = new object();
 
+            /*machine = StateMachine<object, object, object>
+                 .Builder()
+                 .SetInitialState(attackCloseAction)
+                 .In(attackCloseAction)
+                    .OnUpdate(() => Debug.Log("HI"))
+                 .Build();
+            machine.Start();
+            return;*/
+
             // Each event has a 1 : 1 mapping to an state, for that reason, we use the action themselves as both event and states.
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
             // Finally, we need an additional state (and event) used when plan is being calculated, for that reason we use a dummy object.
             // That is whay whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
                  .Builder()
-                 .SetInitialState(idle);
+                 .SetInitialState(attackCloseAction);
 
             SetNode(attackCloseAction);
 
             machine = builder.Build();
+            machine.Start();
 
             actions[0] = attackCloseAction;
             actions[1] = attackFarAction;
@@ -93,7 +103,7 @@ namespace Asteroids.Entities.Enemies
             actions[5] = waitForPowerUpAction;
 
             currentStep = -1;
-            CheckPlanification();
+            //CheckPlanification();
 
             void SetNode(IFSMState node)
             {
@@ -104,7 +114,7 @@ namespace Asteroids.Entities.Enemies
                         .OnUpdate(node.OnUpdate)
                         .On(attackCloseAction)
                             .Goto(attackCloseAction)
-                        .On(attackFarAction)
+                        /*.On(attackFarAction)
                             .Goto(attackFarAction)
                         .On(getCloserPlayerAction)
                             .Goto(getCloserPlayerAction)
@@ -113,7 +123,7 @@ namespace Asteroids.Entities.Enemies
                         .On(pickPowerUpAction)
                             .Goto(pickPowerUpAction)
                         .On(waitForPowerUpAction)
-                            .Goto(waitForPowerUpAction);
+                            .Goto(waitForPowerUpAction)*/;
             }
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
@@ -122,12 +132,15 @@ namespace Asteroids.Entities.Enemies
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Update()
         {
-            CheckPlanification();
+            //CheckPlanification();
             machine.Update();
         }
 
         private void Next()
         {
+            Debug.Log("NEXT");
+            return;
+
             if (currentPlan.FoundPlan && currentStep < currentPlan.GetActionsCount())
             {
                 currentStep++;
