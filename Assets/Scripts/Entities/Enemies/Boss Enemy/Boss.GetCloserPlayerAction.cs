@@ -45,11 +45,11 @@ namespace Asteroids.Entities.Enemies
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
                 => acceptor.Accept(new Handle(boss, Mathf.Max(Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - boss.requiredDistanceToPlayerForCloseAttack, 0)));
 
-            public void OnEntry() { }
+            void IFSMState.OnEntry() { }
 
-            public void OnExit() { }
+            void IFSMState.OnExit() { }
 
-            public void OnUpdate()
+            void IFSMState.OnUpdate()
             {
                 boss.MoveAndRotateTowards(PlayerController.Position);
                 if (Vector3.Distance(PlayerController.Position, boss.transform.position) < boss.requiredDistanceToPlayerForCloseAttack)

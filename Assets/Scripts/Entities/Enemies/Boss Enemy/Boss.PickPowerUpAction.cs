@@ -65,7 +65,7 @@ namespace Asteroids.Entities.Enemies
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
                 => acceptor.Accept(new Handle(boss, boss.lifes - worldState.BossHealth, this));
 
-            public void OnEntry()
+            void IFSMState.OnEntry()
             {
                 FindPowerUp();
 
@@ -88,9 +88,9 @@ namespace Asteroids.Entities.Enemies
                 }
             }
 
-            public void OnExit() => powerUp = null;
+            void IFSMState.OnExit() => powerUp = null;
 
-            public void OnUpdate()
+            void IFSMState.OnUpdate()
             {
                 if (powerUp == null)
                     // Player picked the power up, look for a new one.

@@ -105,12 +105,12 @@ namespace Asteroids.Entities.Enemies
             // That is whay whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
                  .Builder()
-                 .SetInitialState(getCloserPlayerAction);
+                 .SetInitialState(getFurtherPlayerAction);
 
             SetNode(attackCloseAction);
             //SetNode(attackFarAction);
             SetNode(getCloserPlayerAction);
-            //SetNode(getFurtherPlayerAction);
+            SetNode(getFurtherPlayerAction);
             SetNode(pickPowerUpAction);
             SetNode(waitForPowerUpAction);
 
@@ -127,9 +127,9 @@ namespace Asteroids.Entities.Enemies
                         .OnExit(node.OnExit)
                         .OnUpdate(node.OnUpdate)
                         .On(attackCloseAction).Goto(attackCloseAction)
-                        /*.On(attackFarAction).Goto(attackFarAction)*/
+                        //.On(attackFarAction).Goto(attackFarAction)
                         .On(getCloserPlayerAction).Goto(getCloserPlayerAction)
-                        /*.On(getFurtherPlayerAction).Goto(getFurtherPlayerAction)*/
+                        .On(getFurtherPlayerAction).Goto(getFurtherPlayerAction)
                         .On(pickPowerUpAction).Goto(pickPowerUpAction)
                         .On(waitForPowerUpAction).Goto(waitForPowerUpAction);
                         //.On(auto).Goto(auto);
@@ -169,6 +169,14 @@ namespace Asteroids.Entities.Enemies
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90;
             rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
             rigidbody.position = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
+        }
+
+        private void MoveAndRotateAway(Vector3 target)
+        {
+            Vector3 direction = (transform.position - target).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90;
+            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+            rigidbody.position += (Vector2)direction * movementSpeed * Time.deltaTime;
         }
 
         private void Next()
