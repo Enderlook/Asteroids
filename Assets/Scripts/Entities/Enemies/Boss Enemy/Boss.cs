@@ -44,6 +44,9 @@ namespace Asteroids.Entities.Enemies
         private int scoreWhenDestroyed;
 
         [Header("Setup")]
+        [SerializeField, Min(0), Tooltip("Required time to update plan.")]
+        private float timeBetweenPlanifications;
+
         [SerializeField, Tooltip("Close range gameobject.")]
         private GameObject closeRange;
 #pragma warning restore CS0649
@@ -62,22 +65,21 @@ namespace Asteroids.Entities.Enemies
         private readonly IAction<BossState, IGoal<BossState>>[] actions = new IAction<BossState, IGoal<BossState>>[6];
         private readonly PlayerIsDeadGoal goal = new PlayerIsDeadGoal();
 
-        private const float ClosestDistanceToPlayer = 1;
+        private float requiredDistanceToPlayerForCloseAttack;
         private const float FurtherDistanceToPlayer = 15;
         private const float CloseAttackDuration = .8f;
         private const float AverageTimeRequiredByFarAttack = 2f;
 
         private PlanningCoroutine<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> planification;
         private float nextPlanificationAt;
-        private const float timeBetweenPlanifications = 2f;
-
-        private StateMachine<object, object, object> machine;
-        private static readonly object auto = new object();
-
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
         private const bool log = true;
 #endif
+
+        private StateMachine<object, object, object> machine;
+        private static readonly object auto = new object();
+
 
         private void Start()
         {
@@ -86,6 +88,9 @@ namespace Asteroids.Entities.Enemies
             renderer = GetComponent<SpriteRenderer>();
 
             currentLifes = lifes;
+
+            Rect rect = closeRange.GetComponent<SpriteRenderer>().sprite.rect;
+            requiredDistanceToPlayerForCloseAttack = Mathf.Max(rect.width, rect.height) / 1.75f;
 
             AttackCloseAction attackCloseAction = (AttackCloseAction)(actions[0] = new AttackCloseAction(this));
             AttackFarAction attackFarAction = (AttackFarAction)(actions[1] = new AttackFarAction(this));
@@ -96,15 +101,15 @@ namespace Asteroids.Entities.Enemies
 
             // Each event has a 1 : 1 mapping to an state, for that reason, we use the action themselves as both event and states.
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
-            // Finally, we need a few additional states and/or event used when plan is being calculated or power up is picked, for that reason we use a dummy object.
+            // Finally, we need an additional states (and event) used when plan is being calculated, for that reason we use a dummy object.
             // That is whay whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
                  .Builder()
-                 .SetInitialState(pickPowerUpAction);
+                 .SetInitialState(getCloserPlayerAction);
 
             SetNode(attackCloseAction);
             //SetNode(attackFarAction);
-            //SetNode(getCloserPlayerAction);
+            SetNode(getCloserPlayerAction);
             //SetNode(getFurtherPlayerAction);
             SetNode(pickPowerUpAction);
             SetNode(waitForPowerUpAction);
@@ -115,14 +120,15 @@ namespace Asteroids.Entities.Enemies
             currentStep = -1;
             //CheckPlanification();
 
-            void SetNode(IFSMState node) => builder
+            void SetNode(IFSMState node)
+                => builder
                     .In(node)
                         .OnEntry(node.OnEntry)
                         .OnExit(node.OnExit)
                         .OnUpdate(node.OnUpdate)
                         .On(attackCloseAction).Goto(attackCloseAction)
                         /*.On(attackFarAction).Goto(attackFarAction)*/
-                        /*.On(getCloserPlayerAction).Goto(getCloserPlayerAction)*/
+                        .On(getCloserPlayerAction).Goto(getCloserPlayerAction)
                         /*.On(getFurtherPlayerAction).Goto(getFurtherPlayerAction)*/
                         .On(pickPowerUpAction).Goto(pickPowerUpAction)
                         .On(waitForPowerUpAction).Goto(waitForPowerUpAction);

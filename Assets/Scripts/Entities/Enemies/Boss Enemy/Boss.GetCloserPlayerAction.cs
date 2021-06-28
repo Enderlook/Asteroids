@@ -1,4 +1,6 @@
-﻿using Enderlook.GOAP;
+﻿using Asteroids.Entities.Player;
+
+using Enderlook.GOAP;
 
 using UnityEngine;
 
@@ -6,7 +8,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private sealed class GetCloserPlayerAction : IAction<BossState, IGoal<BossState>>
+        private sealed class GetCloserPlayerAction : IFSMState, IAction<BossState, IGoal<BossState>>
         {
             private readonly Boss boss;
 
@@ -41,7 +43,18 @@ namespace Asteroids.Entities.Enemies
             }
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
-                => acceptor.Accept(new Handle(boss, Mathf.Max(Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - ClosestDistanceToPlayer, 0)));
+                => acceptor.Accept(new Handle(boss, Mathf.Max(Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) - boss.requiredDistanceToPlayerForCloseAttack, 0)));
+
+            public void OnEntry() { }
+
+            public void OnExit() { }
+
+            public void OnUpdate()
+            {
+                boss.MoveAndRotateTowards(PlayerController.Position);
+                if (Vector3.Distance(PlayerController.Position, boss.transform.position) < boss.requiredDistanceToPlayerForCloseAttack)
+                    boss.Next();
+            }
         }
     }
 }
