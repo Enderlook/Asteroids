@@ -58,6 +58,10 @@ namespace Asteroids.PowerUps
 
             EventManager.Subscribe<OnPowerUpPickedEvent>(() => PowerUpsInScene--);
 
+            SpawnPowerUp();
+            SpawnPowerUp();
+            SpawnPowerUp();
+
             // For gameplay reasons power ups are not tracked by the rewind feature
         }
 

@@ -8,11 +8,10 @@ using System;
 using System.Text;
 
 using UnityEngine;
-using UnityEngine.Video;
 
 namespace Asteroids.Entities.Enemies
 {
-    [DefaultExecutionOrder(10)]
+    [DefaultExecutionOrder(100)]
     public sealed partial class Boss : MonoBehaviour
     {
 #pragma warning disable CS0649
@@ -22,6 +21,9 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Range(0, 1), Tooltip("Life factor considered too hurt.")]
         private float tooHurtFactor;
+
+        [SerializeField, Min(1), Tooltip("Health restored per power up.")]
+        private int healthRestoredPerPowerUp;
 
         [Header("Movement")]
         [SerializeField, Tooltip("Movement speed.")]
@@ -62,7 +64,6 @@ namespace Asteroids.Entities.Enemies
 
         private const float ClosestDistanceToPlayer = 1;
         private const float FurtherDistanceToPlayer = 15;
-        private const int HealthRestoredPerPack = 4;
         private const float CloseAttackDuration = .8f;
         private const float AverageTimeRequiredByFarAttack = 2f;
 
@@ -72,14 +73,13 @@ namespace Asteroids.Entities.Enemies
 
         private StateMachine<object, object, object> machine;
         private static readonly object auto = new object();
-        private static readonly object pickedPowerUp = new object();
 
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
         private const bool log = true;
 #endif
 
-        private void Awake()
+        private void Start()
         {
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
@@ -102,15 +102,12 @@ namespace Asteroids.Entities.Enemies
                  .Builder()
                  .SetInitialState(pickPowerUpAction);
 
-            SetNode(attackCloseAction)
-                .Ignore(pickedPowerUp);
+            SetNode(attackCloseAction);
             //SetNode(attackFarAction);
             //SetNode(getCloserPlayerAction);
             //SetNode(getFurtherPlayerAction);
-            SetNode(pickPowerUpAction)
-                .On(pickedPowerUp).If(Next).Goto(auto);
-            SetNode(waitForPowerUpAction)
-                .Ignore(pickedPowerUp); ;
+            SetNode(pickPowerUpAction);
+            SetNode(waitForPowerUpAction);
 
             machine = builder.Build();
             machine.Start();
@@ -118,9 +115,7 @@ namespace Asteroids.Entities.Enemies
             currentStep = -1;
             //CheckPlanification();
 
-            StateBuilder<object, object, object> SetNode(IFSMState node)
-            {
-                return builder
+            void SetNode(IFSMState node) => builder
                     .In(node)
                         .OnEntry(node.OnEntry)
                         .OnExit(node.OnExit)
@@ -131,7 +126,7 @@ namespace Asteroids.Entities.Enemies
                         /*.On(getFurtherPlayerAction).Goto(getFurtherPlayerAction)*/
                         .On(pickPowerUpAction).Goto(pickPowerUpAction)
                         .On(waitForPowerUpAction).Goto(waitForPowerUpAction);
-            }
+                        //.On(auto).Goto(auto);
 
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
@@ -144,7 +139,7 @@ namespace Asteroids.Entities.Enemies
             {
                 if (invulnerabilityTime <= Time.time)
                 {
-                    collider.enabled = true;
+                    collider.isTrigger = false;
                     renderer.color = Color.white;
                 }
             }
@@ -157,32 +152,34 @@ namespace Asteroids.Entities.Enemies
         {
             if (!@event.PickedByPlayer)
             {
-                currentLifes = Mathf.Min(currentLifes + HealthRestoredPerPack, lifes);
-                machine.Fire(pickedPowerUp);
+                currentLifes = Mathf.Min(currentLifes + healthRestoredPerPowerUp, lifes);
+                Next();
             }
         }
 
         private void MoveAndRotateTowards(Vector3 target)
         {
             Vector3 direction = (target - transform.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90;
             rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
             rigidbody.position = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
         }
 
-        private bool Next()
+        private void Next()
         {
             Debug.Log("NEXT");
-            return true;
+            return;
 
             if (currentPlan.FoundPlan && currentStep < currentPlan.GetActionsCount())
             {
                 currentStep++;
                 machine.Fire(currentPlan.GetAction(currentStep));
-                return false;
             }
-            currentStep = -1;
-            return true;
+            else
+            {
+                currentStep = -1;
+                machine.Fire(auto);
+            }
         }
 
         private void WorldIsNotAsExpected()
@@ -249,23 +246,18 @@ namespace Asteroids.Entities.Enemies
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (invulnerabilityTime >= 0)
-            {
-
-            }
-
-            if (lifes == 0)
+            if (lifes == 1)
                 EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(name, scoreWhenDestroyed));
             else
             {
                 lifes--;
+                BecomeInvulnerable();
             }
-
-            BecomeInvulnerable();
         }
 
         private void BecomeInvulnerable()
         {
+            collider.isTrigger = true;
             invulnerabilityTime = invulnerabilityDuration;
             renderer.color = invulnerabilityColor;
         }

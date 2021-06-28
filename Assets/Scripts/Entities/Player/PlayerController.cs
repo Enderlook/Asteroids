@@ -74,7 +74,7 @@ namespace Asteroids.Entities.Player
                 invulnerabilityTime -= Time.deltaTime;
                 if (invulnerabilityTime <= 0)
                 {
-                    collider.enabled = true;
+                    collider.isTrigger = false;
                     EventManager.Raise(VulnerabilityChangedEvent.Vulnerable);
                 }
             }
@@ -124,18 +124,18 @@ namespace Asteroids.Entities.Player
             {
                 lifes--;
                 EventManager.Raise(HealthChangedEvent.Decrease);
+
+                rigidbody.position = Vector2.zero;
+                rigidbody.rotation = 0;
+                rigidbody.velocity = default;
+
+                BecomeInvulnerable();
             }
-
-            rigidbody.position = Vector2.zero;
-            rigidbody.rotation = 0;
-            rigidbody.velocity = default;
-
-            BecomeInvulnerable();
         }
 
         private void BecomeInvulnerable()
         {
-            collider.enabled = false;
+            collider.isTrigger = true;
             invulnerabilityTime = model.invulnerabilityDuration;
             EventManager.Raise(VulnerabilityChangedEvent.Invulnerable);
         }

@@ -15,6 +15,8 @@ namespace Asteroids.UI
 {
     public sealed class Scoreboard : MonoBehaviour
     {
+
+#pragma warning disable CS0649
         [SerializeField, Tooltip("Prefab of score tile to show.")]
         private ScoreField scorePrefab;
 
@@ -26,6 +28,7 @@ namespace Asteroids.UI
 
         [SerializeField, Tooltip("Types of enemies")]
         private SimpleEnemyFlyweight[] enemies;
+#pragma warning restore CS0649
 
         private Dictionary<string, (int kills, int totalScore)> killedEnemies = new Dictionary<string, (int kills, int totalScore)>();
 
