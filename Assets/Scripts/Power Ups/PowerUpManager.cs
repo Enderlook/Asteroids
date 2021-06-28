@@ -111,6 +111,7 @@ namespace Asteroids.PowerUps
             powerUp.GetComponent<Rigidbody2D>().velocity = -speed;
 
             PowerUpsInScene++;
+            EventManager.Raise(new OnPowerUpSpawnEvent());
         }
     }
 }

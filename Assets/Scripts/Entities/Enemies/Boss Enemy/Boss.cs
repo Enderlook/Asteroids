@@ -51,6 +51,7 @@ namespace Asteroids.Entities.Enemies
         private new Rigidbody2D rigidbody;
 
         private StateMachine<object, object, object> machine;
+        private readonly object idle = new object();
 
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
@@ -69,18 +70,7 @@ namespace Asteroids.Entities.Enemies
             GetCloserPlayerAction getCloserPlayerAction = new GetCloserPlayerAction(this);
             GetFurtherPlayerAction getFurtherPlayerAction = new GetFurtherPlayerAction(this);
             PickPowerUpAction pickPowerUpAction = new PickPowerUpAction(this);
-            WaitForPowerUpAction waitForPowerUpAction = new WaitForPowerUpAction();
-
-            object idle = new object();
-
-            /*machine = StateMachine<object, object, object>
-                 .Builder()
-                 .SetInitialState(attackCloseAction)
-                 .In(attackCloseAction)
-                    .OnUpdate(() => Debug.Log("HI"))
-                 .Build();
-            machine.Start();
-            return;*/
+            WaitForPowerUpAction waitForPowerUpAction = new WaitForPowerUpAction(this);
 
             // Each event has a 1 : 1 mapping to an state, for that reason, we use the action themselves as both event and states.
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
@@ -88,9 +78,14 @@ namespace Asteroids.Entities.Enemies
             // That is whay whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
                  .Builder()
-                 .SetInitialState(attackCloseAction);
+                 .SetInitialState(waitForPowerUpAction);
 
             SetNode(attackCloseAction);
+            //SetNode(attackFarAction);
+            //SetNode(getCloserPlayerAction);
+            //SetNode(getFurtherPlayerAction);
+            //SetNode(pickPowerUpAction);
+            SetNode(waitForPowerUpAction);
 
             machine = builder.Build();
             machine.Start();
@@ -115,15 +110,15 @@ namespace Asteroids.Entities.Enemies
                         .On(attackCloseAction)
                             .Goto(attackCloseAction)
                         /*.On(attackFarAction)
-                            .Goto(attackFarAction)
-                        .On(getCloserPlayerAction)
-                            .Goto(getCloserPlayerAction)
-                        .On(getFurtherPlayerAction)
-                            .Goto(getFurtherPlayerAction)
-                        .On(pickPowerUpAction)
-                            .Goto(pickPowerUpAction)
+                            .Goto(attackFarAction)*/
+                        /*.On(getCloserPlayerAction)
+                            .Goto(getCloserPlayerAction)*/
+                        /*.On(getFurtherPlayerAction)
+                            .Goto(getFurtherPlayerAction)*/
+                        /*.On(pickPowerUpAction)
+                            .Goto(pickPowerUpAction)*/
                         .On(waitForPowerUpAction)
-                            .Goto(waitForPowerUpAction)*/;
+                            .Goto(waitForPowerUpAction);
             }
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
@@ -206,5 +201,12 @@ namespace Asteroids.Entities.Enemies
         }
 
         private bool IsTooHurt(BossState state) => (state.BossHealth / (float)lifes) <= tooHurtFactor;
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
+        private void OnDestroy()
+        {
+            // Forcing an sate transition will call OnExit of current frame, removing possible memory leak from subscribed events.
+            machine.Fire(idle);
+        }
     }
 }

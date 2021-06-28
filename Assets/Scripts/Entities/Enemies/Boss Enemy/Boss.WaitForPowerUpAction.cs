@@ -1,4 +1,5 @@
 ﻿using Asteroids.PowerUps;
+using Asteroids.Scene;
 
 using Enderlook.GOAP;
 
@@ -8,8 +9,12 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private sealed class WaitForPowerUpAction : IAction<BossState, IGoal<BossState>>, IGoal<BossState>
+        private sealed class WaitForPowerUpAction : IFSMState, IAction<BossState, IGoal<BossState>>, IGoal<BossState>
         {
+            private readonly Boss boss;
+
+            public WaitForPowerUpAction(Boss boss) => this.boss = boss;
+
             private readonly struct Handle : IActionHandle<BossState, IGoal<BossState>>
             {
                 private readonly float cost;
@@ -48,6 +53,12 @@ namespace Asteroids.Entities.Enemies
 
             void IAction<BossState, IGoal<BossState>>.Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
                 => acceptor.Accept(new Handle(Mathf.Max(PowerUpManager.SpawnTime - worldState.TimeSinceLastPowerUpWasSpawned, 1), this));
+
+            void IFSMState.OnEntry() => EventManager.Subscribe<OnPowerUpSpawnEvent>(boss.Next);
+
+            void IFSMState.OnExit() => EventManager.Unsubscribe<OnPowerUpSpawnEvent>(boss.Next);
+
+            void IFSMState.OnUpdate() { }
         }
     }
 }
