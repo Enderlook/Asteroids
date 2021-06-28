@@ -65,12 +65,12 @@ namespace Asteroids.Entities.Enemies
 
             currentLifes = lifes;
 
-            AttackCloseAction attackCloseAction = new AttackCloseAction(this);
-            AttackFarAction attackFarAction = new AttackFarAction(this);
-            GetCloserPlayerAction getCloserPlayerAction = new GetCloserPlayerAction(this);
-            GetFurtherPlayerAction getFurtherPlayerAction = new GetFurtherPlayerAction(this);
-            PickPowerUpAction pickPowerUpAction = new PickPowerUpAction(this);
-            WaitForPowerUpAction waitForPowerUpAction = new WaitForPowerUpAction(this);
+            AttackCloseAction attackCloseAction = (AttackCloseAction)(actions[0] = new AttackCloseAction(this));
+            AttackFarAction attackFarAction = (AttackFarAction)(actions[1] = new AttackFarAction(this));
+            GetCloserPlayerAction getCloserPlayerAction = (GetCloserPlayerAction)(actions[2] = new GetCloserPlayerAction(this));
+            GetFurtherPlayerAction getFurtherPlayerAction = (GetFurtherPlayerAction)(actions[3] = new GetFurtherPlayerAction(this));
+            PickPowerUpAction pickPowerUpAction = (PickPowerUpAction)(actions[4] = new PickPowerUpAction(this));
+            WaitForPowerUpAction waitForPowerUpAction = (WaitForPowerUpAction)(actions[5] = new WaitForPowerUpAction(this));
 
             // Each event has a 1 : 1 mapping to an state, for that reason, we use the action themselves as both event and states.
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
@@ -89,13 +89,6 @@ namespace Asteroids.Entities.Enemies
 
             machine = builder.Build();
             machine.Start();
-
-            actions[0] = attackCloseAction;
-            actions[1] = attackFarAction;
-            actions[2] = getCloserPlayerAction;
-            actions[3] = getFurtherPlayerAction;
-            actions[4] = pickPowerUpAction;
-            actions[5] = waitForPowerUpAction;
 
             currentStep = -1;
             //CheckPlanification();
