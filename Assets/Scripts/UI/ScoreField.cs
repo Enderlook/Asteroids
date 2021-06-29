@@ -8,11 +8,14 @@ namespace Asteroids.UI
     [DefaultExecutionOrder((int)ExecutionOrder.O6_Score)]
     public sealed class ScoreField : MonoBehaviour
     {
+
+#pragma warning disable CS0649
         [SerializeField]
         private Text score;
 
         [SerializeField]
         private Text kills;
+#pragma warning restore CS0649
 
         private float currentScore;
         private int targetScore;

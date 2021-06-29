@@ -80,6 +80,8 @@ namespace Asteroids.Entities.Enemies
         private StateMachine<object, object, object> machine;
         private static readonly object auto = new object();
 
+        private const int PickUpPowerUpStateIndex = 4;
+
         private void Start()
         {
             rigidbody = GetComponent<Rigidbody2D>();
@@ -101,7 +103,7 @@ namespace Asteroids.Entities.Enemies
             CreateAndAddAttackFarAbility(builder, builders, 1);
             CreateAndAddGetCloserAbility(builder, builders, 2);
             CreateAndAddGetFurtherAbility(builder, builders, 3);
-            CreateAndAddPickUpPowerUpAbility(builder, builders, 4);
+            CreateAndAddPickUpPowerUpAbility(builder, builders, PickUpPowerUpStateIndex);
             CreateAndAddWaitForPowerUpSpawnAbility(builder, builders, 5);
             builders[6] = builder.In(auto);
 
@@ -152,7 +154,8 @@ namespace Asteroids.Entities.Enemies
             if (!@event.PickedByPlayer)
             {
                 currentLifes = Mathf.Min(currentLifes + healthRestoredPerPowerUp, lifes);
-                Next();
+                if (machine.State == actions[PickUpPowerUpStateIndex])
+                    Next();
             }
         }
 
