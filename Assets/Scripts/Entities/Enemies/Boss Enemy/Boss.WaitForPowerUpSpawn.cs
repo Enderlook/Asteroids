@@ -10,7 +10,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private StateBuilder<object, object, object> CreateAndAddWaitForPowerUpSpawnAbility(StateMachineBuilder<object, object, object> builder, int index)
+        private void CreateAndAddWaitForPowerUpSpawnAbility(StateMachineBuilder<object, object, object> builder, StateBuilder<object, object, object>[] builders, int index)
         {
             Node<float> node = new Node<float>(
                 (BossState _, ref BossState now) =>
@@ -30,7 +30,7 @@ namespace Asteroids.Entities.Enemies
             );
             actions[index] = node;
 
-            return builder.In(node)
+            builders[index] = builder.In(node)
                 .OnEntry(() => EventManager.Subscribe<OnPowerUpSpawnEvent>(Next))
                 .OnExit(() => EventManager.Unsubscribe<OnPowerUpSpawnEvent>(Next));
         }

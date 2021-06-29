@@ -7,7 +7,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private StateBuilder<object, object, object> CreateAndAddAttackCloseAbility(StateMachineBuilder<object, object, object> builder, int index)
+        private void CreateAndAddAttackCloseAbility(StateMachineBuilder<object, object, object> builder, StateBuilder<object, object, object>[] builders, int index)
         {
             Node node = new Node(
                 (BossState before, ref BossState now) =>
@@ -33,7 +33,7 @@ namespace Asteroids.Entities.Enemies
 
             float initialTime = 0;
             float initialRotation = 0;
-            return builder.In(node)
+            builders[index] = builder.In(node)
                 .OnEntry(() =>
                 {
                     closeRange.gameObject.SetActive(true);

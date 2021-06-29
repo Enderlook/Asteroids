@@ -7,7 +7,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private StateBuilder<object, object, object> CreateAndAddAttackFarAbility(StateMachineBuilder<object, object, object> builder, int index)
+        private void CreateAndAddAttackFarAbility(StateMachineBuilder<object, object, object> builder, StateBuilder<object, object, object>[] builders, int index)
         {
             Node node = new Node(
                 (BossState before, ref BossState now) =>
@@ -31,7 +31,7 @@ namespace Asteroids.Entities.Enemies
             );
             actions[index] = node;
 
-            return builder.In(node);
+            builders[index] = builder.In(node);
         }
     }
 }

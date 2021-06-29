@@ -9,7 +9,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private StateBuilder<object, object, object> CreateAndAddPickUpPowerUpAbility(StateMachineBuilder<object, object, object> builder, int index)
+        private void CreateAndAddPickUpPowerUpAbility(StateMachineBuilder<object, object, object> builder, StateBuilder<object, object, object>[] builders, int index)
         {
             Node<int> node = new Node<int>(
                 (BossState _, ref BossState now) => {
@@ -36,7 +36,7 @@ namespace Asteroids.Entities.Enemies
             actions[index] = node;
 
             Transform powerUp = null;
-            return builder.In(node)
+            builders[index] = builder.In(node)
                 .OnEntry(() =>
                 {
                     FindPowerUp();

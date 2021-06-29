@@ -94,15 +94,30 @@ namespace Asteroids.Entities.Enemies
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
             // Finally, we need an additional states (and event) used when plan is being calculated, for that reason we use a dummy object.
             // That is whay whe use `object` as the generic parameters of the state machine.
-            StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
-                 .Builder();
+            StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>.Builder();
 
-            SetTransitions(CreateAndAddAttackCloseAbility(builder, 0));
-            SetTransitions(CreateAndAddAttackFarAbility(builder, 1));
-            SetTransitions(CreateAndAddGetCloserAbility(builder, 2));
-            SetTransitions(CreateAndAddGetFurtherAbility(builder, 3));
-            SetTransitions(CreateAndAddPickUpPowerUpAbility(builder, 4));
-            SetTransitions(CreateAndAddWaitForPowerUpSpawnAbility(builder, 5));
+            StateBuilder<object, object, object>[] builders = new StateBuilder<object, object, object>[7];
+            CreateAndAddAttackCloseAbility(builder, builders, 0);
+            CreateAndAddAttackFarAbility(builder, builders, 1);
+            CreateAndAddGetCloserAbility(builder, builders, 2);
+            CreateAndAddGetFurtherAbility(builder, builders, 3);
+            CreateAndAddPickUpPowerUpAbility(builder, builders, 4);
+            CreateAndAddWaitForPowerUpSpawnAbility(builder, builders, 5);
+            builders[6] = builder.In(auto);
+
+            // Since plans can be modified at any moment, all states requires transitions to all other states.
+            for (int i = 0; i < builders.Length; i++)
+            {
+                StateBuilder<object, object, object> builder_ = builders[i];
+                for (int j = 0; j < actions.Length; j++)
+                {
+                    IAction<BossState, IGoal<BossState>> action = actions[j];
+                    // We use the say key for action and state due to its 1 : 1 mapping.
+                    builder_.On(action).Goto(action);
+                }
+                // We use the say key for action and state due to its 1 : 1 mapping.
+                builder_.On(auto).Goto(auto);
+            }
 
             machine = builder.SetInitialState(auto).Build();
             machine.Start();
@@ -110,15 +125,7 @@ namespace Asteroids.Entities.Enemies
             currentStep = -1;
             //CheckPlanification();
 
-            void SetTransitions(StateBuilder<object, object, object> b)
-            {
-                for (int i = 0; i < actions.Length; i++)
-                {
-                    IAction<BossState, IGoal<BossState>> action = actions[i];
-                    b.On(action).Goto(action);
-                }
-                //b.On(auto).Goto(auto);
-            }
+            
 
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
@@ -152,7 +159,7 @@ namespace Asteroids.Entities.Enemies
         private void MoveAndRotateTowards(Vector3 target)
         {
             Vector3 direction = (target - transform.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90;
+            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
             rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
             rigidbody.position = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
         }
@@ -160,7 +167,7 @@ namespace Asteroids.Entities.Enemies
         private void MoveAndRotateAway(Vector3 target)
         {
             Vector3 direction = (transform.position - target).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + 90;
+            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
             rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
             rigidbody.position += (Vector2)direction * movementSpeed * Time.deltaTime;
         }

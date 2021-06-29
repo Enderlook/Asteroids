@@ -8,7 +8,7 @@ namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
     {
-        private StateBuilder<object, object, object> CreateAndAddGetFurtherAbility(StateMachineBuilder<object, object, object> builder, int index)
+        private void CreateAndAddGetFurtherAbility(StateMachineBuilder<object, object, object> builder, StateBuilder<object, object, object>[] builders, int index)
         {
             Node<float> node = new Node<float>(
                 null,
@@ -25,7 +25,7 @@ namespace Asteroids.Entities.Enemies
             );
             actions[index] = node;
 
-            return builder.In(node)
+            builders[index] = builder.In(node)
                 .OnUpdate(() =>
                 {
                     MoveAndRotateAway(PlayerController.Position);
