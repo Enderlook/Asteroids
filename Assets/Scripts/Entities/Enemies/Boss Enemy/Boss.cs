@@ -80,7 +80,6 @@ namespace Asteroids.Entities.Enemies
         private StateMachine<object, object, object> machine;
         private static readonly object auto = new object();
 
-
         private void Start()
         {
             rigidbody = GetComponent<Rigidbody2D>();
@@ -92,47 +91,34 @@ namespace Asteroids.Entities.Enemies
             Rect rect = closeRange.GetComponent<SpriteRenderer>().sprite.rect;
             requiredDistanceToPlayerForCloseAttack = Mathf.Max(rect.width, rect.height) / 1.75f;
 
-            AttackCloseAction attackCloseAction = (AttackCloseAction)(actions[0] = new AttackCloseAction(this));
-            AttackFarAction attackFarAction = (AttackFarAction)(actions[1] = new AttackFarAction(this));
-            GetCloserPlayerAction getCloserPlayerAction = (GetCloserPlayerAction)(actions[2] = new GetCloserPlayerAction(this));
-            GetFurtherPlayerAction getFurtherPlayerAction = (GetFurtherPlayerAction)(actions[3] = new GetFurtherPlayerAction(this));
-            PickPowerUpAction pickPowerUpAction = (PickPowerUpAction)(actions[4] = new PickPowerUpAction(this));
-            WaitForPowerUpAction waitForPowerUpAction = (WaitForPowerUpAction)(actions[5] = new WaitForPowerUpAction(this));
-
-            // Each event has a 1 : 1 mapping to an state, for that reason, we use the action themselves as both event and states.
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
             // Finally, we need an additional states (and event) used when plan is being calculated, for that reason we use a dummy object.
             // That is whay whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>
-                 .Builder()
-                 .SetInitialState(getFurtherPlayerAction);
+                 .Builder();
 
-            SetNode(attackCloseAction);
-            //SetNode(attackFarAction);
-            SetNode(getCloserPlayerAction);
-            SetNode(getFurtherPlayerAction);
-            SetNode(pickPowerUpAction);
-            SetNode(waitForPowerUpAction);
+            SetTransitions(CreateAndAddAttackCloseAbility(builder, 0));
+            SetTransitions(CreateAndAddAttackFarAbility(builder, 1));
+            SetTransitions(CreateAndAddGetCloserAbility(builder, 2));
+            SetTransitions(CreateAndAddGetFurtherAbility(builder, 3));
+            SetTransitions(CreateAndAddPickUpPowerUpAbility(builder, 4));
+            SetTransitions(CreateAndAddWaitForPowerUpSpawnAbility(builder, 5));
 
-            machine = builder.Build();
+            machine = builder.SetInitialState(auto).Build();
             machine.Start();
 
             currentStep = -1;
             //CheckPlanification();
 
-            void SetNode(IFSMState node)
-                => builder
-                    .In(node)
-                        .OnEntry(node.OnEntry)
-                        .OnExit(node.OnExit)
-                        .OnUpdate(node.OnUpdate)
-                        .On(attackCloseAction).Goto(attackCloseAction)
-                        //.On(attackFarAction).Goto(attackFarAction)
-                        .On(getCloserPlayerAction).Goto(getCloserPlayerAction)
-                        .On(getFurtherPlayerAction).Goto(getFurtherPlayerAction)
-                        .On(pickPowerUpAction).Goto(pickPowerUpAction)
-                        .On(waitForPowerUpAction).Goto(waitForPowerUpAction);
-                        //.On(auto).Goto(auto);
+            void SetTransitions(StateBuilder<object, object, object> b)
+            {
+                for (int i = 0; i < actions.Length; i++)
+                {
+                    IAction<BossState, IGoal<BossState>> action = actions[i];
+                    b.On(action).Goto(action);
+                }
+                //b.On(auto).Goto(auto);
+            }
 
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
