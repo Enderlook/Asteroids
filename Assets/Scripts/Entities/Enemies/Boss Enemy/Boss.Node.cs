@@ -1,6 +1,9 @@
 ﻿using Enderlook.GOAP;
 
 using System;
+using System.Runtime.CompilerServices;
+
+using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
@@ -19,15 +22,27 @@ namespace Asteroids.Entities.Enemies
 
             private readonly CheckAndTrySatisfy2 checkAndTrySatisfy2;
             private readonly CheckAndTrySatisfy checkAndTrySatisfy;
+#if UNITY_EDITOR
+            private string debugName;
+
+            public sealed override string ToString() => debugName;
+#endif
 
             protected bool HasGoal => !(checkAndTrySatisfy2 is null);
 
-            protected NodeBase(CheckAndTrySatisfy2 checkAndTrySatisfy2, CheckAndTrySatisfy checkAndTrySatisfy)
+            protected NodeBase(CheckAndTrySatisfy2 checkAndTrySatisfy2, CheckAndTrySatisfy checkAndTrySatisfy
+#if UNITY_EDITOR
+                , string debugName
+#endif
+                )
             {
                 this.checkAndTrySatisfy2 = checkAndTrySatisfy2;
                 this.checkAndTrySatisfy = checkAndTrySatisfy;
                 if (checkAndTrySatisfy is null && !(checkAndTrySatisfy2 is null))
                     checkAndTrySatisfy = (ref BossState worldState) => checkAndTrySatisfy2(worldState, ref worldState) == SatisfactionResult.Satisfied;
+#if UNITY_EDITOR
+                this.debugName = debugName;
+#endif
             }
 
             public abstract void Visit<TActionHandleAcceptor>(ref TActionHandleAcceptor acceptor, BossState worldState)
@@ -52,7 +67,14 @@ namespace Asteroids.Entities.Enemies
                 CheckAndTrySatisfy2 checkAndTrySatisfy2, CheckAndTrySatisfy checkAndTrySatisfy,
                 ApplyEffect applyEffect, Func<bool> checkProceduralPreconditions,
                 Func<float> getCostAndRequiredGoal
-                ) : base(checkAndTrySatisfy2, checkAndTrySatisfy)
+#if UNITY_EDITOR
+                , [CallerMemberName] string debugName = ""
+#endif
+                ) : base(checkAndTrySatisfy2, checkAndTrySatisfy
+#if UNITY_EDITOR
+                    , debugName
+#endif
+                    )
             {
                 this.applyEffect = applyEffect;
                 this.checkProceduralPreconditions = checkProceduralPreconditions ?? alwaysTrue;
@@ -97,7 +119,14 @@ namespace Asteroids.Entities.Enemies
                 Func<BossState, T> getParameter,
                 ApplyEffect<T> applyEffect, Func<T, bool> checkProceduralPreconditions,
                 Func<T, float> getCostAndRequiredGoal
-                ) : base(checkAndTrySatisfy2, checkAndTrySatisfy)
+#if UNITY_EDITOR
+                , [CallerMemberName] string debugName = ""
+#endif
+                ) : base(checkAndTrySatisfy2, checkAndTrySatisfy
+#if UNITY_EDITOR
+                    , debugName
+#endif
+                    )
             {
                 this.applyEffect = applyEffect;
                 this.getParameter = getParameter;

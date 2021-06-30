@@ -40,6 +40,9 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Tooltip("Determines each how many levels the boss is spawned.")]
         private int levelsPerBoss;
+
+        [SerializeField, Tooltip("Prefab of boss.")]
+        private GameObject bossPrefab;
 #pragma warning restore CS0649
 
         private new Camera camera;
@@ -111,9 +114,7 @@ namespace Asteroids.Entities.Enemies
             // Since we only spawn the boss once each several levels it doesn't make sense to pool it (the cost of pooling would be larger than creating it again and let the GC collect it).
             // Since we only spawn one boss at the time (hence they are rare) it doesn't make sense to create a factory of them (we only need to instantiate it and set it position and rotation, nothing more).
 
-
-
-            throw new System.NotImplementedException();
+            Instantiate(bossPrefab).transform.position = GetSpawnPosition();
         }
 
         private void RecalculateEnemyCountManually()
@@ -128,6 +129,15 @@ namespace Asteroids.Entities.Enemies
         }
 
         private void SpawnEnemy()
+        {
+            Vector2 position = GetSpawnPosition();
+
+            Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
+
+            enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
+        }
+
+        private Vector2 GetSpawnPosition()
         {
             Vector3 positionViewport;
 
@@ -150,11 +160,7 @@ namespace Asteroids.Entities.Enemies
                     goto case 0;
             }
 
-            Vector2 position = camera.ViewportToWorldPoint(positionViewport);
-
-            Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
-
-            enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
+            return camera.ViewportToWorldPoint(positionViewport);
         }
 
 #if UNITY_EDITOR

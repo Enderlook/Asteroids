@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities
 {
-    [RequireComponent(typeof(Renderer)), RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Renderer), typeof(Rigidbody2D))]
     public class ScreenWrapper : MonoBehaviour
     {
         // https://gamedevelopment.tutsplus.com/articles/create-an-asteroids-like-screen-wrapping-effect-with-unity--gamedev-15055

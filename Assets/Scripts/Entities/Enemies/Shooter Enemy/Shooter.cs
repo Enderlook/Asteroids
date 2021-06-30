@@ -6,7 +6,6 @@ using Asteroids.Utils;
 
 using Enderlook.Unity.Components.ScriptableSound;
 
-using System.Collections;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -15,7 +14,7 @@ using Resources = Asteroids.Utils.Resources;
 
 namespace Asteroids.Entities.Enemies
 {
-    [RequireComponent(typeof(Rigidbody2D))]
+    [RequireComponent(typeof(Rigidbody2D), typeof(Boss))]
     public sealed partial class Shooter : MonoBehaviour
     {
         private static readonly BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Constructor construct = ProjectileConstructor;

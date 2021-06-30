@@ -1,4 +1,5 @@
-﻿using Asteroids.PowerUps;
+﻿using Asteroids.Entities.Player;
+using Asteroids.PowerUps;
 using Asteroids.Scene;
 
 using Enderlook.GOAP;
@@ -11,7 +12,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
-    [DefaultExecutionOrder(100)]
+    [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer), typeof(Collider2D)), /*RequireComponent(typeof(BossShooter)),*/ DefaultExecutionOrder(100)]
     public sealed partial class Boss : MonoBehaviour
     {
 #pragma warning disable CS0649
@@ -58,11 +59,11 @@ namespace Asteroids.Entities.Enemies
         private int currentLifes;
         private float invulnerabilityTime;
 
-        private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> currentPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
-        private Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> inProgressPlan = new Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>>();
+        private Plan<IGoal<BossState>, NodeBase> currentPlan = new Plan<IGoal<BossState>, NodeBase>();
+        private Plan<IGoal<BossState>, NodeBase> inProgressPlan = new Plan<IGoal<BossState>, NodeBase>();
         private int currentStep;
 
-        private readonly IAction<BossState, IGoal<BossState>>[] actions = new IAction<BossState, IGoal<BossState>>[6];
+        private readonly NodeBase[] actions = new NodeBase[6];
         private readonly PlayerIsDeadGoal goal = new PlayerIsDeadGoal();
 
         private float requiredDistanceToPlayerForCloseAttack;
@@ -70,7 +71,7 @@ namespace Asteroids.Entities.Enemies
         private const float CloseAttackDuration = .8f;
         private const float AverageTimeRequiredByFarAttack = 2f;
 
-        private PlanningCoroutine<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> planification;
+        private PlanningCoroutine<IGoal<BossState>, NodeBase> planification;
         private float nextPlanificationAt;
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
@@ -80,7 +81,10 @@ namespace Asteroids.Entities.Enemies
         private StateMachine<object, object, object> machine;
         private static readonly object auto = new object();
 
-        private const int PickUpPowerUpStateIndex = 4;
+        private const int AttackCloseIndex = 0;
+        private const int AttackFarIndex = 1;
+        private const int PickUpPowerUpIndex = 4;
+        private const int WaitForPowerUpSpawn = 5;
 
         private void Start()
         {
@@ -90,22 +94,49 @@ namespace Asteroids.Entities.Enemies
 
             currentLifes = lifes;
 
-            Rect rect = closeRange.GetComponent<SpriteRenderer>().sprite.rect;
+            SpriteRenderer spriteRenderer = closeRange.GetComponent<SpriteRenderer>();
+            Sprite sprite = spriteRenderer.sprite;
+            Rect rect = sprite.rect;
             requiredDistanceToPlayerForCloseAttack = Mathf.Max(rect.width, rect.height) / 1.75f;
 
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
             // Finally, we need an additional states (and event) used when plan is being calculated, for that reason we use a dummy object.
-            // That is whay whe use `object` as the generic parameters of the state machine.
+            // That is why whe use `object` as the generic parameters of the state machine.
             StateMachineBuilder<object, object, object> builder = StateMachine<object, object, object>.Builder();
 
             StateBuilder<object, object, object>[] builders = new StateBuilder<object, object, object>[7];
-            CreateAndAddAttackCloseAbility(builder, builders, 0);
-            CreateAndAddAttackFarAbility(builder, builders, 1);
+            CreateAndAddAttackCloseAbility(builder, builders, AttackCloseIndex);
+            CreateAndAddAttackFarAbility(builder, builders, AttackFarIndex);
             CreateAndAddGetCloserAbility(builder, builders, 2);
             CreateAndAddGetFurtherAbility(builder, builders, 3);
-            CreateAndAddPickUpPowerUpAbility(builder, builders, PickUpPowerUpStateIndex);
-            CreateAndAddWaitForPowerUpSpawnAbility(builder, builders, 5);
-            builders[6] = builder.In(auto);
+            CreateAndAddPickUpPowerUpAbility(builder, builders, PickUpPowerUpIndex);
+            CreateAndAddWaitForPowerUpSpawnAbility(builder, builders, WaitForPowerUpSpawn);
+            builders[6] = builder.In(auto)
+                .OnUpdate(() =>
+                {
+                    // We only update on this state if the planner hasn't give us a plan yet (it's working on it).
+                    // So we improvise.
+
+                    if (IsTooHurt())
+                    {
+                        if (FindObjectOfType<PowerUpTemplate.PickupBehaviour>() != null)
+                        {
+                            machine.Fire(actions[PickUpPowerUpIndex]);
+                            return;
+                        }
+                        else if (PowerUpManager.TimeSinceLastSpawnedPowerUp < PowerUpManager.SpawnTime / 3)
+                        {
+                            machine.Fire(actions[WaitForPowerUpSpawn]);
+                            return;
+                        }
+                    }
+
+                    float distance = Vector3.Distance(PlayerController.Position, transform.position);
+                    if (distance <= requiredDistanceToPlayerForCloseAttack)
+                        machine.Fire(actions[AttackCloseIndex]);
+                    else
+                        machine.Fire(actions[AttackFarIndex]);
+                });
 
             // Since plans can be modified at any moment, all states requires transitions to all other states.
             for (int i = 0; i < builders.Length; i++)
@@ -125,9 +156,7 @@ namespace Asteroids.Entities.Enemies
             machine.Start();
 
             currentStep = -1;
-            //CheckPlanification();
-
-            
+            CheckPlanification();
 
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
@@ -145,7 +174,7 @@ namespace Asteroids.Entities.Enemies
                 }
             }
 
-            //CheckPlanification();
+            CheckPlanification();
             machine.Update();
         }
 
@@ -154,7 +183,7 @@ namespace Asteroids.Entities.Enemies
             if (!@event.PickedByPlayer)
             {
                 currentLifes = Mathf.Min(currentLifes + healthRestoredPerPowerUp, lifes);
-                if (machine.State == actions[PickUpPowerUpStateIndex])
+                if (machine.State == actions[PickUpPowerUpIndex])
                     Next();
             }
         }
@@ -175,11 +204,8 @@ namespace Asteroids.Entities.Enemies
             rigidbody.position += (Vector2)direction * movementSpeed * Time.deltaTime;
         }
 
-        private void Next()
+        public void Next()
         {
-            Debug.Log("NEXT");
-            return;
-
             if (currentPlan.FoundPlan && currentStep < currentPlan.GetActionsCount())
             {
                 currentStep++;
@@ -214,7 +240,7 @@ namespace Asteroids.Entities.Enemies
 
             planification = null;
 
-            Plan<IGoal<BossState>, IAction<BossState, IGoal<BossState>>> tmp = currentPlan;
+            Plan<IGoal<BossState>, NodeBase> tmp = currentPlan;
             currentPlan = inProgressPlan;
             inProgressPlan = tmp;
 
@@ -224,6 +250,13 @@ namespace Asteroids.Entities.Enemies
 #if UNITY_EDITOR
                 if (log)
                 {
+                    int actionsCount = currentPlan.GetActionsCount();
+                    if (actionsCount > 0)
+                    {
+                        for (int i = 0; i < actionsCount; i++)
+                            builder.AppendLine(currentPlan.GetAction(i).ToString());
+                    }
+
                     Debug.Log(builder.ToString());
                     builder.Clear();
                 }
@@ -253,6 +286,8 @@ namespace Asteroids.Entities.Enemies
         }
 
         private bool IsTooHurt(BossState state) => (state.BossHealth / (float)lifes) <= tooHurtFactor;
+
+        private bool IsTooHurt() => (currentLifes / (float)lifes) <= tooHurtFactor;
 
         private void OnCollisionEnter2D(Collision2D collision)
         {

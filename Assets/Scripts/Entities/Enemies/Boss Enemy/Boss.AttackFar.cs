@@ -31,7 +31,10 @@ namespace Asteroids.Entities.Enemies
             );
             actions[index] = node;
 
-            builders[index] = builder.In(node);
+            BossShooter bossShooter = GetComponent<BossShooter>();
+            builders[index] = builder.In(node)
+                .OnEntry(() => bossShooter.enabled = true)
+                .OnExit(() => bossShooter.enabled = false);
         }
     }
 }
