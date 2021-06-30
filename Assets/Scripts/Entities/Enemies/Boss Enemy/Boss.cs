@@ -67,7 +67,7 @@ namespace Asteroids.Entities.Enemies
         private readonly PlayerIsDeadGoal goal = new PlayerIsDeadGoal();
 
         private float requiredDistanceToPlayerForCloseAttack;
-        private const float FurtherDistanceToPlayer = 15;
+        public const float FurtherDistanceToPlayer = 9;
         private const float CloseAttackDuration = .8f;
         private const float AverageTimeRequiredByFarAttack = 2f;
 
@@ -75,6 +75,7 @@ namespace Asteroids.Entities.Enemies
         private float nextPlanificationAt;
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
+        private StringBuilder builder2 = new StringBuilder();
         private const bool log = true;
 #endif
 
@@ -86,7 +87,7 @@ namespace Asteroids.Entities.Enemies
         private const int PickUpPowerUpIndex = 4;
         private const int WaitForPowerUpSpawn = 5;
 
-        private void Start()
+        private void Awake()
         {
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
@@ -94,10 +95,8 @@ namespace Asteroids.Entities.Enemies
 
             currentLifes = lifes;
 
-            SpriteRenderer spriteRenderer = closeRange.GetComponent<SpriteRenderer>();
-            Sprite sprite = spriteRenderer.sprite;
-            Rect rect = sprite.rect;
-            requiredDistanceToPlayerForCloseAttack = Mathf.Max(rect.width, rect.height) / 1.75f;
+            Vector2 size = closeRange.GetComponent<Collider2D>().bounds.size;
+            requiredDistanceToPlayerForCloseAttack = Mathf.Max(size.x, size.y);
 
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
             // Finally, we need an additional states (and event) used when plan is being calculated, for that reason we use a dummy object.
@@ -196,6 +195,17 @@ namespace Asteroids.Entities.Enemies
             rigidbody.position = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
         }
 
+        public void MoveAndRotateTowards(Vector3 target, float distance = 0)
+        {
+            Vector3 direction = (target - transform.position).normalized;
+            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
+            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+            Vector3 newPosition = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
+            if (Vector3.Distance(newPosition, target) < distance)
+                newPosition = target + (direction * distance);
+            rigidbody.position = newPosition;
+        }
+
         private void MoveAndRotateAway(Vector3 target)
         {
             Vector3 direction = (transform.position - target).normalized;
@@ -250,12 +260,12 @@ namespace Asteroids.Entities.Enemies
 #if UNITY_EDITOR
                 if (log)
                 {
-                    int actionsCount = currentPlan.GetActionsCount();
-                    if (actionsCount > 0)
-                    {
-                        for (int i = 0; i < actionsCount; i++)
-                            builder.AppendLine(currentPlan.GetAction(i).ToString());
-                    }
+                    int stepsCount = currentPlan.GetStepsCount();
+                    if (stepsCount > 0)
+                        for (int i = 0; i < stepsCount; i++)
+                            builder2.AppendLine(currentPlan.GetAction(i).ToString());
+                    builder.Insert(0, builder2);
+                    builder2.Clear();
 
                     Debug.Log(builder.ToString());
                     builder.Clear();
@@ -278,7 +288,7 @@ namespace Asteroids.Entities.Enemies
             planification = inProgressPlan
                 .Plan(new BossState(this), actions
 #if UNITY_EDITOR
-                        , log ? (Action<string>)(e => builder.AppendLine(e)) : null
+                        , log ? new Action<string>(e => builder.AppendLine(e)) : null
 #endif
                         ).CompleteGoal(goal)
                 .WithTimeSlice(1000 / 60)
@@ -309,8 +319,10 @@ namespace Asteroids.Entities.Enemies
 
         private void OnDestroy()
         {
+            if (machine is null)
+                return;
             EventManager.Unsubscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
-            // Forcing an sate transition will call OnExit of current frame, removing possible memory leak from subscribed events.
+            // Forcing an state transition will call OnExit of current frame, removing possible memory leak from subscribed events.
             machine.Fire(auto);
         }
     }

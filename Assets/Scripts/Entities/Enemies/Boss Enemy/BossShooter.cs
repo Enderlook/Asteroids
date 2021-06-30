@@ -1,6 +1,7 @@
 ﻿//IA2-P1
 // The whole file.
 // ^- Don't touch that comment, used by the teacher
+using Asteroids.Entities.Player;
 using Asteroids.Utils;
 
 using Enderlook.Unity.Attributes;
@@ -9,6 +10,7 @@ using Enderlook.Unity.Components.ScriptableSound;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Diagnostics;
 
 using Resources = Asteroids.Utils.Resources;
 
@@ -80,6 +82,8 @@ namespace Asteroids.Entities.Enemies
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]    
         private void Update()
         {
+            boss.MoveAndRotateTowards(PlayerController.Position, Boss.FurtherDistanceToPlayer);
+
             if (Time.time >= nextCast)
             {
                 nextCast = Time.time + cooldown;

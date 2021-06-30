@@ -40,7 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5354794005350763275}
   - component: {fileID: 5354794005350763273}
-  - component: {fileID: 5354794005350763272}
+  - component: {fileID: 384013634069154042}
   m_Layer: 16
   m_Name: Boss_Laser
   m_TagString: Untagged
@@ -111,20 +111,22 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!136 &5354794005350763272
-CapsuleCollider:
+--- !u!70 &384013634069154042
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5354794005350763274}
+  m_Enabled: 1
+  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.14
-  m_Height: 2.93
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.28, y: 2.93}
+  m_Direction: 0
 --- !u!1 &5354794005588990974
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,6 +141,7 @@ GameObject:
   - component: {fileID: 5354794005588990970}
   - component: {fileID: 5354794005588990968}
   - component: {fileID: 5354794005588990973}
+  - component: {fileID: 2277983130687164581}
   m_Layer: 16
   m_Name: Boss
   m_TagString: Untagged
@@ -331,3 +334,23 @@ MonoBehaviour:
   scoreWhenDestroyed: 100
   timeBetweenPlanifications: 0.3
   closeRange: {fileID: 5354794005350763274}
+--- !u!114 &2277983130687164581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5354794005588990974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40cd0495f0e02b54288beaa9208bcb2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  projectileLayer: 16
+  spriteScale: 1
+  sprite: Boss/Boss_Bullet
+  shootSound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
+  force: 1
+  cooldown: 0.35
+  shootsCount: 3
+  shootPoint: {fileID: 5354794004420836908}

@@ -1762,7 +1762,7 @@ MonoBehaviour:
     max: 5
   spawnSound: {fileID: 1049467943}
   layer: 9
-  levelsPerBoss: 1
+  levelsPerBoss: 3
   bossPrefab: {fileID: 5354794005588990974, guid: 17e9c4d08d136424392bf95e9199f4cd,
     type: 3}
 --- !u!114 &1049467942
