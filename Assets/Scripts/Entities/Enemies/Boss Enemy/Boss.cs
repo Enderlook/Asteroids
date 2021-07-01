@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace Asteroids.Entities.Enemies
 {
-    [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer), typeof(Collider2D)), /*RequireComponent(typeof(BossShooter)),*/ DefaultExecutionOrder(100)]
+    [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer), typeof(Collider2D)), RequireComponent(typeof(BossShooter)), DefaultExecutionOrder(100)]
     public sealed partial class Boss : MonoBehaviour
     {
 #pragma warning disable CS0649
@@ -111,31 +111,7 @@ namespace Asteroids.Entities.Enemies
             CreateAndAddPickUpPowerUpAbility(builder, builders, PickUpPowerUpIndex);
             CreateAndAddWaitForPowerUpSpawnAbility(builder, builders, WaitForPowerUpSpawn);
             builders[6] = builder.In(auto)
-                .OnUpdate(() =>
-                {
-                    // We only update on this state if the planner hasn't give us a plan yet (it's working on it).
-                    // So we improvise.
-
-                    if (IsTooHurt())
-                    {
-                        if (FindObjectOfType<PowerUpTemplate.PickupBehaviour>() != null)
-                        {
-                            machine.Fire(actions[PickUpPowerUpIndex]);
-                            return;
-                        }
-                        else if (PowerUpManager.TimeSinceLastSpawnedPowerUp < PowerUpManager.SpawnTime / 3)
-                        {
-                            machine.Fire(actions[WaitForPowerUpSpawn]);
-                            return;
-                        }
-                    }
-
-                    float distance = Vector3.Distance(PlayerController.Position, transform.position);
-                    if (distance <= requiredDistanceToPlayerForCloseAttack)
-                        machine.Fire(actions[AttackCloseIndex]);
-                    else
-                        machine.Fire(actions[AttackFarIndex]);
-                });
+                .OnUpdate(Improvise);
 
             // Since plans can be modified at any moment, all states requires transitions to all other states.
             for (int i = 0; i < builders.Length; i++)
@@ -160,6 +136,32 @@ namespace Asteroids.Entities.Enemies
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
+        }
+
+        private void Improvise()
+        {
+            // We only update on this state if the planner hasn't give us a plan yet (it's working on it).
+            // So we improvise.
+
+            if (IsTooHurt())
+            {
+                if (FindObjectOfType<PowerUpTemplate.PickupBehaviour>() != null)
+                {
+                    machine.Fire(actions[PickUpPowerUpIndex]);
+                    return;
+                }
+                else if (PowerUpManager.TimeSinceLastSpawnedPowerUp < PowerUpManager.SpawnTime / 3)
+                {
+                    machine.Fire(actions[WaitForPowerUpSpawn]);
+                    return;
+                }
+            }
+
+            float distance = Vector3.Distance(PlayerController.Position, transform.position);
+            if (distance <= requiredDistanceToPlayerForCloseAttack)
+                machine.Fire(actions[AttackCloseIndex]);
+            else
+                machine.Fire(actions[AttackFarIndex]);
         }
 
         private void FixedUpdate()
@@ -202,7 +204,11 @@ namespace Asteroids.Entities.Enemies
             rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
             Vector3 newPosition = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
             if (Vector3.Distance(newPosition, target) < distance)
+            {
+                if (distance > direction.magnitude)
+                    return;
                 newPosition = target + (direction * distance);
+            }
             rigidbody.position = newPosition;
         }
 

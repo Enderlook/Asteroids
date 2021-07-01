@@ -1,4 +1,6 @@
-﻿using Enderlook.GOAP;
+﻿using Asteroids.Entities.Player;
+
+using Enderlook.GOAP;
 using Enderlook.StateMachine;
 
 using UnityEngine;
@@ -34,7 +36,8 @@ namespace Asteroids.Entities.Enemies
             BossShooter bossShooter = GetComponent<BossShooter>();
             builders[index] = builder.In(node)
                 .OnEntry(() => bossShooter.enabled = true)
-                .OnExit(() => bossShooter.enabled = false);
+                .OnExit(() => bossShooter.enabled = false)
+                .OnUpdate(() => MoveAndRotateTowards(PlayerController.Position, FurtherDistanceToPlayer));
         }
     }
 }

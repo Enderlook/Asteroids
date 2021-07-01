@@ -350,7 +350,7 @@ MonoBehaviour:
   spriteScale: 1
   sprite: Boss/Boss_Bullet
   shootSound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
-  force: 1
+  force: 3
   cooldown: 0.35
   shootsCount: 3
   shootPoint: {fileID: 5354794004420836908}
