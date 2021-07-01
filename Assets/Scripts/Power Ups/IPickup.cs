@@ -3,5 +3,7 @@
     public interface IPickup
     {
         void PickUp();
+
+        void BossPickup();
     }
 }

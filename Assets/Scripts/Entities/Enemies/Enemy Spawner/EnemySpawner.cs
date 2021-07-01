@@ -3,7 +3,10 @@
 using Enderlook.Enumerables;
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
+using Enderlook.Unity.Prefabs.HealthBarGUI;
 using Enderlook.Unity.Serializables.Ranges;
+
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -24,7 +27,7 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Tooltip("Maximum amount of enemies per level.")]
         private int maximumAmountOfEnemies;
 
-        public int MaxmiumAmountOfEnemies => maximumAmountOfEnemies;
+        public int MaximumAmountOfEnemies => maximumAmountOfEnemies + 1; // +1 for the boss
 
         [SerializeField, Tooltip("Possible enemies to spawn."), Expandable]
         private EnemyFlyweight[] enemyTemplates;
@@ -37,6 +40,15 @@ namespace Asteroids.Entities.Enemies
 
         [SerializeField, Layer, Tooltip("Layer of enemies, used to count them.")]
         private int layer;
+
+        [SerializeField, Tooltip("Determines each how many levels the boss is spawned.")]
+        private int levelsPerBoss;
+
+        [SerializeField, Tooltip("Prefab of boss.")]
+        private Boss bossPrefab;
+
+        [SerializeField, Tooltip("Health bar used by the boss.")]
+        private HealthBar bossHealthBar;
 #pragma warning restore CS0649
 
         private new Camera camera;
@@ -81,6 +93,11 @@ namespace Asteroids.Entities.Enemies
             if (@event.HasWon)
             {
                 remainingEnemies = SpawnEnemies();
+                if (GameManager.Level % levelsPerBoss == 0)
+                {
+                    SpawnBoss();
+                    remainingEnemies++;
+                }
                 spawnSound.Play();
             }
         }
@@ -97,6 +114,24 @@ namespace Asteroids.Entities.Enemies
             return maxEnemies;
         }
 
+        private Boss SpawnBoss()
+        {
+            // Since there is only one kind of boss it doesn't make sense to implement a build pattern (all the configuration is already on the prefab).
+            // Since we only spawn the boss once each several levels it doesn't make sense to pool it (the cost of pooling would be larger than creating it again and let the GC collect it).
+            // Since we only spawn one boss at the time (hence they are rare) it doesn't make sense to create a factory of them (we only need to instantiate it and set it position and rotation, nothing more).
+
+            Boss boss = Instantiate(bossPrefab);
+            boss.SetHealthBar(bossHealthBar);
+            boss.transform.position = GetSpawnPosition();
+            return boss;
+        }
+
+        public void LoadBoss(Boss.State boss, List<BossShooter.ProjectileState> bossBullets)
+        {
+            if (boss.IsAlive)
+                boss.Load(SpawnBoss(), bossBullets);
+        }
+
         private void RecalculateEnemyCountManually()
         {
             remainingEnemies = 0;
@@ -106,9 +141,21 @@ namespace Asteroids.Entities.Enemies
                 if (objects[i].activeSelf && objects[i].layer == layer)
                     remainingEnemies++;
             }
+            if (FindObjectOfType<Boss>() != null)
+                remainingEnemies++;
         }
 
         private void SpawnEnemy()
+        {
+            Vector2 position = GetSpawnPosition();
+
+            Vector2 target = camera.ViewportToWorldPoint(new Vector3(Random.value, Random.value));
+            Vector2 speed = (position - (target * .8f)).normalized * initialSpeed.Value;
+
+            enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
+        }
+
+        private Vector2 GetSpawnPosition()
         {
             Vector3 positionViewport;
 
@@ -131,11 +178,15 @@ namespace Asteroids.Entities.Enemies
                     goto case 0;
             }
 
-            Vector2 position = camera.ViewportToWorldPoint(positionViewport);
-
-            Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
-
-            enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
+            return camera.ViewportToWorldPoint(positionViewport);
         }
+
+#if UNITY_EDITOR
+        private void OnValidate()
+        {
+            if (levelsPerBoss <= 0)
+                Debug.LogError($"{nameof(levelsPerBoss)} can't be 0 nor negative.");
+        }
+#endif
     }
 }

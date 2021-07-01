@@ -16,7 +16,9 @@ namespace Asteroids.PowerUps
 
             public HealthPickupDecorator(IPickup pickup) => decorable = pickup;
 
-            public void PickUp()
+            void IPickup.BossPickup() => decorable.BossPickup();
+
+            void IPickup.PickUp()
             {
                 decorable.PickUp();
                 FindObjectOfType<PlayerController>().AddNewLifeByPowerUp();

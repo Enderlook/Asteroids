@@ -26,10 +26,13 @@ namespace Asteroids.Entities.Player
         private int scoreToNextLife;
         private float invulnerabilityTime;
 
-        public int Lifes { get; private set; }
+        private int lifes;
 
-        private static Transform instance;
-        public static Vector3 Position => instance.position;
+        private static PlayerController instance;
+
+        public static Vector3 Position => instance.transform.position;
+
+        public static int Lifes => instance.lifes;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         //IA2-P2
@@ -46,14 +49,14 @@ namespace Asteroids.Entities.Player
             if (instance != null)
                 Debug.LogError("Only a single instance can be found at the same time.");
 
-            instance = transform;
+            instance = this;
 
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
 
             model = GetComponent<PlayerModel>();
 
-            Lifes = model.startingLifes;
+            lifes = model.startingLifes;
             scoreToNextLife = model.scorePerLife;
 
             EventManager.Subscribe<GameManager.ScoreHasChangedEvent>(OnScoreChanged);
@@ -71,7 +74,7 @@ namespace Asteroids.Entities.Player
                 invulnerabilityTime -= Time.deltaTime;
                 if (invulnerabilityTime <= 0)
                 {
-                    collider.enabled = true;
+                    collider.isTrigger = false;
                     EventManager.Raise(VulnerabilityChangedEvent.Vulnerable);
                 }
             }
@@ -99,40 +102,40 @@ namespace Asteroids.Entities.Player
 
         private void AddNewLifeByScore()
         {
-            if (Lifes >= model.maxLifes)
+            if (lifes >= model.maxLifes)
                 return;
-            Lifes++;
+            lifes++;
             EventManager.Raise(HealthChangedEvent.IncreaseByScore);
         }
 
         public void AddNewLifeByPowerUp()
         {
-            if (Lifes >= model.maxLifes)
+            if (lifes >= model.maxLifes)
                 return;
-            Lifes++;
+            lifes++;
             EventManager.Raise(HealthChangedEvent.IncreaseByPowerUp);
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (Lifes == 0)
+            if (lifes == 0)
                 EventManager.Raise(GameManager.LevelTerminationEvent.Lose);
             else
             {
-                Lifes--;
+                lifes--;
                 EventManager.Raise(HealthChangedEvent.Decrease);
+
+                rigidbody.position = Vector2.zero;
+                rigidbody.rotation = 0;
+                rigidbody.velocity = default;
+
+                BecomeInvulnerable();
             }
-
-            rigidbody.position = Vector2.zero;
-            rigidbody.rotation = 0;
-            rigidbody.velocity = default;
-
-            BecomeInvulnerable();
         }
 
         private void BecomeInvulnerable()
         {
-            collider.enabled = false;
+            collider.isTrigger = true;
             invulnerabilityTime = model.invulnerabilityDuration;
             EventManager.Raise(VulnerabilityChangedEvent.Invulnerable);
         }

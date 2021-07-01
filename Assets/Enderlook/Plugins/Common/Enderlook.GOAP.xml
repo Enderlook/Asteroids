@@ -1,0 +1,700 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Enderlook.GOAP</name>
+    </assembly>
+    <members>
+        <member name="T:Enderlook.GOAP.IAction`2">
+            <summary>
+            Describes an action.
+            </summary>
+            <typeparam name="TWorldState">Type of world state.</typeparam>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IAction`2.Visit``1(``0@,`0)">
+            <summary>
+            Request the processing of this action.
+            This method must call <see cref="M:Enderlook.GOAP.IActionHandleAcceptor`2.Accept``1(``0)"/>.
+            </summary>
+            <typeparam name="TActionHandleAcceptor">Type of the action hadnle acceptor.</typeparam>
+            <param name="acceptor">Processor of the action.</param>
+            <param name="worldState">State of the world, this can be used to later calculate dynamic costs and goals in the action handle.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.IActionHandle`2">
+            <summary>
+            Represent the handle of an action.
+            </summary>
+            <typeparam name="TWorldState">Type of world state.</typeparam>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IActionHandle`2.CheckProceduralPreconditions">
+            <summary>
+            Check if this action meets procedural preconditions.<br/>
+            Not confuse with the preconditions of <see cref="M:Enderlook.GOAP.IActionHandle`2.GetCostAndRequiredGoal(System.Single@,`1@)"/>, this ones are not actually tied to the world state.
+            </summary>
+            <returns><see langword="true"/> if procedural preconditions are satisfied.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.IActionHandle`2.GetCostAndRequiredGoal(System.Single@,`1@)">
+            <summary>
+            Get the cost of execution this action and the preconditions required to execute this action.<br/>
+            </summary>
+            <param name="cost">Cost required to execute this action.</param>
+            <param name="goal">Preconditions requires to execute this action if returns <see langword="true"/>.</param>
+            <returns>If <see langword="true"/>, <paramref name="goal"/> contains the required preconditions. On <see langword="false"/>, there are no preconditions.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.IActionHandle`2.ApplyEffect(`0@)">
+            <summary>
+            Applies the effects of this action to a world.<br/>
+            Note that this method must not consume the required preconditions, if any.
+            </summary>
+            <param name="worldState">World state where effects are being applied.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.IActionHandleAcceptor`2">
+            <summary>
+            Acceptor of an <see cref="T:Enderlook.GOAP.IActionHandle`2"/>
+            </summary>
+            <typeparam name="TWorldState">Type of world state.</typeparam>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IActionHandleAcceptor`2.Accept``1(``0)">
+            <summary>
+            Accept an <see cref="T:Enderlook.GOAP.IActionHandle`2"/> to process.
+            </summary>
+            <typeparam name="TActionHandle">Type of action handle.</typeparam>
+            <param name="handle">Action handle to process.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.IGoal`1">
+            <summary>
+            Describes a goal.
+            </summary>
+            <typeparam name="TWorldState">Type of world state.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IGoal`1.CheckAndTrySatisfy(`0,`0@)">
+            <summary>
+            Check if the goal can be satisfied by <paramref name="now"/>. If <see langword="true"/>, satisfy it (e.g: mutate the memory to consume the state).<br/>
+            If the goal can not be satisfied by <paramref name="now"/>, check if the satisfaction has progressed since <paramref name="before"/> by comparing it wil <paramref name="now"/>.
+            </summary>
+            <param name="before">Previous memory state to compare progress towards satisfaction.</param>
+            <param name="now">Memory to check if it can satify the goal.</param>
+            <returns>How satisfaction of this goal has progressed.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.IGoal`1.CheckAndTrySatisfy(`0@)">
+            <summary>
+            Check if the goal can be satisfied by <paramref name="worldState"/>. If <see langword="true"/>, satisfy it (e.g: mutate the memory to consume the state).<br/>
+            </summary>
+            <param name="worldState">Memory to check if it can satify the goal.</param>
+            <returns><see langword="true"/> if the goal was satisfied.</returns>
+        </member>
+        <member name="T:Enderlook.GOAP.IGoalMerge`1">
+            <summary>
+            Interface that allows merging goals to reduce memory consumption.<br/>
+            This interface can be implemented by a helper type.
+            </summary>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IGoalMerge`1.TryMerge(`0,`0,`0@)">
+            <summary>
+            Try to merge <paramref name="a"/> and <paramref name="b"/>.
+            </summary>
+            <param name="a">First goal to merge.</param>
+            <param name="b">Second goal to merge.</param>
+            <param name="c">Produced combination of <paramref name="a"/> and <paramref name="b"/>.</param>
+            <returns><see langword="true"/> if <paramref name="a"/> and <paramref name="b"/> could be merged.</returns>
+        </member>
+        <member name="T:Enderlook.GOAP.IGoalPool`1">
+            <summary>
+            Interface that allows pooling of goals.<br/>
+            This interface can be implemented by a helper type.
+            </summary>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IGoalPool`1.Return(`0)">
+            <summary>
+            Gives ownership of the goal.
+            </summary>
+            <param name="value">Goal to give ownership.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.SatisfactionResult">
+            <summary>
+            Determines how much a certain memory state can satisfy a goal.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.SatisfactionResult.Satisfied">
+            <summary>
+            The memory has satisfied the goal.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.SatisfactionResult.Progressed">
+            <summary>
+            The memory has progressed towards satisfaction of the goal.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.SatisfactionResult.NotProgressed">
+            <summary>
+            The memory has not progressed towards satisfaction of the goal.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.PlanningCoroutine">
+            <summary>
+            Represent the planification process as a coroutine.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.PlanningCoroutine.Dispose">
+            <inheritdoc cref="M:System.IDisposable.Dispose"/>
+        </member>
+        <member name="M:Enderlook.GOAP.PlanningCoroutine.MoveNext">
+            <summary>
+            Continues execution of coroutine.
+            </summary>
+            <returns>If <see langword="false"/>, the planning finalized, or was cancelled.</returns>
+        </member>
+        <member name="T:Enderlook.GOAP.PlanningCoroutineResult">
+            <summary>
+            Determines the result of an iteration of the planner.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanningCoroutineResult.Continue">
+            <summary>
+            Planification can continue.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanningCoroutineResult.Cancelled">
+            <summary>
+            Planification was cancelled.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanningCoroutineResult.Suspended">
+            <summary>
+            Planification is suspended until get a different yield.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanningCoroutineResult.Finalized">
+            <summary>
+            Planification has finalized (either found a valid plan or exhausted all possibilities).
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.PlanningCoroutine`2">
+            <summary>
+            Represent the planification process as a coroutine.
+            </summary>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+            <typeparam name="TAction">Type of action.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.PlanningCoroutine`2.GetAssociatedPlan">
+            <summary>
+            Get the associated plan with the coroutine.
+            </summary>
+            <returns>Asociated plan.</returns>
+        </member>
+        <member name="T:Enderlook.GOAP.Plan`2">
+            <summary>
+            Stores the result of a planification.
+            </summary>
+            <typeparam name="TGoal">Type of goals.</typeparam>
+            <typeparam name="TAction">Type of actions.</typeparam>
+        </member>
+        <member name="P:Enderlook.GOAP.Plan`2.FoundPlan">
+            <summary>
+            <see langword="true"/> if it does has a plan.
+            </summary>
+        </member>
+        <member name="P:Enderlook.GOAP.Plan`2.WasCancelled">
+            <summary>
+            <see langword="true"/> if it planification was cancelled.
+            </summary>
+        </member>
+        <member name="P:Enderlook.GOAP.Plan`2.IsInProgress">
+            <summary>
+            <see langword="true"/> if it is planifying.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetPlanCost">
+            <summary>
+            Get the cost of the plan.
+            </summary>
+            <returns>Cost of the plan.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetGoal">
+            <summary>
+            Get the goal that the plan will archive.
+            </summary>
+            <returns>Goal to archive.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetGoalIndex">
+            <summary>
+            Get the goal index that the plan will archive.
+            </summary>
+            <returns>Goal to archive. The index represent the element from passed enumeration.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetStepsCount">
+            <summary>
+            Get the amount of steps required by this plan.
+            </summary>
+            <returns>Amount of steps required by the plan.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetActionsCount">
+            <summary>
+            Get the amount of actions that were available during the formulation of this plan.
+            </summary>
+            <returns>Amount of actions avaiable during the formulation of this plan.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetActionIndex(System.Int32)">
+            <summary>
+            Get the index of the action to execute at index <paramref name="step"/>.
+            </summary>
+            <param name="step">Number of action from plan.</param>
+            <returns>Index of the action to execute. The index correspond to elements from the passed enumeration.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="step"/> is negative, equal or higher than <see cref="M:Enderlook.GOAP.Plan`2.GetStepsCount"/>.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetActionAtIndex(System.Int32)">
+            <summary>
+            Get the action associated with the specified index.
+            </summary>
+            <param name="index">Index of the associated action.</param>
+            <returns>The actio associated with that index.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="index"/> is negative, equal or higher than <see cref="M:Enderlook.GOAP.Plan`2.GetStepsCount"/>.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Plan`2.GetAction(System.Int32)">
+            <summary>
+            Get the action to execute at index <paramref name="step"/>.<br/>
+            This is faster than manually calling both <see cref="M:Enderlook.GOAP.Plan`2.GetActionIndex(System.Int32)"/> and <see cref="M:Enderlook.GOAP.Plan`2.GetActionAtIndex(System.Int32)"/>.
+            </summary>
+            <param name="step">Number of action from plan.</param>
+            <returns>Action to execute.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when there is no plan (either plan was canceled, not found, or the instance was never used to formulate a plan).</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="step"/> is negative, equal or higher than <see cref="M:Enderlook.GOAP.Plan`2.GetStepsCount"/>.</exception>
+        </member>
+        <member name="T:Enderlook.GOAP.PlanExtensions">
+            <summary>
+            Extension methods for <see cref="T:Enderlook.GOAP.Plan`2"/> used to fill the instance with a GOAP plan.<br/>
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.PlanExtensions.Plan``4(Enderlook.GOAP.Plan{``1,``2},``0,``3,System.Action{System.String})">
+            <summary>
+            Initializes the planification.
+            </summary>
+            <typeparam name="TWorldState">Type of world state.</typeparam>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+            <typeparam name="TAction">Type of action.</typeparam>
+            <typeparam name="TActions">Type of enumeration which contains all available actions.</typeparam>
+            <param name="plan">Instance where plan will be stored if found any.</param>
+            <param name="worldState">Initial state of the world.</param>
+            <param name="actions">Avariable actions to perfom in the world.</param>
+            <param name="log">If not <see langword="null"/>, log information will be send to this delegate.<br/>
+            The layout of the information is an implementation detail, so this should only be used for debugging purposes.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="plan"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="worldState"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="actions"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.PlanExtensions.Plan``1(Enderlook.GOAP.Plan{Enderlook.GOAP.IGoal{``0},Enderlook.GOAP.IAction{``0,Enderlook.GOAP.IGoal{``0}}},``0,System.Collections.Generic.IEnumerable{Enderlook.GOAP.IAction{``0,Enderlook.GOAP.IGoal{``0}}},System.Action{System.String})">
+            <inheritdoc cref="M:Enderlook.GOAP.PlanExtensions.Plan``1(Enderlook.GOAP.Plan{Enderlook.GOAP.IGoal{``0},Enderlook.GOAP.IAction{``0,Enderlook.GOAP.IGoal{``0}}},``0,System.Collections.Generic.IEnumerable{Enderlook.GOAP.IAction{``0,Enderlook.GOAP.IGoal{``0}}},System.Action{System.String})"/>
+        </member>
+        <member name="T:Enderlook.GOAP.PlanMode">
+            <summary>
+            Determines the result of a plan.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanMode.None">
+            <summary>
+            Instance is default.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanMode.InProgress">
+            <summary>
+            Plan is in progress.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanMode.FoundPlan">
+            <summary>
+            A plan to reach the requested goal was found.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanMode.NotFound">
+            <summary>
+            No plan was found to reach the requested goal.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.PlanMode.Cancelled">
+            <summary>
+            The planification was cancelled before founding a plan to reach the requested goal.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.CheapestGoal`1">
+            <summary>
+            This type is an implementation detail an shall never be used in parameters, fields, variables or return types.
+            </summary>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.PlanBuilder`4">
+            <summary>
+            This type is an implementation detail an shall never be used in parameters, fields, variables or return types.<br/>
+            It should only be used in chaining calls.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilder`4.CompleteGoal(`1)">
+            <summary>
+            The GOAP will try to complete a single goal.
+            </summary>
+            <param name="goal">Goal to satify.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="goal"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilder`4.CompleteCheapestGoalOf(System.Collections.Generic.IEnumerable{`1})">
+            <summary>
+            The GOAP will try to complete the goal with lower cost.
+            </summary>
+            <param name="goals">Goal to try to satify. Only the goals whose cost is lower will be satisfied.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="goals"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.PlanBuilderGoal`5">
+            <summary>
+            This type is an implementation detail an shall never be used in parameters, fields, variables or return types.<br/>
+            It should only be used in chaining calls.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithHelper``1(``0)">
+            <summary>
+            Includes a helper instance to reduce unnecessary allocations.<br/>
+            The instance (the type is not required, so this also supports class subtyping) must implement at least one of <see cref="T:Enderlook.GOAP.IGoalMerge`1"/>, <see cref="T:Enderlook.GOAP.IGoalPool`1"/>, <see cref="T:Enderlook.GOAP.IWorldStatePool`1"/>.
+            </summary>
+            <typeparam name="THelper">Type of helper.</typeparam>
+            <param name="helper">Helper instance.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="helper"/> is <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="helper"/> doesn't implement any of  <see cref="T:Enderlook.GOAP.IGoalMerge`1"/>, <see cref="T:Enderlook.GOAP.IGoalPool`1"/>, <see cref="T:Enderlook.GOAP.IWorldStatePool`1"/>.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithWatchdog``1(``0)">
+            <summary>
+            Includes a watchdog which may suspend or cancelates the planification.
+            </summary>
+            <typeparam name="TWatchdog">Type of watchdog.</typeparam>
+            <param name="watchdog">Watchdog of planification.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="watchdog"/> is <see langword="null"/>.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithCancellationToken(System.Threading.CancellationToken)">
+            <summary>
+            Includes a cancellation token to cancelate the planification.
+            </summary>
+            <param name="token">Cancellation token of the planification.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithCostLimit(System.Single)">
+            <summary>
+            Cancellates the planification if the plan cost reaches <paramref name="maximumCost"/>.
+            </summary>
+            <param name="maximumCost">Limit cost of the plan.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumCost"/> is 0 or negative.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithTimeout(System.Int32)">
+            <summary>
+            Cancellates the planification if the computation time reaches <paramref name="maximumMilliseconds"/>.
+            </summary>
+            <param name="maximumMilliseconds">Maximum miliseconds spent computating.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumMilliseconds"/> is 0 or negative.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithTimeSlice(System.Int32)">
+            <summary>
+            Suspends the planification if the computation time reaches <paramref name="maximumMilliseconds"/>.<br/>
+            If executed synchronously, suspension is <see cref="M:System.Threading.Thread.Yield"/>.<br/>
+            If executed asynchronously, suspension is <see cref="M:System.Threading.Tasks.Task.Yield"/>.<br/>
+            If executed in coroutine, suspension is <see langword="yield return"/>.
+            </summary>
+            <param name="maximumMilliseconds">Maximum miliseconds spent computating.</param>
+            <returns>Instance of the builder for the plan.<br/>
+            Shall only be used for method chaining.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumMilliseconds"/> is 0 or negative.</exception>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.Execute">
+            <summary>
+            Executes the planification synchronously.
+            </summary>
+            <returns>Instance passed on <see cref="M:Enderlook.GOAP.PlanExtensions.Plan``4(Enderlook.GOAP.Plan{``1,``2},``0,``3,System.Action{System.String})"/> method.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <remarks>If the planifiaction has a watchdog, all <see cref="F:Enderlook.GOAP.Watchdogs.WatchdogResult.Suspend"/> will be traduced as <see cref="M:System.Threading.Thread.Yield"/>.</remarks>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.ExecuteAsync">
+            <summary>
+            Executes the planification asynchronously.
+            </summary>
+            <returns>Instance passed on <see cref="M:Enderlook.GOAP.PlanExtensions.Plan``4(Enderlook.GOAP.Plan{``1,``2},``0,``3,System.Action{System.String})"/> method.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <remarks>If the planifiaction has a watchdog, all <see cref="F:Enderlook.GOAP.Watchdogs.WatchdogResult.Suspend"/> will be traduced as <see cref="M:System.Threading.Tasks.Task.Yield"/>.</remarks>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.ExecuteCoroutine">
+            <summary>
+            Executes the planification asynchronously.
+            </summary>
+            <returns>Instance passed on <see cref="M:Enderlook.GOAP.PlanExtensions.Plan``4(Enderlook.GOAP.Plan{``1,``2},``0,``3,System.Action{System.String})"/> method.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when instance is default.</exception>
+            <remarks>If the planifiaction has a watchdog, all <see cref="F:Enderlook.GOAP.Watchdogs.WatchdogResult.Suspend"/> will be traduced as an enumerator yield.</remarks>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.PlanBuilderHelper`7">
+            <summary>
+            This type is an implementation detail an shall never be used in parameters, fields, variables or return types.<br/>
+            It should only be used in chaining calls.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderHelper`7.Execute">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.Execute"/>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderHelper`7.ExecuteAsync">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.ExecuteAsync"/>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderHelper`7.ExecuteCoroutine">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.ExecuteCoroutine"/>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.PlanBuilderWatchdog`6">
+            <summary>
+            This type is an implementation detail an shall never be used in parameters, fields, variables or return types.<br/>
+            It should only be used in chaining calls.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderWatchdog`6.WithHelper``1(``0)">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.WithHelper``1(``0)"/>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderWatchdog`6.Execute">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.Execute"/>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderWatchdog`6.ExecuteAsync">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.ExecuteAsync"/>
+        </member>
+        <member name="M:Enderlook.GOAP.Planning.PlanBuilderWatchdog`6.ExecuteCoroutine">
+            <inheritdoc cref="M:Enderlook.GOAP.Planning.PlanBuilderGoal`5.ExecuteCoroutine"/>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.Planner">
+            <summary>
+            Extension methods for <see cref="T:Enderlook.GOAP.Plan`2"/> used to fill the instance with a GOAP plan.<br/>
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Planning.SingleGoal`1">
+            <summary>
+            This type is an implementation detail an shall never be used in parameters, fields, variables or return types.
+            </summary>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+        </member>
+        <member name="T:Enderlook.GOAP.Utilities.IAgent`3">
+            <summary>
+            Describes an agent.
+            </summary>
+            <typeparam name="TWorldState">Type of world state.</typeparam>
+            <typeparam name="TGoal">Type of goal.</typeparam>
+            <typeparam name="TAction">Type of action.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.IAgent`3.GetWorldState">
+            <summary>
+            Get the current state of the world.
+            </summary>
+            <returns>Current state of the world.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.IAgent`3.SetGoals``3(Enderlook.GOAP.PlanBuilderIterator{``0,`0,`1,`2,``1,``2}@)">
+            <summary>
+            Set all the possible goals that this agent want to complete.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.IAgent`3.SetActions``3(Enderlook.GOAP.PlanBuilderIterator{``0,`0,`1,`2,``1,``2}@)">
+            <summary>
+            Set all the actions that this agent can do.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Utilities.Pool`1">
+            <summary>
+            An static thread-safe pool.
+            </summary>
+            <typeparam name="T">Type of element to pool.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.Pool`1.Get">
+            <summary>
+            Get an instance from the pool or create a new one.
+            </summary>
+            <returns>Instance of the element.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.Pool`1.Return(`0)">
+            <summary>
+            Return an instance to the pool giving its ownership.
+            </summary>
+            <param name="item">Element to return to the pool.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.Utilities.Toggle">
+            <summary>
+            Type used to allow enable features using generics.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Utilities.Toggle.Yes">
+            <summary>
+            The given feature is enabled.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Utilities.Toggle.No">
+            <summary>
+            The given feature is disasbled.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.Toggle.IsOn``1">
+            <summary>
+            Determines if the feature is enabled.
+            </summary>
+            <typeparam name="T"><see cref="T:Enderlook.GOAP.Utilities.Toggle.Yes"/> or <see cref="T:Enderlook.GOAP.Utilities.Toggle.No"/>.</typeparam>
+            <returns>Whenever the feature is enabled.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.Utilities.Toggle.Assert``1">
+            <summary>
+            Asserts that <typeparamref name="T"/> is of type <see cref="T:Enderlook.GOAP.Utilities.Toggle.Yes"/> or <see cref="T:Enderlook.GOAP.Utilities.Toggle.No"/>.
+            </summary>
+            <typeparam name="T"><see cref="T:Enderlook.GOAP.Utilities.Toggle.Yes"/> or <see cref="T:Enderlook.GOAP.Utilities.Toggle.No"/>.</typeparam>
+        </member>
+        <member name="T:Enderlook.GOAP.Utilities.Unused">
+            <summary>
+            Represent a generic type that is not being used.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.CancellableWatchdog">
+            <summary>
+            Represent a watchdog that wrap a <see cref="T:System.Threading.CancellationToken"/>.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Watchdogs.CancellableWatchdog.#ctor(System.Threading.CancellationToken)">
+            <summary>
+            Wrap a <see cref="T:System.Threading.CancellationToken"/>.
+            </summary>
+            <param name="token"><see cref="T:System.Threading.CancellationToken"/> to wrap.</param>
+        </member>
+        <member name="M:Enderlook.GOAP.Watchdogs.CancellableWatchdog.op_Implicit(System.Threading.CancellationToken)~Enderlook.GOAP.Watchdogs.CancellableWatchdog">
+            <summary>
+            Wrap a <see cref="T:System.Threading.CancellationToken"/>.
+            </summary>
+            <param name="token"><see cref="T:System.Threading.CancellationToken"/> to wrap.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.CostWatchdog">
+            <summary>
+            Cancelates a GOAP operation as soon the cost reaches an specified value.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Watchdogs.CostWatchdog.#ctor(System.Single)">
+            <summary>
+            Creates a watchdog that cancelates as soon the cost of GOAP reaches the specified <paramref name="maximumCost"/>.
+            </summary>
+            <param name="maximumCost">Cost at which GOAP is cancelated.</param>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumCost"/> is 0 or negative.</exception>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.EndlessWatchdog">
+            <summary>
+            Don't suspend nor cancelates the computation of a GOAP.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.IWatchdog">
+            <summary>
+            Describes a cancellator of a planification.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Watchdogs.IWatchdog.Poll(System.Single)">
+            <summary>
+            Determines if the planning how should continue.
+            </summary>
+            <param name="cost">Current cost of total actions to perform.</param>
+            <returns>How the planning should continue.</returns>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.TimeOutWatchdog">
+            <summary>
+            Cancelates a GOAP operation as soon the computation time reaches an specified value.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Watchdogs.TimeOutWatchdog.#ctor(System.Int32)">
+            <summary>
+            Creates a watchdog that cancelates as soon the computation time of GOAP reaches the specified <paramref name="maximumMilliseconds"/>.
+            </summary>
+            <param name="maximumMilliseconds">Maximum miliseconds spent computating.</param>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="maximumMilliseconds"/> is 0 or negative.</exception>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.TimeSliceWatchdog">
+            <summary>
+            Suspends a GOAP operation as soon the computation time reaches an specified value.
+            </summary>
+        </member>
+        <member name="M:Enderlook.GOAP.Watchdogs.TimeSliceWatchdog.#ctor(System.Int32)">
+            <summary>
+            Creates a watchdog that suspends as soon the computation time of GOAP reaches the specified <paramref name="maximumMiliseconds"/>.
+            </summary>
+            <param name="maximumMiliseconds">Maximum miliseconds spent computating.</param>
+        </member>
+        <member name="T:Enderlook.GOAP.Watchdogs.WatchdogResult">
+            <summary>
+            How planning must continue.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.Watchdogs.WatchdogResult.Continue">
+            <summary>
+            Can continue planification.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.Watchdogs.WatchdogResult.Cancel">
+            <summary>
+            Planification was canceled.
+            </summary>
+        </member>
+        <member name="F:Enderlook.GOAP.Watchdogs.WatchdogResult.Suspend">
+            <summary>
+            Planification was suspended until get a different yield.
+            </summary>
+        </member>
+        <member name="T:Enderlook.GOAP.IWorldState`1">
+            <summary>
+            Describes the state of the world.
+            </summary>
+            <typeparam name="TSelf">It's own type.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IWorldState`1.Clone">
+            <summary>
+            Creates a deep clone of the state of this world.
+            </summary>
+            <returns>New deep clone of this world.</returns>
+        </member>
+        <member name="T:Enderlook.GOAP.IWorldStatePool`1">
+            <summary>
+            Interface that allows pooling of world states.<br/>
+            This interface can be implemented by a helper type.
+            </summary>
+            <typeparam name="TWorld">Type of world state.</typeparam>
+        </member>
+        <member name="M:Enderlook.GOAP.IWorldStatePool`1.Clone(`0)">
+            <summary>
+            Clones the content of a world.
+            </summary>
+            <param name="value">World to clone.</param>
+            <returns>New clone of the world.</returns>
+        </member>
+        <member name="M:Enderlook.GOAP.IWorldStatePool`1.Return(`0)">
+            <summary>
+            Gives ownership of the world.
+            </summary>
+            <param name="value">World to give ownership.</param>
+        </member>
+    </members>
+</doc>

@@ -1,4 +1,6 @@
-﻿namespace Asteroids.Entities.Enemies
+﻿using System;
+
+namespace Asteroids.Entities.Enemies
 {
     public sealed partial class EnemySpawner
     {

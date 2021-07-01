@@ -20,6 +20,8 @@ namespace Asteroids.Scene
             private static readonly string pathAndName = path + "/save.sav";
 
             public readonly PlayerController.State player;
+            public readonly Boss.State boss;
+            public readonly List<BossShooter.ProjectileState> bossBullets;
             public readonly GameManager.State game;
             public readonly LaserWeapon.State laser;
             public readonly Weapon.State projectile;
@@ -32,9 +34,11 @@ namespace Asteroids.Scene
             public readonly List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies;
             public readonly List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)> bomberEnemies;
 
-            public GameState(PlayerController.State player, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies, List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies, List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)> bomberEnemies)
+            public GameState(PlayerController.State player, Boss.State boss, List<BossShooter.ProjectileState> bossBullets, GameManager.State game, LaserWeapon.State laser, Weapon.State projectile, List<ManualWeapon.ProjectileState> projectiles, BombWeapon.State bomb, List<BombWeapon.Bomb.State> bombs, Dictionary<string, List<SimpleEnemyBuilder.EnemyState>> enemies, List<(SimpleEnemyBuilder.EnemyState, Shooter.ShooterState, List<Shooter.ProjectileState>)> shooterEnemies, List<(SimpleEnemyBuilder.EnemyState, Bomber.BomberState, List<Bomber.ProjectileState>)> bomberEnemies)
             {
                 this.player = player;
+                this.boss = boss;
+                this.bossBullets = bossBullets;
                 this.game = game;
                 this.laser = laser;
                 this.projectile = projectile;

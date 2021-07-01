@@ -17,7 +17,7 @@ namespace Asteroids.Entities.Player
 
             public State(PlayerController playerController)
             {
-                lifes = playerController.Lifes;
+                lifes = playerController.lifes;
                 scoreToNextLife = playerController.scoreToNextLife;
                 invulnerabilityTime = playerController.invulnerabilityTime;
                 memento = new Memento(playerController);
@@ -25,7 +25,7 @@ namespace Asteroids.Entities.Player
 
             public void Load(PlayerController playerController)
             {
-                playerController.Lifes = lifes;
+                playerController.lifes = lifes;
                 playerController.scoreToNextLife = scoreToNextLife;
                 playerController.invulnerabilityTime = invulnerabilityTime;
                 memento.Load(playerController);

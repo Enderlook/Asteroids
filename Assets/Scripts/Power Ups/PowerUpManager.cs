@@ -1,4 +1,5 @@
-﻿using Enderlook.Enumerables;
+﻿using Asteroids.Scene;
+
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Serializables.Ranges;
 
@@ -31,12 +32,31 @@ namespace Asteroids.PowerUps
         private GameObject powerUp;
         private int lastTemplate = -1;
 
+        private static PowerUpManager instance;
+
+        public static float SpawnTime => instance.spawnTime;
+
+        public static int PowerUpsInScene { get; private set; }
+
+        public static float TimeSinceLastSpawnedPowerUp => instance.spawnTime - instance.cooldown;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
+            if (instance != null)
+            {
+                Debug.LogError($"{nameof(PowerUpManager)} is a singlenton.");
+                Destroy(this);
+                return;
+            }
+
+            instance = this;
+
             camera = Camera.main;
             cooldown = spawnTime;
             audioSource = GetComponent<AudioSource>();
+
+            EventManager.Subscribe<OnPowerUpPickedEvent>(() => PowerUpsInScene--);
 
             // For gameplay reasons power ups are not tracked by the rewind feature
         }
@@ -89,6 +109,9 @@ namespace Asteroids.PowerUps
             powerUp.layer = layer;
             powerUp.transform.position = position; // Don't update from rigidbody because that has one frame delay
             powerUp.GetComponent<Rigidbody2D>().velocity = -speed;
+
+            PowerUpsInScene++;
+            EventManager.Raise(new OnPowerUpSpawnEvent());
         }
     }
 }
