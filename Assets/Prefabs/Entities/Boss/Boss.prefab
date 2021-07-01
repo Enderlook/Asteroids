@@ -327,8 +327,8 @@ MonoBehaviour:
   lifes: 10
   tooHurtFactor: 0.5
   healthRestoredPerPowerUp: 4
-  movementSpeed: 3
-  rotationSpeed: 180
+  movementSpeed: 1.8
+  rotationSpeed: 120
   invulnerabilityDuration: 2
   invulnerabilityColor: {r: 0.5, g: 0.5, b: 0.5, a: 0}
   scoreWhenDestroyed: 100
@@ -350,7 +350,7 @@ MonoBehaviour:
   spriteScale: 1
   sprite: Boss/Boss_Bullet
   shootSound: {fileID: 11400000, guid: d6c883a16cd43bc48bb2524c0123b5c6, type: 2}
-  force: 3
-  cooldown: 0.35
-  shootsCount: 3
+  force: 4.5
+  cooldown: 1
+  shootsCount: 2
   shootPoint: {fileID: 5354794004420836908}

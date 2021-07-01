@@ -1,4 +1,6 @@
-﻿using Enderlook.GOAP;
+﻿using Asteroids.Entities.Player;
+
+using Enderlook.GOAP;
 using Enderlook.StateMachine;
 
 using UnityEngine;
@@ -33,24 +35,30 @@ namespace Asteroids.Entities.Enemies
 
             float initialTime = 0;
             float initialRotation = 0;
+            float clockwise = 1;
             builders[index] = builder.In(node)
                 .OnEntry(() =>
                 {
                     closeRange.gameObject.SetActive(true);
                     initialRotation = rigidbody.rotation;
-                    initialTime = Time.time;
+                    initialTime = Time.fixedTime;
+
+                    Vector3 direction = (PlayerController.Position - transform.position).normalized;
+                    float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
+                    if (Mathf.MoveTowardsAngle(initialRotation, angle, rotationSpeed * Time.deltaTime) < initialRotation)
+                        clockwise *= -1;
                 })
                 .OnExit(() => closeRange.gameObject.SetActive(false))
                 .OnUpdate(() =>
                 {
-                    float percent = (Time.time - initialTime) / CloseAttackDuration;
+                    float percent = (Time.fixedTime - initialTime) / CloseAttackDuration;
                     if (percent >= 1)
                     {
                         rigidbody.rotation = initialRotation;
                         Next();
                     }
                     else
-                        rigidbody.rotation = initialRotation + (360 * percent);
+                        rigidbody.rotation = initialRotation + (360 * percent * clockwise);
                 });
         }
     }

@@ -15,7 +15,6 @@ namespace Asteroids.UI
 {
     public sealed class Scoreboard : MonoBehaviour
     {
-
 #pragma warning disable CS0649
         [SerializeField, Tooltip("Prefab of score tile to show.")]
         private ScoreField scorePrefab;
@@ -28,6 +27,9 @@ namespace Asteroids.UI
 
         [SerializeField, Tooltip("Types of enemies")]
         private SimpleEnemyFlyweight[] enemies;
+
+        [SerializeField, Tooltip("Sprite of boss enemy.")]
+        private Sprite bossSprite;
 #pragma warning restore CS0649
 
         private Dictionary<string, (int kills, int totalScore)> killedEnemies = new Dictionary<string, (int kills, int totalScore)>();
@@ -46,17 +48,22 @@ namespace Asteroids.UI
 
         public void OrderScores()
         {
-            foreach ((Sprite sprite, int kills, int score) in killedEnemies
+            IEnumerable<(Sprite sprite, string name, int kills, int totalScore)> enumerable = killedEnemies
                 .Concat(enemies
                     .Select(e => e.name)
                     .Except(killedEnemies.Keys)
                     .Select(e => new KeyValuePair<string, (int kills, int totalScore)>(e, (0, 0))))
-                .OrderByDescending(e => e.Value.totalScore)
-                .ThenByDescending(e => e.Value.kills)
-                .ThenBy(e => e.Key)
-                .Join(enemies, e => e.Key, e => e.name, (a, b) => (Resources.Load<Sprite>(b.Sprites[0]), a.Value.kills, a.Value.totalScore))
-                )
+                .Join(enemies, e => e.Key, e => e.name, (a, b) => (Resources.Load<Sprite>(b.Sprites[0]), b.name, a.Value.kills, a.Value.totalScore));
+
+            if (killedEnemies.TryGetValue("Boss", out (int kills, int totalScore) tuple) && tuple.kills > 0)
+                enumerable.Append((bossSprite, "Boss", tuple.kills, tuple.totalScore));
+
+            foreach ((Sprite sprite, string name, int kills, int score) in enumerable
+                .OrderByDescending(e => e.totalScore)
+                .ThenBy(e => e.kills)
+                .ThenBy(e => e.name))
             {
+                Debug.Log(name);
                 ScoreField scoreField = Instantiate(scorePrefab, layout);
                 scoreField.SetTarget(score, kills);
                 scoreField.SetSprite(sprite);

@@ -17,7 +17,7 @@ namespace Asteroids.Entities.Enemies
                 (float distance, ref BossState worldState) =>
                 {
                     Vector3 difference = worldState.PlayerPosition - worldState.BossPosition;
-                    worldState.BossPosition -= Vector3.Normalize(difference) * distance;
+                    worldState.BossPosition += Vector3.Normalize(difference) * distance;
                     worldState.AdvanceTime(distance / movementSpeed);
                 },
                 null,

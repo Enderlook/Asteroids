@@ -10,7 +10,6 @@ using Enderlook.Unity.Components.ScriptableSound;
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.Diagnostics;
 
 using Resources = Asteroids.Utils.Resources;
 
@@ -58,6 +57,9 @@ namespace Asteroids.Entities.Enemies
         private new Rigidbody2D rigidbody;
         private Boss boss;
 
+        // Since boss doesn't move by rigidbody velocity, we use this to calculate its velocity.
+        private Vector2 lastPosition;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Awake()
         {
@@ -73,25 +75,29 @@ namespace Asteroids.Entities.Enemies
             };
 
             rigidbody = GetComponent<Rigidbody2D>();
+            lastPosition = rigidbody.position;
 
+            Debug.Assert(shootSound != null);
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(shootSound, false, false);
 
             //GameSaver.SubscribeShooterBoss(this, () => new ProjectileState(this));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]    
-        private void Update()
+        private void FixedUpdate()
         {
             boss.MoveAndRotateTowards(PlayerController.Position, Boss.FurtherDistanceToPlayer);
 
-            if (Time.time >= nextCast)
+            if (Time.fixedTime >= nextCast)
             {
-                nextCast = Time.time + cooldown;
+                nextCast = Time.fixedTime + cooldown;
                 CreateBullet();
 
                 if (remainingShoots-- == 0)
                     boss.Next();
             }
+
+            lastPosition = rigidbody.position;
         }
 
         private void OnEnable()
@@ -157,7 +163,7 @@ namespace Asteroids.Entities.Enemies
             Rigidbody2D bullet = builder.Create((
                 shootPoint.position,
                 Quaternion.Euler(new Vector3(0, 0, rigidbody.rotation)),
-                (Vector2)(-shootPoint.up * force) + rigidbody.velocity
+                (Vector2)(-shootPoint.up * force) + (rigidbody.position - lastPosition)
             ));
 
             soundPlayer.Play();

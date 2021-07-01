@@ -3,6 +3,7 @@
 using Enderlook.Enumerables;
 using Enderlook.Unity.Attributes;
 using Enderlook.Unity.Components.ScriptableSound;
+using Enderlook.Unity.Prefabs.HealthBarGUI;
 using Enderlook.Unity.Serializables.Ranges;
 
 using System.Collections;
@@ -44,7 +45,10 @@ namespace Asteroids.Entities.Enemies
         private int levelsPerBoss;
 
         [SerializeField, Tooltip("Prefab of boss.")]
-        private GameObject bossPrefab;
+        private Boss bossPrefab;
+
+        [SerializeField, Tooltip("Health bar used by the boss.")]
+        private HealthBar bossHealthBar;
 #pragma warning restore CS0649
 
         private new Camera camera;
@@ -73,7 +77,7 @@ namespace Asteroids.Entities.Enemies
             StartCoroutine(Work());
             IEnumerator Work()
             {
-                yield return new WaitForSeconds(0.25f);
+                yield return new WaitForSeconds(0.5f);
                 SpawnBoss();
             }
             return;
@@ -123,7 +127,9 @@ namespace Asteroids.Entities.Enemies
             // Since we only spawn the boss once each several levels it doesn't make sense to pool it (the cost of pooling would be larger than creating it again and let the GC collect it).
             // Since we only spawn one boss at the time (hence they are rare) it doesn't make sense to create a factory of them (we only need to instantiate it and set it position and rotation, nothing more).
 
-            Instantiate(bossPrefab).transform.position = GetSpawnPosition();
+            Boss boss = Instantiate(bossPrefab);
+            boss.SetHealthBar(bossHealthBar);
+            boss.transform.position = GetSpawnPosition();
         }
 
         private void RecalculateEnemyCountManually()
@@ -135,13 +141,16 @@ namespace Asteroids.Entities.Enemies
                 if (objects[i].activeSelf && objects[i].layer == layer)
                     remainingEnemies++;
             }
+            if (FindObjectOfType<Boss>() != null)
+                remainingEnemies++;
         }
 
         private void SpawnEnemy()
         {
             Vector2 position = GetSpawnPosition();
 
-            Vector2 speed = (position - new Vector2(Random.value, Random.value)).normalized * initialSpeed.Value;
+            Vector2 target = (Vector2)camera.ViewportToWorldPoint(new Vector3(Random.value, Random.value));
+            Vector2 speed = (position - (target * .8f)).normalized * initialSpeed.Value;
 
             enemyTemplates.RandomPick().GetFactory().Create((position, -speed));
         }

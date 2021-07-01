@@ -4,6 +4,7 @@ using Asteroids.Scene;
 
 using Enderlook.GOAP;
 using Enderlook.StateMachine;
+using Enderlook.Unity.Prefabs.HealthBarGUI;
 
 using System;
 using System.Text;
@@ -55,6 +56,7 @@ namespace Asteroids.Entities.Enemies
         private new Rigidbody2D rigidbody;
         private new Collider2D collider;
         private new SpriteRenderer renderer;
+        private HealthBar healthBar;
 
         private int currentLifes;
         private float invulnerabilityTime;
@@ -76,7 +78,7 @@ namespace Asteroids.Entities.Enemies
 #if UNITY_EDITOR
         private StringBuilder builder = new StringBuilder();
         private StringBuilder builder2 = new StringBuilder();
-        private const bool log = true;
+        private const bool log = false;
 #endif
 
         private StateMachine<object, object, object> machine;
@@ -92,9 +94,10 @@ namespace Asteroids.Entities.Enemies
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
             renderer = GetComponent<SpriteRenderer>();
+            healthBar = FindObjectOfType<HealthBar>();
 
             currentLifes = lifes;
-
+            Debug.Assert(closeRange.GetComponent<Collider2D>() != null);
             Vector2 size = closeRange.GetComponent<Collider2D>().bounds.size;
             requiredDistanceToPlayerForCloseAttack = Mathf.Max(size.x, size.y);
 
@@ -110,8 +113,7 @@ namespace Asteroids.Entities.Enemies
             CreateAndAddGetFurtherAbility(builder, builders, 3);
             CreateAndAddPickUpPowerUpAbility(builder, builders, PickUpPowerUpIndex);
             CreateAndAddWaitForPowerUpSpawnAbility(builder, builders, WaitForPowerUpSpawn);
-            builders[6] = builder.In(auto)
-                .OnUpdate(Improvise);
+            builders[6] = builder.In(auto).OnUpdate(Improvise);
 
             // Since plans can be modified at any moment, all states requires transitions to all other states.
             for (int i = 0; i < builders.Length; i++)
@@ -136,6 +138,13 @@ namespace Asteroids.Entities.Enemies
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
+        }
+
+        public void SetHealthBar(HealthBar healthBar)
+        {
+            this.healthBar = healthBar;
+            healthBar.gameObject.SetActive(true);
+            healthBar.ManualUpdate(lifes, currentLifes);
         }
 
         private void Improvise()
@@ -184,24 +193,29 @@ namespace Asteroids.Entities.Enemies
             if (!@event.PickedByPlayer)
             {
                 currentLifes = Mathf.Min(currentLifes + healthRestoredPerPowerUp, lifes);
+                healthBar.UpdateValues(lifes);
                 if (machine.State == actions[PickUpPowerUpIndex])
                     Next();
             }
         }
 
+        private void RotateTowardsDirection(Vector3 direction)
+        {
+            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
+            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+        }
+
         private void MoveAndRotateTowards(Vector3 target)
         {
             Vector3 direction = (target - transform.position).normalized;
-            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
-            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+            RotateTowardsDirection(direction);
             rigidbody.position = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
         }
 
         public void MoveAndRotateTowards(Vector3 target, float distance = 0)
         {
             Vector3 direction = (target - transform.position).normalized;
-            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
-            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+            RotateTowardsDirection(direction);
             Vector3 newPosition = Vector3.MoveTowards(rigidbody.position, target, movementSpeed * Time.deltaTime);
             if (Vector3.Distance(newPosition, target) < distance)
             {
@@ -215,23 +229,23 @@ namespace Asteroids.Entities.Enemies
         private void MoveAndRotateAway(Vector3 target)
         {
             Vector3 direction = (transform.position - target).normalized;
-            float angle = (Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg) + 90;
-            rigidbody.rotation = Mathf.MoveTowardsAngle(rigidbody.rotation, angle, rotationSpeed * Time.deltaTime);
+            RotateTowardsDirection(direction);
             rigidbody.position += (Vector2)direction * movementSpeed * Time.deltaTime;
         }
 
         public void Next()
         {
-            if (currentPlan.FoundPlan && currentStep < currentPlan.GetActionsCount())
+            if (currentPlan.FoundPlan && ++currentStep < currentPlan.GetActionsCount())
             {
-                currentStep++;
                 machine.Fire(currentPlan.GetAction(currentStep));
+                return;
             }
-            else
-            {
-                currentStep = -1;
-                machine.Fire(auto);
-            }
+
+            currentStep = -1;
+            machine.Fire(auto);
+
+            if (planification is null)
+                Planify();
         }
 
         private void WorldIsNotAsExpected()
@@ -307,11 +321,18 @@ namespace Asteroids.Entities.Enemies
 
         private void OnCollisionEnter2D(Collision2D collision)
         {
+            if (collision.gameObject.GetComponent<PlayerController>() != null)
+                return;
+
             if (lifes == 1)
-                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent(name, scoreWhenDestroyed));
+            {
+                EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent("Boss", scoreWhenDestroyed));
+                Destroy(gameObject);
+            }
             else
             {
                 lifes--;
+                healthBar.UpdateValues(lifes);
                 BecomeInvulnerable();
             }
         }
@@ -325,8 +346,8 @@ namespace Asteroids.Entities.Enemies
 
         private void OnDestroy()
         {
-            if (machine is null)
-                return;
+            if (healthBar != null) // On returning from scene, the gameobject may be destroyed before this one.
+                healthBar.gameObject.SetActive(false);
             EventManager.Unsubscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
             // Forcing an state transition will call OnExit of current frame, removing possible memory leak from subscribed events.
             machine.Fire(auto);
