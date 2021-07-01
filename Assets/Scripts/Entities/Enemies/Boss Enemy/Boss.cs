@@ -162,7 +162,7 @@ namespace Asteroids.Entities.Enemies
             // For gameplay reasons the boss is not tracked by the rewind feature.
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (invulnerabilityTime > 0)
             {
