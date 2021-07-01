@@ -7,6 +7,7 @@ using Enderlook.Unity.Prefabs.HealthBarGUI;
 using Enderlook.Unity.Serializables.Ranges;
 
 using System.Collections;
+using System.Collections.Generic;
 
 using UnityEngine;
 
@@ -27,7 +28,7 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Tooltip("Maximum amount of enemies per level.")]
         private int maximumAmountOfEnemies;
 
-        public int MaxmiumAmountOfEnemies => maximumAmountOfEnemies;
+        public int MaximumAmountOfEnemies => maximumAmountOfEnemies + 1; // +1 for the boss
 
         [SerializeField, Tooltip("Possible enemies to spawn."), Expandable]
         private EnemyFlyweight[] enemyTemplates;
@@ -74,13 +75,6 @@ namespace Asteroids.Entities.Enemies
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]
         private void Start()
         {
-            StartCoroutine(Work());
-            IEnumerator Work()
-            {
-                yield return new WaitForSeconds(0.5f);
-                SpawnBoss();
-            }
-            return;
             if (remainingEnemies == 0)
                 remainingEnemies = SpawnEnemies();
         }
@@ -121,7 +115,7 @@ namespace Asteroids.Entities.Enemies
             return maxEnemies;
         }
 
-        private void SpawnBoss()
+        private Boss SpawnBoss()
         {
             // Since there is only one kind of boss it doesn't make sense to implement a build pattern (all the configuration is already on the prefab).
             // Since we only spawn the boss once each several levels it doesn't make sense to pool it (the cost of pooling would be larger than creating it again and let the GC collect it).
@@ -130,6 +124,13 @@ namespace Asteroids.Entities.Enemies
             Boss boss = Instantiate(bossPrefab);
             boss.SetHealthBar(bossHealthBar);
             boss.transform.position = GetSpawnPosition();
+            return boss;
+        }
+
+        public void LoadBoss(Boss.State boss, List<BossShooter.ProjectileState> bossBullets)
+        {
+            if (boss.IsAlive)
+                boss.Load(SpawnBoss(), bossBullets);
         }
 
         private void RecalculateEnemyCountManually()

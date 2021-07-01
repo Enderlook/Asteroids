@@ -20,6 +20,9 @@ namespace Asteroids.Scene
         private Func<PlayerController.State> savePlayer;
         private Action<PlayerController.State> loadPlayer;
 
+        private Func<Boss.State> saveBoss;
+        private List<Func<BossShooter.ProjectileState>> saveBossShooterProjectiles = new List<Func<BossShooter.ProjectileState>>();
+
         private Func<GameManager.State> saveGameManager;
         private Action<GameManager.State> loadGameManager;
 
@@ -81,6 +84,7 @@ namespace Asteroids.Scene
             // That would make the saving file bigger, not sure if it is worthly.
 
             PlayerController.State player = instance.savePlayer();
+            Boss.State boss = instance?.saveBoss() ?? default;
             GameManager.State game = instance.saveGameManager();
             LaserWeapon.State laser = instance.saveLaserTrigger();
             Weapon.State projectile = instance.saveProjectileTrigger();
@@ -124,7 +128,9 @@ namespace Asteroids.Scene
                 .ToList();
 #pragma warning restore RCS1077
 
-            GameState gameState = new GameState(player, game, laser, projectile, projectiles, bomb, bombs, enemies, shooters, bombers);
+            List<BossShooter.ProjectileState> bossBullets = instance.saveBossShooterProjectiles.Select(e => e()).ToList();
+
+            GameState gameState = new GameState(player, boss, bossBullets, game, laser, projectile, projectiles, bomb, bombs, enemies, shooters, bombers);
             gameState.SaveToFile();
         }
 
@@ -134,6 +140,7 @@ namespace Asteroids.Scene
         {
             GameState gameState = GameState.ReadFile();
             instance.loadPlayer(gameState.player);
+            FindObjectOfType<EnemySpawner>().LoadBoss(gameState.boss, gameState.bossBullets);
             instance.loadGameManager(gameState.game);
             instance.loadLaserTrigger(gameState.laser);
             instance.loadProjectileTrigger(gameState.projectile, gameState.projectiles);
@@ -152,6 +159,10 @@ namespace Asteroids.Scene
             instance.savePlayer = save;
             instance.loadPlayer = load;
         }
+
+        public static void SubscribeBoss(Func<Boss.State> save) => instance.saveBoss = save;
+
+        public static void SubscribeBossBullet(Func<BossShooter.ProjectileState> save) => instance.saveBossShooterProjectiles.Add(save);
 
         public static void SubscribeGameManager(Func<GameManager.State> save, Action<GameManager.State> load)
         {

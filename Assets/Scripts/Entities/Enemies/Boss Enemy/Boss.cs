@@ -49,13 +49,17 @@ namespace Asteroids.Entities.Enemies
         [SerializeField, Min(0), Tooltip("Required time to update plan.")]
         private float timeBetweenPlanifications;
 
-        [SerializeField, Tooltip("Close range gameobject.")]
+        [SerializeField, Tooltip("Close range game object.")]
         private GameObject closeRange;
+
+        [SerializeField, Tooltip("Shield game object.")]
+        private GameObject shield;
 #pragma warning restore CS0649
 
         private new Rigidbody2D rigidbody;
         private new Collider2D collider;
         private new SpriteRenderer renderer;
+        private BossShooter bossShooter;
         private HealthBar healthBar;
 
         private int currentLifes;
@@ -94,10 +98,10 @@ namespace Asteroids.Entities.Enemies
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
             renderer = GetComponent<SpriteRenderer>();
+            bossShooter = GetComponent<BossShooter>();
             healthBar = FindObjectOfType<HealthBar>();
 
             currentLifes = lifes;
-            Debug.Assert(closeRange.GetComponent<Collider2D>() != null);
             Vector2 size = closeRange.GetComponent<Collider2D>().bounds.size;
             requiredDistanceToPlayerForCloseAttack = Mathf.Max(size.x, size.y);
 
@@ -136,6 +140,8 @@ namespace Asteroids.Entities.Enemies
             CheckPlanification();
 
             EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
+
+            GameSaver.SubscribeBoss(() => new State(this));
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
         }
@@ -322,6 +328,14 @@ namespace Asteroids.Entities.Enemies
         private void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.gameObject.GetComponent<PlayerController>() != null)
+                return;
+
+            TakeDamage();
+        }
+
+        public void TakeDamage()
+        {
+            if (invulnerabilityTime > 0)
                 return;
 
             if (lifes == 1)

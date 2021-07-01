@@ -31,8 +31,16 @@ namespace Asteroids.Entities.Enemies
             actions[index] = node;
 
             builders[index] = builder.In(node)
-                .OnEntry(() => EventManager.Subscribe<OnPowerUpSpawnEvent>(Next))
-                .OnExit(() => EventManager.Unsubscribe<OnPowerUpSpawnEvent>(Next));
+                .OnEntry(() =>
+                {
+                    shield.SetActive(true);
+                    EventManager.Subscribe<OnPowerUpSpawnEvent>(Next);
+                })
+                .OnExit(() =>
+                {
+                    shield.SetActive(false);
+                    EventManager.Unsubscribe<OnPowerUpSpawnEvent>(Next);
+                });
         }
     }
 }

@@ -63,7 +63,6 @@ namespace Asteroids.UI
                 .ThenBy(e => e.kills)
                 .ThenBy(e => e.name))
             {
-                Debug.Log(name);
                 ScoreField scoreField = Instantiate(scorePrefab, layout);
                 scoreField.SetTarget(score, kills);
                 scoreField.SetSprite(sprite);

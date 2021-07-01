@@ -2,6 +2,7 @@
 // The whole file.
 // ^- Don't touch that comment, used by the teacher
 using Asteroids.Entities.Player;
+using Asteroids.Scene;
 using Asteroids.Utils;
 
 using Enderlook.Unity.Attributes;
@@ -79,8 +80,6 @@ namespace Asteroids.Entities.Enemies
 
             Debug.Assert(shootSound != null);
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(shootSound, false, false);
-
-            //GameSaver.SubscribeShooterBoss(this, () => new ProjectileState(this));
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Used by Unity.")]    
@@ -132,7 +131,7 @@ namespace Asteroids.Entities.Enemies
             ReturnToPoolOnCollision returnToPoolOnCollision = projectile.AddComponent<ReturnToPoolOnCollision>();
             returnToPoolOnCollision.pool = flyweight.builder;
 
-            //GameSaver.SubscribeBossBullet(flyweight, () => new ProjectileState(rigidbody));
+            GameSaver.SubscribeBossBullet(() => new ProjectileState(rigidbody));
 
             return rigidbody;
         }

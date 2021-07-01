@@ -39,7 +39,7 @@ namespace Asteroids.WeaponSystem
             castPoint = weaponsManager.CastPoint;
             lineRenderer = castPoint.GetComponent<LineRenderer>();
             soundPlayer = SimpleSoundPlayer.CreateOneTimePlayer(weaponSound, false, false);
-            results = new RaycastHit2D[FindObjectOfType<EnemySpawner>().MaxmiumAmountOfEnemies];
+            results = new RaycastHit2D[FindObjectOfType<EnemySpawner>().MaximumAmountOfEnemies];
 
             Memento.TrackForRewind(this);
             GameSaver.SubscribeLaserTrigger(() => new State(this), (state) => ((State)state).Load(this));
@@ -84,6 +84,8 @@ namespace Asteroids.WeaponSystem
                 GameObject gameObject = results[i].collider.gameObject;
                 foreach (ExecuteOnCollision toExecute in gameObject.GetComponents<ExecuteOnCollision>())
                     toExecute.Execute();
+                if (gameObject.TryGetComponent(out Boss boss))
+                    boss.TakeDamage();
             }
             lineRenderer.SetPosition(0, new Vector3(0, distance, 0));
         }

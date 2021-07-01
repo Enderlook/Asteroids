@@ -14,7 +14,7 @@ using Resources = Asteroids.Utils.Resources;
 
 namespace Asteroids.Entities.Enemies
 {
-    [RequireComponent(typeof(Rigidbody2D), typeof(Boss))]
+    [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))]
     public sealed partial class Shooter : MonoBehaviour
     {
         private static readonly BuilderFactoryPool<Rigidbody2D, Shooter, (Vector3 position, Quaternion rotation, Vector3 velocity)>.Constructor construct = ProjectileConstructor;
