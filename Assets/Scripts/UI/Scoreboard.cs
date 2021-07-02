@@ -59,6 +59,7 @@ namespace Asteroids.UI
                 enumerable.Append((bossSprite, "Boss", tuple.kills, tuple.totalScore));
 
             foreach ((Sprite sprite, string name, int kills, int score) in enumerable
+                .Where(e => e.kills > 0)
                 .OrderByDescending(e => e.totalScore)
                 .ThenBy(e => e.kills)
                 .ThenBy(e => e.name))
