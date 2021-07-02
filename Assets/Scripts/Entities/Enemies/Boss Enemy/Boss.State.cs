@@ -34,7 +34,7 @@ namespace Asteroids.Entities.Enemies
                 boss.machine.Fire(boss.actions[state]);
                 boss.rigidbody.position = position;
                 boss.rigidbody.rotation = rotation;
-                boss.bossShooter.Load(bossBullets);
+                boss.shooter.Load(bossBullets);
             }
         }
     }

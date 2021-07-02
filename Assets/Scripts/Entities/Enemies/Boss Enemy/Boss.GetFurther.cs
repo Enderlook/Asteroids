@@ -13,7 +13,7 @@ namespace Asteroids.Entities.Enemies
             Node<float> node = new Node<float>(
                 null,
                 null,
-                worldState => Mathf.Max(FurtherDistanceToPlayer - Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition), 0),
+                worldState => Mathf.Max(RequiredDistanceToPlayerForFarAttack - Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition), 0),
                 (float distance, ref BossState worldState) =>
                 {
                     Vector3 difference = worldState.BossPosition + worldState.PlayerPosition;
@@ -29,7 +29,7 @@ namespace Asteroids.Entities.Enemies
                 .OnUpdate(() =>
                 {
                     MoveAndRotateAway(PlayerController.Position);
-                    if (Vector3.Distance(PlayerController.Position, transform.position) >= FurtherDistanceToPlayer)
+                    if (Vector3.Distance(PlayerController.Position, transform.position) >= RequiredDistanceToPlayerForFarAttack)
                         Next();
                 });
         }

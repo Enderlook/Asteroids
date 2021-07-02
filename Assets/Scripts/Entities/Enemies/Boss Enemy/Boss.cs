@@ -59,7 +59,7 @@ namespace Asteroids.Entities.Enemies
         private new Rigidbody2D rigidbody;
         private new Collider2D collider;
         private new SpriteRenderer renderer;
-        private BossShooter bossShooter;
+        private BossShooter shooter;
         private HealthBar healthBar;
 
         private int currentLifes;
@@ -73,9 +73,8 @@ namespace Asteroids.Entities.Enemies
         private readonly PlayerIsDeadGoal goal = new PlayerIsDeadGoal();
 
         private float requiredDistanceToPlayerForCloseAttack;
-        public const float FurtherDistanceToPlayer = 9;
+        public const float RequiredDistanceToPlayerForFarAttack = 9;
         private const float CloseAttackDuration = .8f;
-        private const float AverageTimeRequiredByFarAttack = 2f;
 
         private PlanningCoroutine<IGoal<BossState>, NodeBase> planification;
         private float nextPlanificationAt;
@@ -98,12 +97,14 @@ namespace Asteroids.Entities.Enemies
             rigidbody = GetComponent<Rigidbody2D>();
             collider = GetComponent<Collider2D>();
             renderer = GetComponent<SpriteRenderer>();
-            bossShooter = GetComponent<BossShooter>();
+            shooter = GetComponent<BossShooter>();
             healthBar = FindObjectOfType<HealthBar>();
 
             currentLifes = lifes;
-            Vector2 size = closeRange.GetComponent<Collider2D>().bounds.size;
-            requiredDistanceToPlayerForCloseAttack = Mathf.Max(size.x, size.y);
+
+            EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
+
+            GameSaver.SubscribeBoss(() => new State(this));
 
             // Also, each event has transitions to any other event, since the recalculation of a GOAP can completely change the current plan.
             // Finally, we need an additional states (and event) used when plan is being calculated, for that reason we use a dummy object.
@@ -137,11 +138,6 @@ namespace Asteroids.Entities.Enemies
             machine.Start();
 
             currentStep = -1;
-            CheckPlanification();
-
-            EventManager.Subscribe<OnPowerUpPickedEvent>(OnPowerUpPicked);
-
-            GameSaver.SubscribeBoss(() => new State(this));
 
             // For gameplay reasons the boss is not tracked by the rewind feature.
         }
@@ -181,13 +177,10 @@ namespace Asteroids.Entities.Enemies
 
         private void FixedUpdate()
         {
-            if (invulnerabilityTime > 0)
+            if (invulnerabilityTime > 0 && invulnerabilityTime <= Time.time)
             {
-                if (invulnerabilityTime <= Time.time)
-                {
-                    collider.isTrigger = false;
-                    renderer.color = Color.white;
-                }
+                collider.isTrigger = false;
+                renderer.color = Color.white;
             }
 
             CheckPlanification();
@@ -271,6 +264,12 @@ namespace Asteroids.Entities.Enemies
                     return;
             }
 
+            if (planification is null)
+            {
+                currentStep = -1;
+                return;
+            }
+
             if (planification.MoveNext())
                 return;
 
@@ -310,6 +309,16 @@ namespace Asteroids.Entities.Enemies
 
         private void Planify()
         {
+            // We can't put thhs on Awake() nor Start() because collider may have not yet calculated the its bound,
+            // since that is calculated on the first FixedUpdate of that collider (which may be before or after our FixedUpdate, hence the check).
+            if (requiredDistanceToPlayerForCloseAttack == 0)
+            {
+                Vector2 size = closeRange.GetComponent<Collider2D>().bounds.size;
+                requiredDistanceToPlayerForCloseAttack = Mathf.Max(size.x, size.y) * .75f;
+                if (requiredDistanceToPlayerForCloseAttack == 0)
+                    return;
+            }
+
             nextPlanificationAt = Time.time + timeBetweenPlanifications;
             planification = inProgressPlan
                 .Plan(new BossState(this), actions

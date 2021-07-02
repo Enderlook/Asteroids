@@ -15,18 +15,18 @@ namespace Asteroids.Entities.Enemies
                 (BossState before, ref BossState now) =>
                 {
                     float distance = Vector3.Distance(now.PlayerPosition, now.BossPosition);
-                    if (distance >= FurtherDistanceToPlayer && !IsTooHurt(now))
+                    if (distance >= RequiredDistanceToPlayerForFarAttack && !IsTooHurt(now))
                         return SatisfactionResult.Satisfied;
                     if (distance > Vector3.Distance(before.PlayerPosition, before.BossPosition) || now.BossHealth > before.BossHealth)
                         return SatisfactionResult.Progressed;
                     return SatisfactionResult.NotProgressed;
                 },
                 (ref BossState worldState)
-                    => Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) >= FurtherDistanceToPlayer && !IsTooHurt(worldState),
+                    => Vector3.Distance(worldState.PlayerPosition, worldState.BossPosition) >= RequiredDistanceToPlayerForFarAttack && !IsTooHurt(worldState),
                 (ref BossState worldState) =>
                 {
                     worldState.PlayerHealth--;
-                    worldState.AdvanceTime(AverageTimeRequiredByFarAttack);
+                    worldState.AdvanceTime(shooter.Duration);
                 },
                 null,
                 () => 4
@@ -34,9 +34,9 @@ namespace Asteroids.Entities.Enemies
             actions[index] = node;
 
             builders[index] = builder.In(node)
-                .OnEntry(() => bossShooter.enabled = true)
-                .OnExit(() => bossShooter.enabled = false)
-                .OnUpdate(() => MoveAndRotateTowards(PlayerController.Position, FurtherDistanceToPlayer));
+                .OnEntry(() => shooter.enabled = true)
+                .OnExit(() => shooter.enabled = false)
+                .OnUpdate(() => MoveAndRotateTowards(PlayerController.Position, RequiredDistanceToPlayerForFarAttack));
         }
     }
 }

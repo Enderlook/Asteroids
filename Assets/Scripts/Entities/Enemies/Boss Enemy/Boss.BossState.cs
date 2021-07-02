@@ -47,7 +47,7 @@ namespace Asteroids.Entities.Enemies
 
             public override string ToString() => $"{{Pl: ({PlayerHealth} {PlayerPosition}) Bo: ({BossHealth} {BossPosition}) Pu: ({PowerUps} {TimeSinceLastPowerUpWasSpawned}) D: {Vector3.Distance(PlayerPosition, BossPosition)}}}";
 
-            BossState IWorldState<BossState>.Clone() => new BossState(BossPosition, BossHealth, PlayerPosition, PlayerHealth, PowerUps, TimeSinceLastPowerUpWasSpawned);
+            BossState IWorldState<BossState>.Clone() => this;
         }
     }
 }

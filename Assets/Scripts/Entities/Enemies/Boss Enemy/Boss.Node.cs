@@ -3,8 +3,6 @@
 using System;
 using System.Runtime.CompilerServices;
 
-using UnityEngine;
-
 namespace Asteroids.Entities.Enemies
 {
     public sealed partial class Boss
@@ -13,8 +11,6 @@ namespace Asteroids.Entities.Enemies
         public delegate SatisfactionResult CheckAndTrySatisfy2(BossState before, ref BossState now);
         public delegate void ApplyEffect<T>(T parameter, ref BossState worldState);
         public delegate void ApplyEffect(ref BossState worldState);
-
-        private struct Unit { }
 
         private abstract class NodeBase : IGoal<BossState>, IAction<BossState, IGoal<BossState>>
         {
