@@ -347,15 +347,15 @@ namespace Asteroids.Entities.Enemies
             if (invulnerabilityTime > 0)
                 return;
 
-            if (lifes == 1)
+            if (currentLifes == 1)
             {
                 EventManager.Raise(new EnemySpawner.EnemyDestroyedEvent("Boss", scoreWhenDestroyed));
                 Destroy(gameObject);
             }
             else
             {
-                lifes--;
-                healthBar.UpdateValues(lifes);
+                currentLifes--;
+                healthBar.UpdateValues(currentLifes);
                 BecomeInvulnerable();
             }
         }
