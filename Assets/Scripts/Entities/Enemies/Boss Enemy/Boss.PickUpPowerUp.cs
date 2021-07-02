@@ -29,7 +29,7 @@ namespace Asteroids.Entities.Enemies
                     return false;
                 },
                 worldState => lifes - worldState.BossHealth,
-                (int _, ref BossState worldState) => worldState.BossHealth = Mathf.Max(worldState.BossHealth + healthRestoredPerPowerUp, lifes),
+                (int _, ref BossState worldState) => worldState.BossHealth = Mathf.Min(worldState.BossHealth + healthRestoredPerPowerUp, lifes),
                 null,
                 cost => cost
             );
