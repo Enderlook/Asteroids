@@ -177,10 +177,11 @@ namespace Asteroids.Entities.Enemies
 
         private void FixedUpdate()
         {
-            if (invulnerabilityTime > 0 && invulnerabilityTime <= Time.time)
+            if (invulnerabilityTime > 0 && invulnerabilityTime <= Time.fixedTime)
             {
                 collider.isTrigger = false;
                 renderer.color = Color.white;
+                invulnerabilityTime = -1;
             }
 
             CheckPlanification();
@@ -355,15 +356,15 @@ namespace Asteroids.Entities.Enemies
             else
             {
                 currentLifes--;
-                healthBar.UpdateValues(currentLifes);
                 BecomeInvulnerable();
+                healthBar.UpdateValues(currentLifes);
             }
         }
 
         private void BecomeInvulnerable()
         {
             collider.isTrigger = true;
-            invulnerabilityTime = invulnerabilityDuration;
+            invulnerabilityTime = invulnerabilityDuration + Time.fixedTime;
             renderer.color = invulnerabilityColor;
         }
 
