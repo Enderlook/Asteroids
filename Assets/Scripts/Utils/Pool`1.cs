@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using UnityEngine;
+
 namespace Asteroids.Utils
 {
     /// <inheritdoc cref="IPool{TObject,}"/>
@@ -62,6 +64,12 @@ namespace Asteroids.Utils
         /// <inheritdoc cref="IRecycler{TObject, TParameter}.Store(TObject)"/>
         public void Store(TObject obj)
         {
+            if (pool.Contains(obj))
+            {
+                Debug.LogWarning("Storing twice same object in pool. Fixed possible corruption (due to rewind?).");
+                return;
+            }
+
             if (!(disable is null))
                 disable(obj);
             pool.Push(obj);

@@ -64,10 +64,11 @@ namespace Asteroids.Utils
         /// <inheritdoc cref="IPool{TObject, TParameter}.Store(TObject)"/>
         public void Store(TObject obj)
         {
-#if UNITY_EDITOR
             if (pool.Contains(obj))
-                Debug.LogError("Storing twice same object in pool.");
-#endif
+            {
+                Debug.LogWarning("Storing twice same object in pool. Fixed possible corruption (due to rewind?).");
+                return;
+            }
 
             if (!(disable is null))
                 disable(obj);
