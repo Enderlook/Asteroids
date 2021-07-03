@@ -15,14 +15,14 @@ namespace Asteroids.Entities.Enemies
             Node<float> node = new Node<float>(
                 (BossState _, ref BossState now) =>
                 {
-                    if (now.PowerUps == 0)
+                    if (!now.HasPowerUpInScene)
                         return SatisfactionResult.Satisfied;
                     return SatisfactionResult.NotProgressed;
                 },
-                (ref BossState worldState) => worldState.PowerUps == 0,
+                (ref BossState worldState) => !worldState.HasPowerUpInScene,
                 worldState => Mathf.Max(PowerUpManager.SpawnTime - worldState.TimeSinceLastPowerUpWasSpawned, 1),
                 (float _, ref BossState worldState) => {
-                    worldState.PowerUps++;
+                    worldState.HasPowerUpInScene = true;
                     worldState.TimeSinceLastPowerUpWasSpawned = 0;
                 },
                 null,

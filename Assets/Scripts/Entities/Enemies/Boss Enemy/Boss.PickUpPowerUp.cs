@@ -13,17 +13,17 @@ namespace Asteroids.Entities.Enemies
         {
             Node<int> node = new Node<int>(
                 (BossState _, ref BossState now) => {
-                    if (now.PowerUps > 0)
+                    if (now.HasPowerUpInScene)
                     {
-                        now.PowerUps--;
+                        now.HasPowerUpInScene = false;
                         return SatisfactionResult.Satisfied;
                     }
                     return SatisfactionResult.NotProgressed;
                 },
                 (ref BossState worldState) => {
-                    if (worldState.PowerUps > 0)
+                    if (worldState.HasPowerUpInScene)
                     {
-                        worldState.PowerUps--;
+                        worldState.HasPowerUpInScene = false;
                         return true;
                     }
                     return false;

@@ -11,11 +11,15 @@ namespace Asteroids.Entities.Enemies
     {
         public struct BossState : IWorldState<BossState>
         {
+            // The final exam request to have an string/enum as world state,
+            // but since in our case it doesn't make sense (we don't use them in any part)
+            // the teacher allowed us to use a Vector3 instead as a replacement.
+
             public Vector3 PlayerPosition;
             public Vector3 BossPosition;
             public int BossHealth;
             public int PlayerHealth;
-            public int PowerUps;
+            public bool HasPowerUpInScene; // An int would be better to track amount of power ups, but the final exam request to have at least one bool.
             public float TimeSinceLastPowerUpWasSpawned;
 
             public void AdvanceTime(float time)
@@ -24,7 +28,7 @@ namespace Asteroids.Entities.Enemies
                 if (time > PowerUpManager.SpawnTime)
                 {
                     TimeSinceLastPowerUpWasSpawned -= PowerUpManager.SpawnTime;
-                    PowerUps++;
+                    HasPowerUpInScene = true;
                 }
             }
 
@@ -32,20 +36,20 @@ namespace Asteroids.Entities.Enemies
                 : this(
                       boss.transform.position, boss.currentLifes,
                       PlayerController.Position, PlayerController.Lifes,
-                      PowerUpManager.PowerUpsInScene, PowerUpManager.TimeSinceLastSpawnedPowerUp
+                      PowerUpManager.PowerUpsInScene > 0, PowerUpManager.TimeSinceLastSpawnedPowerUp
                 ) { }
 
-            private BossState(Vector3 bossPosition, int bossHealth, Vector3 playerPosition, int playerHealth, int powerUps, float timeSinceLastPowerUpWasSpawned)
+            private BossState(Vector3 bossPosition, int bossHealth, Vector3 playerPosition, int playerHealth, bool hasPowerUpInScene, float timeSinceLastPowerUpWasSpawned)
             {
                 PlayerPosition = playerPosition;
                 BossPosition = bossPosition;
                 BossHealth = bossHealth;
                 PlayerHealth = playerHealth;
-                PowerUps = powerUps;
+                HasPowerUpInScene = hasPowerUpInScene;
                 TimeSinceLastPowerUpWasSpawned = timeSinceLastPowerUpWasSpawned;
             }
 
-            public override string ToString() => $"{{Pl: ({PlayerHealth} {PlayerPosition}) Bo: ({BossHealth} {BossPosition}) Pu: ({PowerUps} {TimeSinceLastPowerUpWasSpawned}) D: {Vector3.Distance(PlayerPosition, BossPosition)}}}";
+            public override string ToString() => $"{{Pl: ({PlayerHealth} {PlayerPosition}) Bo: ({BossHealth} {BossPosition}) Pu: ({HasPowerUpInScene} {TimeSinceLastPowerUpWasSpawned}) D: {Vector3.Distance(PlayerPosition, BossPosition)}}}";
 
             BossState IWorldState<BossState>.Clone() => this;
         }
